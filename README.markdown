@@ -1,0 +1,79 @@
+# TTTAttributedLabel
+## A drop-in replacement for `UILabel` that supports `NSAttributedStrings` 
+
+[NSAttributedString](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html) is pretty rad. When it was ported into iOS 4 from Mac OS, iPhone developers everywhere rejoiced, for it was good. Unfortunately, as of iOS 4 none of the standard controls in UIKit support it. Major bummer.
+
+`TTTAttributedLabel` was created to be a drop-in replacement for `UILabel`, that provided a simple API to styling text with `NSAttributedString` while remaining performant. As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, or event.
+
+## Installation
+
+`TTTAttributedLabel` requires the `CoreText` Framework, so the first thing you'll need to do is include the framework into your project. In Xcode 4, go to the project file at the root of your workspace and select your active target. There should be several sections across the top of that window; choose "Build Phases". Next, click "Link Binary With Libraries" to expand that section to see the frameworks currently included in your project. Click the "+" at the bottom left and select "CoreText.framework".
+
+Now that the framework has been linked, all you need to do is drop `TTTAttributedLabel.{h,m}` into your project, and add `#include "TTTAttributedLabel.h"` to the top of classes that will use it.
+
+## Example Usage
+
+    TTTAttributedLabel *label = [[[TTTAttributedLabel alloc] initWithFrame:CGRectZero] autorelease];
+    label.font = [UIFont systemFontOfSize:14];
+    label.textColor = [UIColor darkGrayColor];
+    label.lineBreakMode = UILineBreakModeWordWrap;
+    label.numberOfLines = 0;
+    
+    NSString *text = @"Lorem ipsum dolar sit amet";
+    [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+      NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
+      
+      // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
+      UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14]; 
+    	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+    	if (font) {
+    	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+    	  CFRelease(font);
+    	}
+    	
+    	return mutableAttributedString;
+    }];
+
+First, we create and configure the label, the same way you would instantiate `UILabel`. Any text properties that are set on the label are inherited as the base attributes when using the `-setText:afterInheritingLabelAttributesAndConfiguringWithBlock:` method. In this example, the substring "ipsum dolar", would appear in bold, such that the label would read "Lorem **ipsum dolar** sit amet", in size 14 Helvetica, with a dark gray color.
+
+The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; in the latter case, the attributed string is directly set, without inheriting the base style of the label.
+
+### Links and UIDataDetectors
+
+In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for URLs, addresses, phone numbers, and dates, or allow you to embed your own.
+
+    label.dataDetectorTypes = UIDataDetectorTypeAll; // Automatically detect links when the label text is subsequently changed
+    label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
+
+    label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
+
+    NSRange range = [label.text rangeOfString:@"me"];
+    [label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
+
+## Credits
+
+`TTTAttributedLabel` was inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), and borrowed some general approaches in converting between UIKit and Core Text text attributes.
+
+## License
+
+TTTAttributedLabel is licensed under the MIT License:
+
+  Copyright (c) 2011 Mattt Thompson (http://mattt.me/)
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
