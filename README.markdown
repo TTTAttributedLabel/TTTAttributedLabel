@@ -1,5 +1,5 @@
 # TTTAttributedLabel
-## A drop-in replacement for `UILabel` that supports `NSAttributedStrings` 
+## A drop-in replacement for UILabel that supports NSAttributedStrings 
 
 [NSAttributedString](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html) is pretty rad. When it was ported into iOS 4 from Mac OS, iPhone developers everywhere rejoiced, for it was good. Unfortunately, as of iOS 4 none of the standard controls in UIKit support it. Major bummer.
 
@@ -52,7 +52,7 @@ In addition to supporting rich text, `TTTAttributedLabel` allows you to automati
 
 ## Credits
 
-`TTTAttributedLabel` was inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), and borrowed some general approaches in converting between UIKit and Core Text text attributes.
+Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
 
 ## License
 
