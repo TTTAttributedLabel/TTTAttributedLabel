@@ -44,6 +44,7 @@ typedef NSAttributedString *(^TTTMutableAttributedStringBlock)(NSMutableAttribut
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
     NSMutableAttributedString *_mutableAttributedText;
     CTFramesetterRef _framesetter;
+    BOOL _needsFramesetter;
     
     id <TTTAttributedLabelDelegate> delegate;
     UIDataDetectorTypes _dataDetectorTypes;
@@ -58,6 +59,7 @@ typedef NSAttributedString *(^TTTMutableAttributedStringBlock)(NSMutableAttribut
 @property (readonly, nonatomic, retain) NSArray *links;
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block;
+- (void)setNeedsFramesetter;
 
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range;
 - (void)addLinkToAddress:(NSDictionary *)addressComponents withRange:(NSRange)range;
