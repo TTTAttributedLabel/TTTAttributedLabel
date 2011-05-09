@@ -1,0 +1,297 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F877A36113782AF10022A8AB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36013782AF10022A8AB /* UIKit.framework */; };
+		F877A36313782AF10022A8AB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36213782AF10022A8AB /* Foundation.framework */; };
+		F877A36513782AF10022A8AB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36413782AF10022A8AB /* CoreGraphics.framework */; };
+		F877A36E13782AF10022A8AB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A36D13782AF10022A8AB /* main.m */; };
+		F877A37113782AF10022A8AB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A37013782AF10022A8AB /* AppDelegate.m */; };
+		F877A37713782AF10022A8AB /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A37613782AF10022A8AB /* RootViewController.m */; };
+		F877A38213782B360022A8AB /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A38113782B360022A8AB /* TTTAttributedLabel.m */; };
+		F877A39513782FC10022A8AB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A39413782FC10022A8AB /* CoreText.framework */; };
+		F877A39813782FF50022A8AB /* AttributedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A39713782FF50022A8AB /* AttributedTableViewCell.m */; };
+		F877A3A2137833EB0022A8AB /* espressos.txt in Resources */ = {isa = PBXBuildFile; fileRef = F877A3A1137833EB0022A8AB /* espressos.txt */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F877A35C13782AF10022A8AB /* Espressos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Espressos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F877A36013782AF10022A8AB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		F877A36213782AF10022A8AB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F877A36413782AF10022A8AB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F877A36813782AF10022A8AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F877A36C13782AF10022A8AB /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		F877A36D13782AF10022A8AB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F877A36F13782AF10022A8AB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F877A37013782AF10022A8AB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F877A37513782AF10022A8AB /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		F877A37613782AF10022A8AB /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		F877A38013782B360022A8AB /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../../TTTAttributedLabel.h; sourceTree = "<group>"; };
+		F877A38113782B360022A8AB /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = ../../TTTAttributedLabel.m; sourceTree = "<group>"; };
+		F877A39413782FC10022A8AB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		F877A39613782FF50022A8AB /* AttributedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributedTableViewCell.h; sourceTree = "<group>"; };
+		F877A39713782FF50022A8AB /* AttributedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributedTableViewCell.m; sourceTree = "<group>"; };
+		F877A3A1137833EB0022A8AB /* espressos.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = espressos.txt; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F877A35913782AF10022A8AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F877A39513782FC10022A8AB /* CoreText.framework in Frameworks */,
+				F877A36113782AF10022A8AB /* UIKit.framework in Frameworks */,
+				F877A36313782AF10022A8AB /* Foundation.framework in Frameworks */,
+				F877A36513782AF10022A8AB /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F877A35113782AF10022A8AB = {
+			isa = PBXGroup;
+			children = (
+				F877A36613782AF10022A8AB /* Classes */,
+				F877A35F13782AF10022A8AB /* Frameworks */,
+				F877A35D13782AF10022A8AB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F877A35D13782AF10022A8AB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F877A35C13782AF10022A8AB /* Espressos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F877A35F13782AF10022A8AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F877A36013782AF10022A8AB /* UIKit.framework */,
+				F877A36213782AF10022A8AB /* Foundation.framework */,
+				F877A36413782AF10022A8AB /* CoreGraphics.framework */,
+				F877A39413782FC10022A8AB /* CoreText.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F877A36613782AF10022A8AB /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F877A39013782E870022A8AB /* Controllers */,
+				F877A39113782E9C0022A8AB /* Views */,
+				F877A38313782B450022A8AB /* TTTAttributedLabel */,
+				F877A36713782AF10022A8AB /* Supporting Files */,
+			);
+			name = Classes;
+			path = TTTAttributedLabelExample;
+			sourceTree = "<group>";
+		};
+		F877A36713782AF10022A8AB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F877A36F13782AF10022A8AB /* AppDelegate.h */,
+				F877A37013782AF10022A8AB /* AppDelegate.m */,
+				F877A36C13782AF10022A8AB /* Prefix.pch */,
+				F877A36D13782AF10022A8AB /* main.m */,
+				F877A36813782AF10022A8AB /* Info.plist */,
+				F877A3A1137833EB0022A8AB /* espressos.txt */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F877A38313782B450022A8AB /* TTTAttributedLabel */ = {
+			isa = PBXGroup;
+			children = (
+				F877A38013782B360022A8AB /* TTTAttributedLabel.h */,
+				F877A38113782B360022A8AB /* TTTAttributedLabel.m */,
+			);
+			name = TTTAttributedLabel;
+			sourceTree = "<group>";
+		};
+		F877A39013782E870022A8AB /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F877A37513782AF10022A8AB /* RootViewController.h */,
+				F877A37613782AF10022A8AB /* RootViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		F877A39113782E9C0022A8AB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F877A39613782FF50022A8AB /* AttributedTableViewCell.h */,
+				F877A39713782FF50022A8AB /* AttributedTableViewCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F877A35B13782AF10022A8AB /* Espressos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F877A37D13782AF10022A8AB /* Build configuration list for PBXNativeTarget "Espressos" */;
+			buildPhases = (
+				F877A35813782AF10022A8AB /* Sources */,
+				F877A35913782AF10022A8AB /* Frameworks */,
+				F877A35A13782AF10022A8AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Espressos;
+			productName = TTTAttributedLabelExample;
+			productReference = F877A35C13782AF10022A8AB /* Espressos.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F877A35313782AF10022A8AB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = Gowalla;
+			};
+			buildConfigurationList = F877A35613782AF10022A8AB /* Build configuration list for PBXProject "TTTAttributedLabelExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F877A35113782AF10022A8AB;
+			productRefGroup = F877A35D13782AF10022A8AB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F877A35B13782AF10022A8AB /* Espressos */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F877A35A13782AF10022A8AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F877A3A2137833EB0022A8AB /* espressos.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F877A35813782AF10022A8AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F877A36E13782AF10022A8AB /* main.m in Sources */,
+				F877A37113782AF10022A8AB /* AppDelegate.m in Sources */,
+				F877A37713782AF10022A8AB /* RootViewController.m in Sources */,
+				F877A38213782B360022A8AB /* TTTAttributedLabel.m in Sources */,
+				F877A39813782FF50022A8AB /* AttributedTableViewCell.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F877A37B13782AF10022A8AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		F877A37C13782AF10022A8AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		F877A37E13782AF10022A8AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = TTTAttributedLabelExample/Prefix.pch;
+				INFOPLIST_FILE = TTTAttributedLabelExample/Info.plist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F877A37F13782AF10022A8AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = TTTAttributedLabelExample/Prefix.pch;
+				INFOPLIST_FILE = TTTAttributedLabelExample/Info.plist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F877A35613782AF10022A8AB /* Build configuration list for PBXProject "TTTAttributedLabelExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F877A37B13782AF10022A8AB /* Debug */,
+				F877A37C13782AF10022A8AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F877A37D13782AF10022A8AB /* Build configuration list for PBXNativeTarget "Espressos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F877A37E13782AF10022A8AB /* Debug */,
+				F877A37F13782AF10022A8AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F877A35313782AF10022A8AB /* Project object */;
+}
