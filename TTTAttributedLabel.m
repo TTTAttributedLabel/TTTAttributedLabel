@@ -290,6 +290,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         [super drawTextInRect:rect];
     }
     
+    if (!self.framesetter || _needsFramesetter) {
+        self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
+        _needsFramesetter = NO;   
+    }
+    
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
     CGContextTranslateCTM(c, 0, self.bounds.size.height);
@@ -343,17 +348,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
 #pragma mark -
 #pragma mark UIView
-
-- (void)setNeedsDisplay {
-    if (!self.framesetter || _needsFramesetter) {
-        @synchronized(self) {
-            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
-            _needsFramesetter = NO;   
-        }
-    }
-    
-    [super setNeedsDisplay];
-}
 
 - (CGSize)sizeThatFits:(CGSize)size {
     if (!self.attributedText) {
