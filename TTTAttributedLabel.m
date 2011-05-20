@@ -236,18 +236,24 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+    NSUInteger lineIndex = numberOfLines - 1;
+    
+    CGPoint lineOrigin = CGPointZero;
     for (NSUInteger i = 0; i < numberOfLines; i++) {
         CGPoint lineOrigin = lineOrigins[i];
-        if (lineOrigin.y > p.y) {
-            CTLineRef line = CFArrayGetValueAtIndex(lines, i);
-            CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-            idx = CTLineGetStringIndexForPosition(line, relativePoint);
-            break;
-        }
+        if(lineOrigin.y > p.y) {
+            lineIndex--;
+        }            
     }
+    
+    lineOrigin = lineOrigins[lineIndex];
+    CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+    CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
+    idx = CTLineGetStringIndexForPosition(line, relativePoint);
+    
     CFRelease(frame);
     CFRelease(path);
-    
+        
     return idx;
 }
 
