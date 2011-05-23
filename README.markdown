@@ -56,6 +56,8 @@ In addition to supporting rich text, `TTTAttributedLabel` allows you to automati
 
 Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
 
+Thanks to [Tyler Bunnell](https://github.com/tylerb) for his fix to how touches are mapped onto their corresponding embedded links.
+
 ## License
 
 TTTAttributedLabel is licensed under the MIT License:
