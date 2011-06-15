@@ -296,7 +296,12 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     
     NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:text] autorelease];
     [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
-    [self setText:block(mutableAttributedString)];
+    
+    if (block) {
+        [self setText:block(mutableAttributedString)];
+    } else {
+        [self setText:mutableAttributedString];
+    }
 }
 
 #pragma mark -
