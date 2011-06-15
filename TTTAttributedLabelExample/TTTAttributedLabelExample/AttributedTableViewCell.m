@@ -57,17 +57,14 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = [[UIScreen mainScreen] scale];
     
-    _summaryLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+    self.summaryLabel = [[[TTTAttributedLabel alloc] initWithFrame:CGRectZero] autorelease];
     self.summaryLabel.font = [UIFont systemFontOfSize:kSummaryTextFontSize];
     self.summaryLabel.textColor = [UIColor darkGrayColor];
     self.summaryLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.summaryLabel.numberOfLines = 0;
+    self.summaryLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
-    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString*)kCTUnderlineStyleAttributeName];
-    self.summaryLabel.linkAttributes = mutableLinkAttributes;
-    
-    self.selectionStyle = UITableViewCellEditingStyleNone;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
 
     [self.contentView addSubview:self.summaryLabel];
     
@@ -85,11 +82,10 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     _summaryText = [text copy];
     [self didChangeValueForKey:@"summaryText"];
     
-    __block NSRegularExpression *regexp = nil;    
     [self.summaryLabel setText:self.summaryText afterInheritingLabelAttributesAndConfiguringWithBlock:^NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
         NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
         
-        regexp = NameRegularExpression();
+        NSRegularExpression *regexp = NameRegularExpression();
         NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
         UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kSummaryTextFontSize]; 
     	CTFontRef boldFont = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
@@ -115,7 +111,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         return mutableAttributedString;
     }];
     
-    regexp = NameRegularExpression();
+    NSRegularExpression *regexp = NameRegularExpression();
     NSRange linkRange = [regexp rangeOfFirstMatchInString:self.summaryText options:0 range:NSMakeRange(0, [self.summaryText length])];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://wikipedia.org/wiki/%@", [self.summaryText substringWithRange:linkRange]]];
     [self.summaryLabel addLinkToURL:url withRange:linkRange];
