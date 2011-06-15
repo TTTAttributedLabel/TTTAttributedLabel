@@ -272,21 +272,19 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 #pragma mark TTTAttributedLabel
 
 - (void)setText:(id)text {
-    if ([text isKindOfClass:[NSAttributedString class]]) {  
-        [super setText:[(NSAttributedString *)text string]];
-        
-        self.attributedText = text;
-        self.links = [NSArray array];
-        if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-            for (NSTextCheckingResult *result in [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil]) {
-                [self addLinkWithTextCheckingResult:result];
-            }
-        }
-        
-        return;
+    if ([text isKindOfClass:[NSString class]]) {
+        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
     }
     
-    [super setText:(NSString *)text];
+    self.attributedText = text;
+    self.links = [NSArray array];
+    if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
+        for (NSTextCheckingResult *result in [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil]) {
+            [self addLinkWithTextCheckingResult:result];
+        }
+    }
+        
+    [super setText:[(NSAttributedString *)text string]];
 }
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block {
