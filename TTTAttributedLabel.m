@@ -124,10 +124,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 }
 
 - (void)dealloc {
+    if (_framesetter) CFRelease(_framesetter);
     [_attributedText release];
-    if (_framesetter) {
-        CFRelease(_framesetter);
-    }
     [_links release];
     [_linkAttributes release];
     [super dealloc];
@@ -148,6 +146,19 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
 - (void)setNeedsFramesetter {
     _needsFramesetter = YES;
+}
+
+- (CTFramesetterRef)framesetter {
+    if (_needsFramesetter) {
+        @synchronized(self) {
+            if (_framesetter) CFRelease(_framesetter);
+            
+            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
+            _needsFramesetter = NO;
+        }
+    }
+    
+    return _framesetter;
 }
 
 - (BOOL)isUserInteractionEnabled {
@@ -174,7 +185,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     self.links = [self.links arrayByAddingObject:result];
     
     if (self.linkAttributes) {
-        NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
+        NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
         [mutableAttributedString addAttributes:self.linkAttributes range:result.range];
         self.attributedText = mutableAttributedString;        
     }
@@ -283,7 +294,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         text = [[[NSAttributedString alloc] initWithString:text] autorelease];
     }
     
-    NSMutableAttributedString *mutableAttributedString = [[text mutableCopy] autorelease];
+    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:text] autorelease];
     [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
     [self setText:block(mutableAttributedString)];
 }
@@ -296,11 +307,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         [super drawTextInRect:rect];
     }
     
-    if (!self.framesetter || _needsFramesetter) {
-        self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
-        _needsFramesetter = NO;   
-    }
-    
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
     CGContextTranslateCTM(c, 0, self.bounds.size.height);
@@ -310,6 +316,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
     CTFrameDraw(frame, c);
+    
+    CFRelease(frame);
     CFRelease(path);
 }
 
