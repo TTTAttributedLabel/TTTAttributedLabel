@@ -44,14 +44,20 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 }
 
 static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIDataDetectorTypes dataDetectorType) {
-    switch (dataDetectorType) {
-        case UIDataDetectorTypeAll: return NSTextCheckingTypeAddress | NSTextCheckingTypeDate | NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
-        case UIDataDetectorTypeAddress: return NSTextCheckingTypeAddress;
-        case UIDataDetectorTypeCalendarEvent: return NSTextCheckingTypeDate;
-        case UIDataDetectorTypeLink: return NSTextCheckingTypeLink;
-        case UIDataDetectorTypePhoneNumber: return NSTextCheckingTypePhoneNumber;
-        default: return 0;
+    NSTextCheckingType textCheckingType;
+    if (dataDetectorType & UIDataDetectorTypeAll) {
+        textCheckingType |= NSTextCheckingTypeAddress | NSTextCheckingTypeDate | NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+    } else if (dataDetectorType & UIDataDetectorTypeAddress) {
+        textCheckingType |= NSTextCheckingTypeAddress;
+    } else if (dataDetectorType & UIDataDetectorTypeCalendarEvent) {
+        textCheckingType |= NSTextCheckingTypeDate;
+    } else if (dataDetectorType & UIDataDetectorTypeLink) {
+        textCheckingType |= NSTextCheckingTypeLink;
+    } else if (dataDetectorType & UIDataDetectorTypePhoneNumber) {
+        textCheckingType |= NSTextCheckingTypePhoneNumber;
     }
+    
+    return textCheckingType;
 }
 
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *label) {
