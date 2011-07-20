@@ -116,6 +116,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     [mutableLinkAttributes setValue:(id)[[UIColor blueColor] CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
     [mutableLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
+    self.attributedText = [[[NSAttributedString alloc] initWithString:@""] autorelease];
     
     return self;
 }
