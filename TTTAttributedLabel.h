@@ -42,7 +42,7 @@
 typedef NSAttributedString *(^TTTMutableAttributedStringBlock)(NSMutableAttributedString *mutableAttributedString);
 
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
-    NSMutableAttributedString *_mutableAttributedText;
+    NSAttributedString *_attributedText;
     CTFramesetterRef _framesetter;
     BOOL _needsFramesetter;
     
