@@ -44,7 +44,7 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 }
 
 static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIDataDetectorTypes dataDetectorType) {
-    NSTextCheckingType textCheckingType;
+    NSTextCheckingType textCheckingType = 0;
     if (dataDetectorType & UIDataDetectorTypeAll) {
         textCheckingType |= NSTextCheckingTypeAddress | NSTextCheckingTypeDate | NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
     } else if (dataDetectorType & UIDataDetectorTypeAddress) {
@@ -87,6 +87,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
+- (id)initCommon;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
@@ -108,7 +109,20 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     if (!self) {
         return nil;
     }
-        
+    
+    return [self initCommon];
+}
+
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return nil;
+    }
+    
+    return [self initCommon];
+}
+
+- (id)initCommon {
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.links = [NSArray array];
     
@@ -118,15 +132,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return nil;
-    }
-    
-    return [self initWithFrame:self.frame];
 }
 
 - (void)dealloc {
