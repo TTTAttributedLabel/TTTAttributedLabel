@@ -149,10 +149,12 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         [self setNeedsFramesetter];
     }
     
-    [self willChangeValueForKey:@"attributedText"];
-    [_attributedText release];
-    _attributedText = [text copy];
-    [self didChangeValueForKey:@"attributedText"];
+    if (_attributedText != text) {
+        [self willChangeValueForKey:@"attributedText"];
+        [_attributedText release];
+        _attributedText = [text copy];
+        [self didChangeValueForKey:@"attributedText"];
+    }    
 }
 
 - (void)setNeedsFramesetter {
@@ -261,8 +263,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     NSUInteger lineIndex = numberOfLines - 1;
     
     for (NSUInteger i = 0; i < numberOfLines; i++) {
-        CGPoint lineOrigin = lineOrigins[i];
-        if(lineOrigin.y > p.y) {
+        CGPoint lineOrigin1 = lineOrigins[i];
+        if(lineOrigin1.y > p.y) {
             lineIndex--;
         }            
     }
@@ -334,6 +336,16 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CFRelease(path);
 }
 
+// add support if embedded in a UITableViewCell
+- (void)setHighlighted:(BOOL)highlighted {
+    UIColor *highlightColor = highlighted ? [UIColor whiteColor] : self.textColor;
+    NSMutableAttributedString *mas = [[self.attributedText mutableCopy] autorelease];
+    NSRange range = NSMakeRange(0, [self.text length]);
+    [mas removeAttribute:(NSString * )kCTForegroundColorAttributeName range:range]; // TODO: may eat custom colors!
+	[mas addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)highlightColor.CGColor range:range];
+    self.attributedText = mas;
+}
+
 #pragma mark -
 #pragma mark UIControl
 
@@ -358,7 +370,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
                 }
                 break;
             case NSTextCheckingTypePhoneNumber:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber::)]) {
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
                     [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
                 }
                 break;
