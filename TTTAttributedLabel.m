@@ -323,8 +323,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
-    CGContextTranslateCTM(c, 0, self.bounds.size.height);
-    CGContextScaleCTM(c, 1.0, -1.0);
+    CGContextTranslateCTM(c, 0.0f, self.bounds.size.height);
+    CGContextScaleCTM(c, 1.0f, -1.0f);
     
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, rect);
