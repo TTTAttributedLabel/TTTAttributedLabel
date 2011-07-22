@@ -260,7 +260,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
     NSUInteger lineIndex = numberOfLines - 1;
     
-    CGPoint lineOrigin = CGPointZero;
     for (NSUInteger i = 0; i < numberOfLines; i++) {
         CGPoint lineOrigin = lineOrigins[i];
         if(lineOrigin.y > p.y) {
@@ -268,7 +267,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         }            
     }
     
-    lineOrigin = lineOrigins[lineIndex];
+    CGPoint lineOrigin = lineOrigins[lineIndex];
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     idx = CTLineGetStringIndexForPosition(line, relativePoint);
