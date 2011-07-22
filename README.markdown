@@ -15,26 +15,28 @@ Now that the framework has been linked, all you need to do is drop `TTTAttribute
 
 ## Example Usage
 
-    TTTAttributedLabel *label = [[[TTTAttributedLabel alloc] initWithFrame:CGRectZero] autorelease];
-    label.font = [UIFont systemFontOfSize:14];
-    label.textColor = [UIColor darkGrayColor];
-    label.lineBreakMode = UILineBreakModeWordWrap;
-    label.numberOfLines = 0;
-    
-    NSString *text = @"Lorem ipsum dolar sit amet";
-    [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
-      NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
-      
-      // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
-      UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14]; 
-    	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
-    	if (font) {
-    	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
-    	  CFRelease(font);
-    	}
-    	
-    	return mutableAttributedString;
-    }];
+``` objective-c
+TTTAttributedLabel *label = [[[TTTAttributedLabel alloc] initWithFrame:CGRectZero] autorelease];
+label.font = [UIFont systemFontOfSize:14];
+label.textColor = [UIColor darkGrayColor];
+label.lineBreakMode = UILineBreakModeWordWrap;
+label.numberOfLines = 0;
+
+NSString *text = @"Lorem ipsum dolar sit amet";
+[label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+  NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
+  
+  // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
+  UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14]; 
+	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+	if (font) {
+	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+	  CFRelease(font);
+	}
+	
+	return mutableAttributedString;
+}];
+```
 
 First, we create and configure the label, the same way you would instantiate `UILabel`. Any text properties that are set on the label are inherited as the base attributes when using the `-setText:afterInheritingLabelAttributesAndConfiguringWithBlock:` method. In this example, the substring "ipsum dolar", would appear in bold, such that the label would read "Lorem **ipsum dolar** sit amet", in size 14 Helvetica, with a dark gray color.
 
@@ -44,13 +46,15 @@ The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; i
 
 In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for URLs, addresses, phone numbers, and dates, or allow you to embed your own.
 
-    label.dataDetectorTypes = UIDataDetectorTypeAll; // Automatically detect links when the label text is subsequently changed
-    label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
+``` objective-c
+label.dataDetectorTypes = UIDataDetectorTypeAll; // Automatically detect links when the label text is subsequently changed
+label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
 
-    label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
+label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
 
-    NSRange range = [label.text rangeOfString:@"me"];
-    [label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
+NSRange range = [label.text rangeOfString:@"me"];
+[label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
+```
 
 ## Credits
 
