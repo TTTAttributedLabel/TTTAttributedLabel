@@ -145,14 +145,16 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 #pragma mark -
 
 - (void)setAttributedText:(NSAttributedString *)text {
-    if (![text isEqualToAttributedString:self.attributedText]) {
-        [self setNeedsFramesetter];
+    if ([text isEqualToAttributedString:self.attributedText]) {
+        return;
     }
     
     [self willChangeValueForKey:@"attributedText"];
     [_attributedText release];
     _attributedText = [text copy];
     [self didChangeValueForKey:@"attributedText"];
+    
+    [self setNeedsFramesetter];
 }
 
 - (void)setNeedsFramesetter {
@@ -260,7 +262,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
     NSUInteger lineIndex = numberOfLines - 1;
     
-    CGPoint lineOrigin = CGPointZero;
     for (NSUInteger i = 0; i < numberOfLines; i++) {
         CGPoint lineOrigin = lineOrigins[i];
         if(lineOrigin.y > p.y) {
@@ -268,7 +269,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         }            
     }
     
-    lineOrigin = lineOrigins[lineIndex];
+    CGPoint lineOrigin = lineOrigins[lineIndex];
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     idx = CTLineGetStringIndexForPosition(line, relativePoint);
@@ -359,7 +360,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
                 }
                 break;
             case NSTextCheckingTypePhoneNumber:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber::)]) {
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
                     [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
                 }
                 break;
