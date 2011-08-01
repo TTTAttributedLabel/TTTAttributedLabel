@@ -119,7 +119,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 + (CGFloat)heightForCellWithText:(NSString *)text {
     CGFloat height = 10.0f;
-    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kSummaryTextFontSize] constrainedToSize:CGSizeMake(290.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
+    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kSummaryTextFontSize] constrainedToSize:CGSizeMake(285.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
         
     return height;
 }
