@@ -186,6 +186,10 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     _userInteractionDisabled = !userInteractionEnabled;
 }
 
+- (BOOL)isExclusiveTouch {
+    return [self.links count] > 0;
+}
+
 #pragma mark -
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
@@ -352,10 +356,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 #pragma mark -
 #pragma mark UIControl
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
-    return [self linkAtPoint:point] != nil;
-}
-
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];	
 	NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
@@ -385,6 +385,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
                 }
                 break;
         }
+    } else {
+        [self.nextResponder touchesBegan:touches withEvent:event];
     }
 }
 
