@@ -45,15 +45,19 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 
 static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIDataDetectorTypes dataDetectorType) {
     NSTextCheckingType textCheckingType = 0;
-    if (dataDetectorType & UIDataDetectorTypeAll) {
-        textCheckingType |= NSTextCheckingTypeAddress | NSTextCheckingTypeDate | NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
-    } else if (dataDetectorType & UIDataDetectorTypeAddress) {
+    if (dataDetectorType & UIDataDetectorTypeAddress) {
         textCheckingType |= NSTextCheckingTypeAddress;
-    } else if (dataDetectorType & UIDataDetectorTypeCalendarEvent) {
+    }
+    
+    if (dataDetectorType & UIDataDetectorTypeCalendarEvent) {
         textCheckingType |= NSTextCheckingTypeDate;
-    } else if (dataDetectorType & UIDataDetectorTypeLink) {
+    }
+    
+    if (dataDetectorType & UIDataDetectorTypeLink) {
         textCheckingType |= NSTextCheckingTypeLink;
-    } else if (dataDetectorType & UIDataDetectorTypePhoneNumber) {
+    }
+    
+    if (dataDetectorType & UIDataDetectorTypePhoneNumber) {
         textCheckingType |= NSTextCheckingTypePhoneNumber;
     }
     
