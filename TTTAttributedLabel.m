@@ -259,6 +259,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         return NSNotFound;
     }
     
+    // convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
+    p = CGPointMake(p.x, self.bounds.size.height - p.y);
+
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
@@ -267,17 +270,18 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
-    NSUInteger lineIndex = numberOfLines - 1;
-    
-    for (NSUInteger i = 0; i < numberOfLines; i++) {
-        CGPoint lineOrigin = lineOrigins[i];
-        if(lineOrigin.y > p.y) {
-            lineIndex--;
-        }            
+    NSUInteger lineIndex;
+
+    for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
+        CGPoint lineOrigin = lineOrigins[lineIndex];
+        if (lineOrigin.y < p.y) {
+            break;
+        }
     }
     
     CGPoint lineOrigin = lineOrigins[lineIndex];
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+    // convert CT coordinates to line-relative coordinates
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     idx = CTLineGetStringIndexForPosition(line, relativePoint);
     
