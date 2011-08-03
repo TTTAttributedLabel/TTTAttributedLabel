@@ -189,6 +189,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 #pragma mark -
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
+    if (!string) {
+        return [NSArray array];
+    }
     NSMutableArray *mutableLinks = [NSMutableArray array];
     NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:error];
     [dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
@@ -324,6 +327,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
+        return;
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
