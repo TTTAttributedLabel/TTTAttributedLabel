@@ -293,25 +293,26 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
+    } else {
+        self.attributedText = text;
     }
-    
-    self.attributedText = text;
+
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-        for (NSTextCheckingResult *result in [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil]) {
+        for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
             [self addLinkWithTextCheckingResult:result];
         }
     }
         
-    [super setText:[(NSAttributedString *)text string]];
+    [super setText:[self.attributedText string]];
 }
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block {
     if ([text isKindOfClass:[NSString class]]) {
-        text = [[[NSAttributedString alloc] initWithString:text] autorelease];
+        self.attributedText = [[[NSAttributedString alloc] initWithString:text] autorelease];
     }
     
-    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:text] autorelease];
+    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
     [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
     
     if (block) {
