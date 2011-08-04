@@ -186,9 +186,16 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     _userInteractionDisabled = !userInteractionEnabled;
 }
 
+- (BOOL)isExclusiveTouch {
+    return [self.links count] > 0;
+}
+
 #pragma mark -
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
+    if (!string) {
+        return [NSArray array];
+    }
     NSMutableArray *mutableLinks = [NSMutableArray array];
     NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:error];
     [dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
@@ -256,6 +263,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         return NSNotFound;
     }
     
+    // convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
+    p = CGPointMake(p.x, self.bounds.size.height - p.y);
+
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
@@ -264,17 +274,18 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
-    NSUInteger lineIndex = numberOfLines - 1;
-    
-    for (NSUInteger i = 0; i < numberOfLines; i++) {
-        CGPoint lineOrigin = lineOrigins[i];
-        if(lineOrigin.y > p.y) {
-            lineIndex--;
-        }            
+    NSUInteger lineIndex;
+
+    for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
+        CGPoint lineOrigin = lineOrigins[lineIndex];
+        if (lineOrigin.y < p.y) {
+            break;
+        }
     }
     
     CGPoint lineOrigin = lineOrigins[lineIndex];
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+    // convert CT coordinates to line-relative coordinates
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     idx = CTLineGetStringIndexForPosition(line, relativePoint);
     
@@ -290,25 +301,26 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
+    } else {
+        self.attributedText = text;
     }
-    
-    self.attributedText = text;
+
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-        for (NSTextCheckingResult *result in [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil]) {
+        for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
             [self addLinkWithTextCheckingResult:result];
         }
     }
         
-    [super setText:[(NSAttributedString *)text string]];
+    [super setText:[self.attributedText string]];
 }
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block {
     if ([text isKindOfClass:[NSString class]]) {
-        text = [[[NSAttributedString alloc] initWithString:text] autorelease];
+        self.attributedText = [[[NSAttributedString alloc] initWithString:text] autorelease];
     }
     
-    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:text] autorelease];
+    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
     [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
     
     if (block) {
@@ -324,6 +336,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
+        return;
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
@@ -342,10 +355,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
 #pragma mark -
 #pragma mark UIControl
-
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
-    return [self linkAtPoint:point] != nil;
-}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];	
@@ -376,6 +385,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
                 }
                 break;
         }
+    } else {
+        [self.nextResponder touchesBegan:touches withEvent:event];
     }
 }
 
