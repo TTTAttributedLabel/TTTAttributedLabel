@@ -333,6 +333,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 #pragma mark -
 #pragma mark UILabel
 
+- (void)setHighlighted:(BOOL)highlighted {
+    [super setHighlighted:highlighted];
+    [self setNeedsDisplay];
+}
+
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
@@ -346,7 +351,18 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, rect);
-    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
+    
+    NSAttributedString *text = self.attributedText;
+	CTFramesetterRef framesetter = self.framesetter;
+	
+	if (self.highlighted) {
+	    NSMutableAttributedString *mutableAttributedString = [text mutableCopy];
+	    [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(__bridge id)self.highlightedTextColor.CGColor range:NSMakeRange(0, text.length)];
+        framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
+		[mutableAttributedString release];
+	}
+    
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [text length]), path, NULL);
     CTFrameDraw(frame, c);
     
     CFRelease(frame);
