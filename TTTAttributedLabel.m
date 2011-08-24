@@ -96,6 +96,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
+- (void) drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 @end
 
 @implementation TTTAttributedLabel
@@ -295,6 +296,15 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     return idx;
 }
 
+- (void) drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, rect);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);
+    CTFrameDraw(frame, c);
+    CFRelease(frame);
+    CFRelease(path);
+}
+
 #pragma mark -
 #pragma mark TTTAttributedLabel
 
@@ -342,7 +352,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
-    // Rotates the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
+    // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
     CGContextTranslateCTM(c, 0.0f, self.bounds.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
@@ -350,22 +360,32 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
     CFRange fitRange;
 
-    // Adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
+    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
     if (textSize.height < textRect.size.height) {
-      CGFloat yOffset = (NSInteger)((textRect.size.height - textSize.height) / 2);
-      textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-      textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - yOffset);
+        CGFloat yOffset = (NSInteger)((textRect.size.height - textSize.height) / 2);
+        textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
+        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - yOffset);
+    }
+
+    // Second, trace the shadow before the actual text, if we have one
+    if (self.shadowColor) {
+        CGRect shadowRect = textRect;
+        // We subtract the height, not add it, because the whole scene is inverted.
+        shadowRect.origin = CGPointMake(shadowRect.origin.x + self.shadowOffset.width, shadowRect.origin.y - self.shadowOffset.height);
+        
+        // Override the text's color attribute to whatever the shadow color is
+        NSMutableAttributedString *shadowAttrString = [self.attributedText mutableCopy];
+        NSDictionary *attrDict = [NSDictionary dictionaryWithObject:(id)self.shadowColor.CGColor forKey:(NSString*)kCTForegroundColorAttributeName];
+        [shadowAttrString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)self.shadowColor.CGColor range:NSMakeRange(0, [self.attributedText length])];
+        CTFramesetterRef shadowFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)shadowAttrString);
+        [shadowAttrString release];
+        
+        [self drawFramesetter:shadowFramesetter textRange:textRange inRect:shadowRect context:c];
     }
   
-    // Finally create the text frame based on the path of the rect, draw the frame on the context
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, textRect);
-    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, textRange, path, NULL);
-    CTFrameDraw(frame, c);
-    
-    CFRelease(frame);
-    CFRelease(path);
+  // Finally, draw the text itself (on top of the shadow, if there is one)
+  [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
 }
 
 #pragma mark -
