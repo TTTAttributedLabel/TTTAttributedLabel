@@ -341,12 +341,27 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
+
+    // Rotates the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
     CGContextTranslateCTM(c, 0.0f, self.bounds.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
+    CGRect textRect = rect;
+    CFRange textRange = CFRangeMake(0, [self.attributedText length]);
+    CFRange fitRange;
+
+    // Adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
+    if (textSize.height < textRect.size.height) {
+      CGFloat yOffset = ((textRect.size.height - textSize.height) / 2);
+      textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
+      textRect.size = textSize;
+    }
+  
+    // Finally create the text frame based on the path of the rect, draw the frame on the context
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, rect);
-    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
+    CGPathAddRect(path, NULL, textRect);
+    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, textRange, path, NULL);
     CTFrameDraw(frame, c);
     
     CFRelease(frame);
