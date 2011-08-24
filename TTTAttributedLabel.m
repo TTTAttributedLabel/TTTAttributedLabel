@@ -376,7 +376,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         
         // Override the text's color attribute to whatever the shadow color is
         NSMutableAttributedString *shadowAttrString = [self.attributedText mutableCopy];
-        NSDictionary *attrDict = [NSDictionary dictionaryWithObject:(id)self.shadowColor.CGColor forKey:(NSString*)kCTForegroundColorAttributeName];
         [shadowAttrString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)self.shadowColor.CGColor range:NSMakeRange(0, [self.attributedText length])];
         CTFramesetterRef shadowFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)shadowAttrString);
         [shadowAttrString release];
