@@ -353,9 +353,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     // Adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
     if (textSize.height < textRect.size.height) {
-      CGFloat yOffset = ((textRect.size.height - textSize.height) / 2);
+      CGFloat yOffset = (NSInteger)((textRect.size.height - textSize.height) / 2);
       textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-      textRect.size = textSize;
+      textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - yOffset);
     }
   
     // Finally create the text frame based on the path of the rect, draw the frame on the context
