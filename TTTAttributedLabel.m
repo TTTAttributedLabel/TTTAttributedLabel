@@ -296,11 +296,13 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     return idx;
 }
 
-- (void) drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
+- (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
     CGMutablePathRef path = CGPathCreateMutable();
+    
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);
     CTFrameDraw(frame, c);
+    
     CFRelease(frame);
     CFRelease(path);
 }
