@@ -108,7 +108,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @synthesize shadowFramesetter = _shadowFramesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
 
-@synthesize delegate;
+@synthesize delegate = _delegate;
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;

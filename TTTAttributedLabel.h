@@ -45,14 +45,14 @@
     CTFramesetterRef _framesetter;
     BOOL _needsFramesetter;
     
-    id <TTTAttributedLabelDelegate> delegate;
+    id _delegate;
     UIDataDetectorTypes _dataDetectorTypes;
     NSArray *_links;
     NSDictionary *_linkAttributes;
     BOOL _userInteractionDisabled;
 }
 
-@property (nonatomic, assign) id delegate;
+@property (nonatomic, assign) id <TTTAttributedLabelDelegate> delegate;
 @property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
 @property (nonatomic, retain) NSDictionary *linkAttributes;
 @property (readonly, nonatomic, retain) NSArray *links;
