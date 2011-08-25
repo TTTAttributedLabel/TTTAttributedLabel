@@ -64,9 +64,8 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.summaryLabel.numberOfLines = 0;
     self.summaryLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
-//    self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.summaryLabel.highlightedTextColor = [UIColor whiteColor];
-    self.summaryLabel.shadowColor = [UIColor colorWithWhite:0.92 alpha:1.0];
+    self.summaryLabel.shadowColor = [UIColor colorWithWhite:0.87 alpha:1.0];
     self.summaryLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 
     [self.contentView addSubview:self.summaryLabel];
@@ -122,7 +121,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 + (CGFloat)heightForCellWithText:(NSString *)text {
     CGFloat height = 10.0f;
-    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kSummaryTextFontSize] constrainedToSize:CGSizeMake(285.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
+    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kSummaryTextFontSize] constrainedToSize:CGSizeMake(270.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
         
     return height;
 }
