@@ -324,7 +324,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     [super setText:[self.attributedText string]];
 }
 
-- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block {
+- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {
     if ([text isKindOfClass:[NSString class]]) {
         self.attributedText = [[[NSAttributedString alloc] initWithString:text] autorelease];
     }

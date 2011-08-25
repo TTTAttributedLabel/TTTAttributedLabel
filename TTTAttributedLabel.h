@@ -39,8 +39,6 @@
 @property (nonatomic, copy) id text;
 @end
 
-typedef NSAttributedString *(^TTTMutableAttributedStringBlock)(NSMutableAttributedString *mutableAttributedString);
-
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
 @private
     NSAttributedString *_attributedText;
@@ -59,7 +57,7 @@ typedef NSAttributedString *(^TTTMutableAttributedStringBlock)(NSMutableAttribut
 @property (nonatomic, retain) NSDictionary *linkAttributes;
 @property (readonly, nonatomic, retain) NSArray *links;
 
-- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTMutableAttributedStringBlock)block;
+- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
 - (void)setNeedsFramesetter;
 
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range;
