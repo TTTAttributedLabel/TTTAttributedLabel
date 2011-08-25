@@ -23,6 +23,12 @@
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
 
+typedef enum {
+    TTTAttributedLabelVerticalAlignmentCenter   = 0,
+    TTTAttributedLabelVerticalAlignmentTop      = 1,
+    TTTAttributedLabelVerticalAlignmentBottom   = 2,
+} TTTAttributedLabelVerticalAlignment;
+
 @class TTTAttributedLabel;
 
 @protocol TTTAttributedLabelDelegate <NSObject>
@@ -49,12 +55,14 @@
     UIDataDetectorTypes _dataDetectorTypes;
     NSArray *_links;
     NSDictionary *_linkAttributes;
+    TTTAttributedLabelVerticalAlignment _verticalAlignment;
     BOOL _userInteractionDisabled;
 }
 
 @property (nonatomic, assign) id <TTTAttributedLabelDelegate> delegate;
 @property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
 @property (nonatomic, retain) NSDictionary *linkAttributes;
+@property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 @property (readonly, nonatomic, retain) NSArray *links;
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;

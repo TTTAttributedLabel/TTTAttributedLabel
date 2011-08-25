@@ -112,6 +112,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
+@synthesize verticalAlignment = _verticalAlignment;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -378,8 +379,20 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
     // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
+    
     if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = (NSInteger)((textRect.size.height - textSize.height) / 2);
+        CGFloat yOffset = 0.0f;
+        switch (self.verticalAlignment) {
+            case TTTAttributedLabelVerticalAlignmentTop:
+                break;
+            case TTTAttributedLabelVerticalAlignmentCenter:
+                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+                break;
+            case TTTAttributedLabelVerticalAlignmentBottom:
+                yOffset = (textRect.size.height - textSize.height);
+                break;
+        }
+        
         textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
         textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - yOffset);
     }
