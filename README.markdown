@@ -60,7 +60,7 @@ NSRange range = [label.text rangeOfString:@"me"];
 
 Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
 
-Thanks to [Tyler Bunnell](https://github.com/tylerb) for his fix to how touches are mapped onto their corresponding embedded links.
+Thanks to [Tyler Bunnell](https://github.com/tylerb) for his fix to how touches are mapped onto their corresponding embedded links, and also to [Mark Makdad](https://github.com/makdad) for implementing shadow color and vertical text alignment.
 
 ## License
 
