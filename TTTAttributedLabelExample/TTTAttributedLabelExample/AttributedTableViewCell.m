@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-static CGFloat const kSummaryTextFontSize = 17;
-
 #import <QuartzCore/QuartzCore.h>
 #import "AttributedTableViewCell.h"
 #import "TTTAttributedLabel.h"
+
+static CGFloat const kSummaryTextFontSize = 17;
 
 static NSRegularExpression *__nameRegularExpression;
 static inline NSRegularExpression * NameRegularExpression() {
@@ -124,8 +124,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     return height;
 }
 
-#pragma mark -
-#pragma mark UIView
+#pragma mark - UIView
 
 - (void)layoutSubviews {
     self.textLabel.hidden = YES;

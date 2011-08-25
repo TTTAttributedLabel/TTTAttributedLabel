@@ -305,8 +305,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CFRelease(path);
 }
 
-#pragma mark -
-#pragma mark TTTAttributedLabel
+#pragma mark - TTTAttributedLabel
 
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
@@ -340,8 +339,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     }
 }
 
-#pragma mark -
-#pragma mark UILabel
+#pragma mark - UILabel
 
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
@@ -387,8 +385,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
   [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
 }
 
-#pragma mark -
-#pragma mark UIControl
+#pragma mark - UIControl
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];	
@@ -424,8 +421,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     }
 }
 
-#pragma mark -
-#pragma mark UIView
+#pragma mark - UIView
 
 - (CGSize)sizeThatFits:(CGSize)size {
     if (!self.attributedText) {

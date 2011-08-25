@@ -58,6 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				F877A36613782AF10022A8AB /* Classes */,
+				F8D8E2221405FB6900AB38FB /* Vendor */,
 				F877A35F13782AF10022A8AB /* Frameworks */,
 				F877A35D13782AF10022A8AB /* Products */,
 			);
@@ -87,7 +88,6 @@
 			children = (
 				F877A39013782E870022A8AB /* Controllers */,
 				F877A39113782E9C0022A8AB /* Views */,
-				F877A38313782B450022A8AB /* TTTAttributedLabel */,
 				F877A36713782AF10022A8AB /* Supporting Files */,
 			);
 			name = Classes;
@@ -134,6 +134,15 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		F8D8E2221405FB6900AB38FB /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				F877A38313782B450022A8AB /* TTTAttributedLabel */,
+			);
+			name = Vendor;
+			path = TTTAttributedLabelExample;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -160,6 +169,7 @@
 		F877A35313782AF10022A8AB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = Gowalla;
 			};
 			buildConfigurationList = F877A35613782AF10022A8AB /* Build configuration list for PBXProject "TTTAttributedLabelExample" */;
