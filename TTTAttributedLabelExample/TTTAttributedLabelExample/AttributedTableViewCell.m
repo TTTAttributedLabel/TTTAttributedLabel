@@ -64,7 +64,10 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.summaryLabel.numberOfLines = 0;
     self.summaryLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
+//    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    self.summaryLabel.highlightedTextColor = [UIColor whiteColor];
+    self.summaryLabel.shadowColor = [UIColor colorWithWhite:0.92 alpha:1.0];
+    self.summaryLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 
     [self.contentView addSubview:self.summaryLabel];
     
