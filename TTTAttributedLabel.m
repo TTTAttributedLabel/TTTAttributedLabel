@@ -94,6 +94,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @property (readwrite, nonatomic, retain) NSArray *links;
 
 - (id)initCommon;
+- (void)setNeedsFramesetter;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
