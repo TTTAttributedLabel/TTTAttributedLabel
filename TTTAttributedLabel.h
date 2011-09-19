@@ -37,7 +37,7 @@ typedef enum {
 @end
 
 /**
- `TTTAttributedLabel` is a drop-in replacement for `UILabel`, that supports `NSAttributedString`, as well as automatically-detected and manually-added links to URLs, addresses, phone numbers, and dates.
+ `TTTAttributedLabel` is a drop-in replacement for `UILabel` that supports `NSAttributedString`, as well as automatically-detected and manually-added links to URLs, addresses, phone numbers, and dates.
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
 @private
@@ -73,7 +73,7 @@ typedef enum {
  
  @discussion This bitmask is `UIDataDetectorTypeNone` by default.
  
- @warning You must specify the `dataDetectorTypes` _before_ setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
+ @warning You must specify `dataDetectorTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
  */
 @property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
 
@@ -90,6 +90,8 @@ typedef enum {
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text.
  
  @discussion The default link style is blue and underlined.
+ 
+ @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
  */
 @property (nonatomic, retain) NSDictionary *linkAttributes;
 
@@ -152,7 +154,7 @@ typedef enum {
 /**
  Adds a link to a phone number for a specified range in the label text.
  
- @param phoneNumber The phone number to be linked to
+ @param phoneNumber The phone number to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
 - (void)addLinkToPhoneNumber:(NSString *)phoneNumber withRange:(NSRange)range;
@@ -160,7 +162,7 @@ typedef enum {
 /**
  Adds a link to a date for a specified range in the label text.
  
- @param date The date to be linked to
+ @param date The date to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
 - (void)addLinkToDate:(NSDate *)date withRange:(NSRange)range;
@@ -168,21 +170,60 @@ typedef enum {
 /**
  Adds a link to a date with a particular time zone and duration for a specified range in the label text.
  
- @param date The date to be linked to
- @param timeZone The time zone of the specified date
- @param duration The duration, in seconds from the specified date
+ @param date The date to be linked to.
+ @param timeZone The time zone of the specified date.
+ @param duration The duration, in seconds from the specified date.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
 - (void)addLinkToDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration withRange:(NSRange)range;
 
 @end
 
+/**
+ The `TTTAttributedLabelDelegate` protocol defines the messages sent to an attributed label delegate when links are tapped. All of the methods of this protocol are optional.
+ */
 @protocol TTTAttributedLabelDelegate <NSObject>
+
+///-----------------------------------
+/// @name Responding to Link Selection
+///-----------------------------------
 @optional
+
+/**
+ Tells the delegate that the user did select a link to a URL.
+ 
+ @param url The URL for the selected link.
+ */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url;
+
+/**
+ Tells the delegate that the user did select a link to an address.
+ 
+ @param addressComponents The components of the address for the selected link.
+ */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithAddress:(NSDictionary *)addressComponents;
+
+/**
+ Tells the delegate that the user did select a link to a phone number.
+ 
+ @param phoneNumber The phone number for the selected link.
+ */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
+
+/**
+ Tells the delegate that the user did select a link to a date.
+ 
+ @param date The datefor the selected link.
+ */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date;
+
+/**
+ Tells the delegate that the user did select a link to a date with a time zone and duration.
+ 
+ @param date The date for the selected link.
+ @param timeZone The time zone of the date for the selected link.
+ @param duration The duration, in seconds from the date for the selected link.
+ */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
 @end
 
