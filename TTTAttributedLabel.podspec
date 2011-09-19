@@ -1,6 +1,13 @@
 Pod::Spec.new do
   name 'TTTAttributedLabel'
-  version '1.0'
+  authors 'Mattt Thompson' => 'm@mattt.me'
+  version '1.0.0'
   summary 'A drop-in replacement for UILabel that supports NSAttributedStrings '
-  source :git => 'https://mattt@github.com/mattt/TTTAttributedLabel.git', :tag => '1.0.0'
+  source :git => 'git://github.com/mattt/TTTAttributedLabel.git', :tag => '1.0.0'
+  
+  platforms 'iOS'
+  sdk '>= 4.0'
+  
+  doc_bin 'appledoc'
+  doc_options '--project-name' => 'TTTAttributedLabel', '--project-company' => 'Mattt Thompson', '--company-id' => 'com.mattt'
 end
