@@ -7,6 +7,12 @@
 
 `TTTAttributedLabel` was created to be a drop-in replacement for `UILabel`, that provided a simple API to styling text with `NSAttributedString` while remaining performant. As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, or event.
 
+## Documentation
+
+Online documentation is available at http://mattt.github.com/TTTAttributedLabel/. 
+
+To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
+
 ## Installation
 
 `TTTAttributedLabel` requires the `CoreText` Framework, so the first thing you'll need to do is include the framework into your project. In Xcode 4, go to the project file at the root of your workspace and select your active target. There should be several sections across the top of that window; choose "Build Phases". Next, click "Link Binary With Libraries" to expand that section to see the frameworks currently included in your project. Click the "+" at the bottom left and select "CoreText.framework".
@@ -65,6 +71,7 @@ Thanks to [Tyler Bunnell](https://github.com/tylerb) for his fix to how touches 
 ## Contact
 
 Mattt Thompson
+
 - http://github.com/mattt
 - http://twitter.com/mattt
 - m@mattt.me
