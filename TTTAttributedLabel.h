@@ -192,6 +192,7 @@ typedef enum {
 /**
  Tells the delegate that the user did select a link to a URL.
  
+ @param label The label whose link was selected.
  @param url The URL for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url;
@@ -199,6 +200,7 @@ typedef enum {
 /**
  Tells the delegate that the user did select a link to an address.
  
+ @param label The label whose link was selected.
  @param addressComponents The components of the address for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithAddress:(NSDictionary *)addressComponents;
@@ -206,6 +208,7 @@ typedef enum {
 /**
  Tells the delegate that the user did select a link to a phone number.
  
+ @param label The label whose link was selected.
  @param phoneNumber The phone number for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
@@ -213,6 +216,7 @@ typedef enum {
 /**
  Tells the delegate that the user did select a link to a date.
  
+ @param label The label whose link was selected.
  @param date The datefor the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date;
@@ -220,6 +224,7 @@ typedef enum {
 /**
  Tells the delegate that the user did select a link to a date with a time zone and duration.
  
+ @param label The label whose link was selected.
  @param date The date for the selected link.
  @param timeZone The time zone of the date for the selected link.
  @param duration The duration, in seconds from the date for the selected link.
