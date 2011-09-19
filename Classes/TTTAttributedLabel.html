@@ -1,0 +1,1034 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
+		<title>TTTAttributedLabel Class Reference</title>
+		<meta id="xcode-display" name="xcode-display" content="render"/>
+		<meta name="viewport" content="width=550" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.4 (build 703)" />
+	</head>
+	<body>
+		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">TTTAttributedLabel </a></h1>
+				<a id="developerHome" href="../index.html">Mattt Thompson</a>
+			</div>
+			
+			<div id="title" role="banner">
+				<h1 class="hideInXcode">TTTAttributedLabel Class Reference</h1>
+			</div>
+			<ul id="headerButtons" role="toolbar">
+				<li id="toc_button">
+					<button aria-label="Show Table of Contents" role="checkbox" class="open" id="table_of_contents"><span class="disclosure"></span>Table of Contents</button>
+				</li>
+				<li id="jumpto_button" role="navigation">
+					<select id="jumpTo">
+	<option value="top">Jump To&#133;</option>
+	
+	<option value="overview">Overview</option>
+	
+	
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+	
+	
+	
+	<option value="properties">Properties</option>
+	
+	<option value="//api/name/dataDetectorTypes">&nbsp;&nbsp;&nbsp;&nbsp;dataDetectorTypes</option>
+	
+	<option value="//api/name/delegate">&nbsp;&nbsp;&nbsp;&nbsp;delegate</option>
+	
+	<option value="//api/name/linkAttributes">&nbsp;&nbsp;&nbsp;&nbsp;linkAttributes</option>
+	
+	<option value="//api/name/links">&nbsp;&nbsp;&nbsp;&nbsp;links</option>
+	
+	<option value="//api/name/verticalAlignment">&nbsp;&nbsp;&nbsp;&nbsp;verticalAlignment</option>
+	
+	
+	
+	
+	
+	
+	<option value="instance_methods">Instance Methods</option>
+	
+	<option value="//api/name/addLinkToAddress:withRange:">&nbsp;&nbsp;&nbsp;&nbsp;- addLinkToAddress:withRange:</option>
+	
+	<option value="//api/name/addLinkToDate:timeZone:duration:withRange:">&nbsp;&nbsp;&nbsp;&nbsp;- addLinkToDate:timeZone:duration:withRange:</option>
+	
+	<option value="//api/name/addLinkToDate:withRange:">&nbsp;&nbsp;&nbsp;&nbsp;- addLinkToDate:withRange:</option>
+	
+	<option value="//api/name/addLinkToPhoneNumber:withRange:">&nbsp;&nbsp;&nbsp;&nbsp;- addLinkToPhoneNumber:withRange:</option>
+	
+	<option value="//api/name/addLinkToURL:withRange:">&nbsp;&nbsp;&nbsp;&nbsp;- addLinkToURL:withRange:</option>
+	
+	<option value="//api/name/setText:">&nbsp;&nbsp;&nbsp;&nbsp;- setText:</option>
+	
+	<option value="//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:">&nbsp;&nbsp;&nbsp;&nbsp;- setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</option>
+	
+	
+	
+</select>
+				</li>
+			</ul>
+		</header>
+		<nav id="tocContainer" class="isShowingTOC">
+			<ul id="toc" role="tree">
+				
+<li role="treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#overview">Overview</a></span></li>
+
+
+
+
+<li role="treeitem" id="task_treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#tasks">Tasks</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Accessing the Delegate">Accessing the Delegate</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Detecting and Accessing Links">Detecting and Accessing Links</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Acccessing Text Style Attributes">Acccessing Text Style Attributes</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Setting the Text Attributes">Setting the Text Attributes</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Adding Links">Adding Links</a></span></li>
+	
+</ul></li>
+
+
+
+
+
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#properties">Properties</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/dataDetectorTypes">dataDetectorTypes</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/delegate">delegate</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/linkAttributes">linkAttributes</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/links">links</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/verticalAlignment">verticalAlignment</a></span></li>
+	
+</ul></li>
+
+
+
+
+
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addLinkToAddress:withRange:">addLinkToAddress:withRange:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addLinkToDate:timeZone:duration:withRange:">addLinkToDate:timeZone:duration:withRange:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addLinkToDate:withRange:">addLinkToDate:withRange:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addLinkToPhoneNumber:withRange:">addLinkToPhoneNumber:withRange:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addLinkToURL:withRange:">addLinkToURL:withRange:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setText:">setText:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:">setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</a></span></li>
+	
+</ul></li>
+
+
+			</ul>
+		</nav>
+		<article>
+			<div id="contents" class="isShowingTOC" role="main">
+				<a title="TTTAttributedLabel Class Reference" name="top"></a>
+				<div class="main-navigation navigation-top">
+					<ul>
+	<li><a href="../index.html">Index</a></li>
+	<li><a href="../hierarchy.html">Hierarchy</a></li>
+</ul>
+				</div>
+				<div id="header">
+					<div class="section-header">
+						<h1 class="title title-header">TTTAttributedLabel Class Reference</h1>
+					</div>		
+				</div>
+				<div id="container">	
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<td class="specification-title">Inherits from</td>
+	<td class="specification-value">UILabel</td>
+</tr><tr>
+	<td class="specification-title">Conforms to</td>
+	<td class="specification-value">TTTAttributedLabel</td>
+</tr><tr>
+	<td class="specification-title">Declared in</td>
+	<td class="specification-value">TTTAttributedLabel.h<br />TTTAttributedLabel.m</td>
+</tr>
+						</tbody></table></div>
+					
+					
+					
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p><a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> is a drop-in replacement for <code>UILabel</code> that supports <code>NSAttributedString</code>, as well as automatically-detected and manually-added <a href="#//api/name/links">links</a> to URLs, addresses, phone numbers, and dates.</p>
+					</div>
+					
+					
+					
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						<h2 class="subtitle subtitle-tasks">Tasks</h2>
+						
+						
+						<a title="Accessing the Delegate" name="task_Accessing the Delegate"></a>
+						<h3 class="subsubtitle task-title">Accessing the Delegate</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/delegate">&nbsp;&nbsp;delegate</a></code>
+		<span class="tooltip"><p>The receiver&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						<a title="Detecting and Accessing Links" name="task_Detecting and Accessing Links"></a>
+						<h3 class="subsubtitle task-title">Detecting and Accessing Links</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/dataDetectorTypes">&nbsp;&nbsp;dataDetectorTypes</a></code>
+		<span class="tooltip"><p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/links">&nbsp;&nbsp;links</a></code>
+		<span class="tooltip"><p>An array of <code>NSTextCheckingResult</code> objects for <a href="#//api/name/links">links</a> detected or manually added to the label text.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						<a title="Acccessing Text Style Attributes" name="task_Acccessing Text Style Attributes"></a>
+						<h3 class="subsubtitle task-title">Acccessing Text Style Attributes</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/linkAttributes">&nbsp;&nbsp;linkAttributes</a></code>
+		<span class="tooltip"><p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/verticalAlignment">&nbsp;&nbsp;verticalAlignment</a></code>
+		<span class="tooltip"><p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						<a title="Setting the Text Attributes" name="task_Setting the Text Attributes"></a>
+						<h3 class="subsubtitle task-title">Setting the Text Attributes</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setText:">&ndash;&nbsp;setText:</a></code>
+		<span class="tooltip"><p>Sets the text displayed by the label.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:">&ndash;&nbsp;setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</a></code>
+		<span class="tooltip"><p>Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Adding Links" name="task_Adding Links"></a>
+						<h3 class="subsubtitle task-title">Adding Links</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addLinkToURL:withRange:">&ndash;&nbsp;addLinkToURL:withRange:</a></code>
+		<span class="tooltip"><p>Adds a link to a URL for a specified range in the label text.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addLinkToAddress:withRange:">&ndash;&nbsp;addLinkToAddress:withRange:</a></code>
+		<span class="tooltip"><p>Adds a link to an address for a specified range in the label text.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addLinkToPhoneNumber:withRange:">&ndash;&nbsp;addLinkToPhoneNumber:withRange:</a></code>
+		<span class="tooltip"><p>Adds a link to a phone number for a specified range in the label text.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addLinkToDate:withRange:">&ndash;&nbsp;addLinkToDate:withRange:</a></code>
+		<span class="tooltip"><p>Adds a link to a date for a specified range in the label text.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addLinkToDate:timeZone:duration:withRange:">&ndash;&nbsp;addLinkToDate:timeZone:duration:withRange:</a></code>
+		<span class="tooltip"><p>Adds a link to a date with a particular time zone and duration for a specified range in the label text.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+					</div>
+					
+					
+					
+					
+					
+					<div class="section section-methods">
+						<a title="Properties" name="properties"></a>
+						<h2 class="subtitle subtitle-methods">Properties</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/dataDetectorTypes" title="dataDetectorTypes"></a>
+	<h3 class="subsubtitle method-title">dataDetectorTypes</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p>
+
+<p>@discussion This bitmask is <code>UIDataDetectorTypeNone</code> by default.</p><div class="warning"><p>You must specify <a href="#//api/name/dataDetectorTypes"><code>dataDetectorTypes</code></a> before setting the <code>text</code>, with either <a href="#//api/name/setText:"><code>setText:</code></a> or <a href="#//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:"><code>setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</code></a>.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/delegate" title="delegate"></a>
+	<h3 class="subsubtitle method-title">delegate</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The receiver&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) id&lt;TTTAttributedLabelDelegate&gt; delegate</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The receiver&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p>
+
+<p>@discussion A <a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> <a href="#//api/name/delegate">delegate</a> responds to messages sent by tapping on <a href="#//api/name/links">links</a> in the label. You can use the <a href="#//api/name/delegate">delegate</a> to respond to <a href="#//api/name/links">links</a> referencing a URL, address, phone number, date, or date with a specified time zone and duration.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/linkAttributes" title="linkAttributes"></a>
+	<h3 class="subsubtitle method-title">linkAttributes</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, retain) NSDictionary *linkAttributes</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
+
+<p>@discussion The default link style is blue and underlined.</p><div class="warning"><p>You must specify <a href="#//api/name/linkAttributes"><code>linkAttributes</code></a> before setting autodecting or manually-adding <a href="#//api/name/links">links</a> for these attributes to be applied.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/links" title="links"></a>
+	<h3 class="subsubtitle method-title">links</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>An array of <code>NSTextCheckingResult</code> objects for <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readonly, nonatomic, retain) NSArray *links</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>An array of <code>NSTextCheckingResult</code> objects for <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/verticalAlignment" title="verticalAlignment"></a>
+	<h3 class="subsubtitle method-title">verticalAlignment</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p>
+
+<p>@discussion The default vertical alignment is <code>TTTAttributedLabelVerticalAlignmentCenter</code>.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+					</div>
+					
+					
+					
+					
+					
+					<div class="section section-methods">
+						<a title="Instance Methods" name="instance_methods"></a>
+						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/addLinkToAddress:withRange:" title="addLinkToAddress:withRange:"></a>
+	<h3 class="subsubtitle method-title">addLinkToAddress:withRange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Adds a link to an address for a specified range in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addLinkToAddress:(NSDictionary *)<em>addressComponents</em> withRange:(NSRange)<em>range</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>addressComponents</em></dt>
+			<dd><p>A dictionary of address components for the address to be linked to</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>range</em></dt>
+			<dd><p>The range in the label text of the link. The range must not exceed the bounds of the receiver.</p>
+
+<p>@discussion The address component dictionary keys are described in <code>NSTextCheckingResult</code>&rsquo;s &ldquo;Keys for Address Components.&rdquo;</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Adds a link to an address for a specified range in the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/addLinkToDate:timeZone:duration:withRange:" title="addLinkToDate:timeZone:duration:withRange:"></a>
+	<h3 class="subsubtitle method-title">addLinkToDate:timeZone:duration:withRange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Adds a link to a date with a particular time zone and duration for a specified range in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addLinkToDate:(NSDate *)<em>date</em> timeZone:(NSTimeZone *)<em>timeZone</em> duration:(NSTimeInterval)<em>duration</em> withRange:(NSRange)<em>range</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>date</em></dt>
+			<dd><p>The date to be linked to.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>timeZone</em></dt>
+			<dd><p>The time zone of the specified date.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>duration</em></dt>
+			<dd><p>The duration, in seconds from the specified date.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>range</em></dt>
+			<dd><p>The range in the label text of the link. The range must not exceed the bounds of the receiver.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Adds a link to a date with a particular time zone and duration for a specified range in the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/addLinkToDate:withRange:" title="addLinkToDate:withRange:"></a>
+	<h3 class="subsubtitle method-title">addLinkToDate:withRange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Adds a link to a date for a specified range in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addLinkToDate:(NSDate *)<em>date</em> withRange:(NSRange)<em>range</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>date</em></dt>
+			<dd><p>The date to be linked to.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>range</em></dt>
+			<dd><p>The range in the label text of the link. The range must not exceed the bounds of the receiver.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Adds a link to a date for a specified range in the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/addLinkToPhoneNumber:withRange:" title="addLinkToPhoneNumber:withRange:"></a>
+	<h3 class="subsubtitle method-title">addLinkToPhoneNumber:withRange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Adds a link to a phone number for a specified range in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addLinkToPhoneNumber:(NSString *)<em>phoneNumber</em> withRange:(NSRange)<em>range</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>phoneNumber</em></dt>
+			<dd><p>The phone number to be linked to.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>range</em></dt>
+			<dd><p>The range in the label text of the link. The range must not exceed the bounds of the receiver.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Adds a link to a phone number for a specified range in the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/addLinkToURL:withRange:" title="addLinkToURL:withRange:"></a>
+	<h3 class="subsubtitle method-title">addLinkToURL:withRange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Adds a link to a URL for a specified range in the label text.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addLinkToURL:(NSURL *)<em>url</em> withRange:(NSRange)<em>range</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>url</em></dt>
+			<dd><p>The url to be linked to</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>range</em></dt>
+			<dd><p>The range in the label text of the link. The range must not exceed the bounds of the receiver.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Adds a link to a URL for a specified range in the label text.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/setText:" title="setText:"></a>
+	<h3 class="subsubtitle method-title">setText:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Sets the text displayed by the label.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)setText:(id)<em>text</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>text</em></dt>
+			<dd><p>An <code>NSString</code> or <code>NSAttributedString</code> object to be displayed by the label. If the specified text is an <code>NSString</code>, the label will display the text like a <code>UILabel</code>, inheriting the text styles of the label. If the specified text is an <code>NSAttributedString</code>, the label text styles will be overridden by the styles specified in the attributed string.</p>
+
+<p>@discussion This method overrides <code>UILabel </code>setText:<code></code> to accept both <code>NSString</code> and <code>NSAttributedString</code> objects.</p>
+
+<p>@discussion This string is <code>nil</code> by default.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Sets the text displayed by the label.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:" title="setText:afterInheritingLabelAttributesAndConfiguringWithBlock:"></a>
+	<h3 class="subsubtitle method-title">setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)setText:(id)<em>text</em> afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *( ^ ) ( NSMutableAttributedString *mutableAttributedString ))<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>text</em></dt>
+			<dd><p>An <code>NSString</code> or <code>NSAttributedString</code> object to be displayed by the label.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>A block object that returns an <code>NSMutableAttributedString</code> object and takes a single argument, which is an <code>NSMutableAttributedString</code> object with the text from the first parameter, and the text attributes inherited from the label text styles. For example, if you specified the <code>font</code> of the label to be <code>[UIFont boldSystemFontOfSize:14]</code> and <code>textColor</code> to be <code>[UIColor redColor]</code>, the <code>NSAttributedString</code> argument of the block would be contain the <code>NSAttributedString</code> attribute equivalents of those properties. In this block, you can set further attributes on particular ranges.</p>
+
+<p>@discussion This string is <code>nil</code> by default.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+					</div>
+					
+					
+				</div>
+				<div class="main-navigation navigation-bottom">
+					<ul>
+	<li><a href="../index.html">Index</a></li>
+	<li><a href="../hierarchy.html">Hierarchy</a></li>
+</ul>
+				</div>
+				<div id="footer">
+					<hr />
+					<div class="footer-copyright">
+						<p><span class="copyright">&copy; 2011 Mattt Thompson. All rights reserved. (Last updated: 2011-09-19)</span><br />
+						
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.4 (build 703)</a>.</span></p>
+						
+					</div>
+				</div>
+			</div>
+		</article>
+		<script type="text/javascript">
+			function jumpToChange()
+			{
+				window.location.hash = this.options[this.selectedIndex].value;
+			}
+			
+			function toggleTOC()
+			{
+				var contents = document.getElementById('contents');
+				var tocContainer = document.getElementById('tocContainer');
+				
+				if (this.getAttribute('class') == 'open')
+				{
+					this.setAttribute('class', '');
+					contents.setAttribute('class', '');
+					tocContainer.setAttribute('class', '');
+					
+					window.name = "hideTOC";
+				}
+				else
+				{
+					this.setAttribute('class', 'open');
+					contents.setAttribute('class', 'isShowingTOC');
+					tocContainer.setAttribute('class', 'isShowingTOC');
+					
+					window.name = "";
+				}
+				return false;
+			}
+			
+			function toggleTOCEntryChildren(e)
+			{
+				e.stopPropagation();
+				var currentClass = this.getAttribute('class');
+				if (currentClass == 'children') {
+					this.setAttribute('class', 'children open');
+				}
+				else if (currentClass == 'children open') {
+					this.setAttribute('class', 'children');
+				}
+				return false;
+			}
+			
+			function tocEntryClick(e)
+			{
+				e.stopPropagation();
+				return true;
+			}
+			
+			function init()
+			{
+				var selectElement = document.getElementById('jumpTo');
+				selectElement.addEventListener('change', jumpToChange, false);
+				
+				var tocButton = document.getElementById('table_of_contents');
+				tocButton.addEventListener('click', toggleTOC, false);
+				
+				var taskTreeItem = document.getElementById('task_treeitem');
+				if (taskTreeItem.getElementsByTagName('li').length > 0)
+				{
+					taskTreeItem.setAttribute('class', 'children');
+					taskTreeItem.firstChild.setAttribute('class', 'disclosure');
+				}
+				
+				var tocList = document.getElementById('toc');
+				
+				var tocEntries = tocList.getElementsByTagName('li');
+				for (var i = 0; i < tocEntries.length; i++) {
+					tocEntries[i].addEventListener('click', toggleTOCEntryChildren, false);
+				}
+				
+				var tocLinks = tocList.getElementsByTagName('a');
+				for (var i = 0; i < tocLinks.length; i++) {
+					tocLinks[i].addEventListener('click', tocEntryClick, false);
+				}
+				
+				if (window.name == "hideTOC") {
+					toggleTOC.call(tocButton);
+				}
+			}
+			
+			window.onload = init;
+		</script>
+	</body>
+</html>

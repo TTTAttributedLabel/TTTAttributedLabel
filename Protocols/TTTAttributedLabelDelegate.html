@@ -1,0 +1,585 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
+		<title>TTTAttributedLabelDelegate Protocol Reference</title>
+		<meta id="xcode-display" name="xcode-display" content="render"/>
+		<meta name="viewport" content="width=550" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.4 (build 703)" />
+	</head>
+	<body>
+		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">TTTAttributedLabel </a></h1>
+				<a id="developerHome" href="../index.html">Mattt Thompson</a>
+			</div>
+			
+			<div id="title" role="banner">
+				<h1 class="hideInXcode">TTTAttributedLabelDelegate Protocol Reference</h1>
+			</div>
+			<ul id="headerButtons" role="toolbar">
+				<li id="toc_button">
+					<button aria-label="Show Table of Contents" role="checkbox" class="open" id="table_of_contents"><span class="disclosure"></span>Table of Contents</button>
+				</li>
+				<li id="jumpto_button" role="navigation">
+					<select id="jumpTo">
+	<option value="top">Jump To&#133;</option>
+	
+	<option value="overview">Overview</option>
+	
+	
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<option value="instance_methods">Instance Methods</option>
+	
+	<option value="//api/name/attributedLabel:didSelectLinkWithAddress:">&nbsp;&nbsp;&nbsp;&nbsp;- attributedLabel:didSelectLinkWithAddress:</option>
+	
+	<option value="//api/name/attributedLabel:didSelectLinkWithDate:">&nbsp;&nbsp;&nbsp;&nbsp;- attributedLabel:didSelectLinkWithDate:</option>
+	
+	<option value="//api/name/attributedLabel:didSelectLinkWithDate:timeZone:duration:">&nbsp;&nbsp;&nbsp;&nbsp;- attributedLabel:didSelectLinkWithDate:timeZone:duration:</option>
+	
+	<option value="//api/name/attributedLabel:didSelectLinkWithPhoneNumber:">&nbsp;&nbsp;&nbsp;&nbsp;- attributedLabel:didSelectLinkWithPhoneNumber:</option>
+	
+	<option value="//api/name/attributedLabel:didSelectLinkWithURL:">&nbsp;&nbsp;&nbsp;&nbsp;- attributedLabel:didSelectLinkWithURL:</option>
+	
+	
+	
+</select>
+				</li>
+			</ul>
+		</header>
+		<nav id="tocContainer" class="isShowingTOC">
+			<ul id="toc" role="tree">
+				
+<li role="treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#overview">Overview</a></span></li>
+
+
+
+
+<li role="treeitem" id="task_treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#tasks">Tasks</a></span><ul>
+	
+</ul></li>
+
+
+
+
+
+
+
+
+
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attributedLabel:didSelectLinkWithAddress:">attributedLabel:didSelectLinkWithAddress:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attributedLabel:didSelectLinkWithDate:">attributedLabel:didSelectLinkWithDate:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attributedLabel:didSelectLinkWithDate:timeZone:duration:">attributedLabel:didSelectLinkWithDate:timeZone:duration:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attributedLabel:didSelectLinkWithPhoneNumber:">attributedLabel:didSelectLinkWithPhoneNumber:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attributedLabel:didSelectLinkWithURL:">attributedLabel:didSelectLinkWithURL:</a></span></li>
+	
+</ul></li>
+
+
+			</ul>
+		</nav>
+		<article>
+			<div id="contents" class="isShowingTOC" role="main">
+				<a title="TTTAttributedLabelDelegate Protocol Reference" name="top"></a>
+				<div class="main-navigation navigation-top">
+					<ul>
+	<li><a href="../index.html">Index</a></li>
+	<li><a href="../hierarchy.html">Hierarchy</a></li>
+</ul>
+				</div>
+				<div id="header">
+					<div class="section-header">
+						<h1 class="title title-header">TTTAttributedLabelDelegate Protocol Reference</h1>
+					</div>		
+				</div>
+				<div id="container">	
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<td class="specification-title">Conforms to</td>
+	<td class="specification-value">NSObject</td>
+</tr><tr>
+	<td class="specification-title">Declared in</td>
+	<td class="specification-value">TTTAttributedLabel.h</td>
+</tr>
+						</tbody></table></div>
+					
+					
+					
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p>The <a href="TTTAttributedLabelDelegate.html"><code>TTTAttributedLabelDelegate</code></a> protocol defines the messages sent to an attributed label delegate when links are tapped. All of the methods of this protocol are optional.</p>
+					</div>
+					
+					
+					
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						<h2 class="subtitle subtitle-tasks">Tasks</h2>
+						
+						
+						
+						
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attributedLabel:didSelectLinkWithURL:">&ndash;&nbsp;attributedLabel:didSelectLinkWithURL:</a></code>
+		<span class="tooltip"><p>Tells the delegate that the user did select a link to a URL.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attributedLabel:didSelectLinkWithAddress:">&ndash;&nbsp;attributedLabel:didSelectLinkWithAddress:</a></code>
+		<span class="tooltip"><p>Tells the delegate that the user did select a link to an address.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attributedLabel:didSelectLinkWithPhoneNumber:">&ndash;&nbsp;attributedLabel:didSelectLinkWithPhoneNumber:</a></code>
+		<span class="tooltip"><p>Tells the delegate that the user did select a link to a phone number.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attributedLabel:didSelectLinkWithDate:">&ndash;&nbsp;attributedLabel:didSelectLinkWithDate:</a></code>
+		<span class="tooltip"><p>Tells the delegate that the user did select a link to a date.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attributedLabel:didSelectLinkWithDate:timeZone:duration:">&ndash;&nbsp;attributedLabel:didSelectLinkWithDate:timeZone:duration:</a></code>
+		<span class="tooltip"><p>Tells the delegate that the user did select a link to a date with a time zone and duration.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+					</div>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<div class="section section-methods">
+						<a title="Instance Methods" name="instance_methods"></a>
+						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/attributedLabel:didSelectLinkWithAddress:" title="attributedLabel:didSelectLinkWithAddress:"></a>
+	<h3 class="subsubtitle method-title">attributedLabel:didSelectLinkWithAddress:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Tells the delegate that the user did select a link to an address.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attributedLabel:(TTTAttributedLabel *)<em>label</em> didSelectLinkWithAddress:(NSDictionary *)<em>addressComponents</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>label</em></dt>
+			<dd><p>The label whose link was selected.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>addressComponents</em></dt>
+			<dd><p>The components of the address for the selected link.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Tells the delegate that the user did select a link to an address.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/attributedLabel:didSelectLinkWithDate:" title="attributedLabel:didSelectLinkWithDate:"></a>
+	<h3 class="subsubtitle method-title">attributedLabel:didSelectLinkWithDate:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Tells the delegate that the user did select a link to a date.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attributedLabel:(TTTAttributedLabel *)<em>label</em> didSelectLinkWithDate:(NSDate *)<em>date</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>label</em></dt>
+			<dd><p>The label whose link was selected.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>date</em></dt>
+			<dd><p>The datefor the selected link.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Tells the delegate that the user did select a link to a date.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/attributedLabel:didSelectLinkWithDate:timeZone:duration:" title="attributedLabel:didSelectLinkWithDate:timeZone:duration:"></a>
+	<h3 class="subsubtitle method-title">attributedLabel:didSelectLinkWithDate:timeZone:duration:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Tells the delegate that the user did select a link to a date with a time zone and duration.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attributedLabel:(TTTAttributedLabel *)<em>label</em> didSelectLinkWithDate:(NSDate *)<em>date</em> timeZone:(NSTimeZone *)<em>timeZone</em> duration:(NSTimeInterval)<em>duration</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>label</em></dt>
+			<dd><p>The label whose link was selected.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>date</em></dt>
+			<dd><p>The date for the selected link.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>timeZone</em></dt>
+			<dd><p>The time zone of the date for the selected link.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>duration</em></dt>
+			<dd><p>The duration, in seconds from the date for the selected link.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Tells the delegate that the user did select a link to a date with a time zone and duration.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/attributedLabel:didSelectLinkWithPhoneNumber:" title="attributedLabel:didSelectLinkWithPhoneNumber:"></a>
+	<h3 class="subsubtitle method-title">attributedLabel:didSelectLinkWithPhoneNumber:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Tells the delegate that the user did select a link to a phone number.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attributedLabel:(TTTAttributedLabel *)<em>label</em> didSelectLinkWithPhoneNumber:(NSString *)<em>phoneNumber</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>label</em></dt>
+			<dd><p>The label whose link was selected.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>phoneNumber</em></dt>
+			<dd><p>The phone number for the selected link.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Tells the delegate that the user did select a link to a phone number.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/attributedLabel:didSelectLinkWithURL:" title="attributedLabel:didSelectLinkWithURL:"></a>
+	<h3 class="subsubtitle method-title">attributedLabel:didSelectLinkWithURL:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Tells the delegate that the user did select a link to a URL.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attributedLabel:(TTTAttributedLabel *)<em>label</em> didSelectLinkWithURL:(NSURL *)<em>url</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>label</em></dt>
+			<dd><p>The label whose link was selected.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>url</em></dt>
+			<dd><p>The URL for the selected link.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Tells the delegate that the user did select a link to a URL.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+					</div>
+					
+					
+				</div>
+				<div class="main-navigation navigation-bottom">
+					<ul>
+	<li><a href="../index.html">Index</a></li>
+	<li><a href="../hierarchy.html">Hierarchy</a></li>
+</ul>
+				</div>
+				<div id="footer">
+					<hr />
+					<div class="footer-copyright">
+						<p><span class="copyright">&copy; 2011 Mattt Thompson. All rights reserved. (Last updated: 2011-09-19)</span><br />
+						
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.4 (build 703)</a>.</span></p>
+						
+					</div>
+				</div>
+			</div>
+		</article>
+		<script type="text/javascript">
+			function jumpToChange()
+			{
+				window.location.hash = this.options[this.selectedIndex].value;
+			}
+			
+			function toggleTOC()
+			{
+				var contents = document.getElementById('contents');
+				var tocContainer = document.getElementById('tocContainer');
+				
+				if (this.getAttribute('class') == 'open')
+				{
+					this.setAttribute('class', '');
+					contents.setAttribute('class', '');
+					tocContainer.setAttribute('class', '');
+					
+					window.name = "hideTOC";
+				}
+				else
+				{
+					this.setAttribute('class', 'open');
+					contents.setAttribute('class', 'isShowingTOC');
+					tocContainer.setAttribute('class', 'isShowingTOC');
+					
+					window.name = "";
+				}
+				return false;
+			}
+			
+			function toggleTOCEntryChildren(e)
+			{
+				e.stopPropagation();
+				var currentClass = this.getAttribute('class');
+				if (currentClass == 'children') {
+					this.setAttribute('class', 'children open');
+				}
+				else if (currentClass == 'children open') {
+					this.setAttribute('class', 'children');
+				}
+				return false;
+			}
+			
+			function tocEntryClick(e)
+			{
+				e.stopPropagation();
+				return true;
+			}
+			
+			function init()
+			{
+				var selectElement = document.getElementById('jumpTo');
+				selectElement.addEventListener('change', jumpToChange, false);
+				
+				var tocButton = document.getElementById('table_of_contents');
+				tocButton.addEventListener('click', toggleTOC, false);
+				
+				var taskTreeItem = document.getElementById('task_treeitem');
+				if (taskTreeItem.getElementsByTagName('li').length > 0)
+				{
+					taskTreeItem.setAttribute('class', 'children');
+					taskTreeItem.firstChild.setAttribute('class', 'disclosure');
+				}
+				
+				var tocList = document.getElementById('toc');
+				
+				var tocEntries = tocList.getElementsByTagName('li');
+				for (var i = 0; i < tocEntries.length; i++) {
+					tocEntries[i].addEventListener('click', toggleTOCEntryChildren, false);
+				}
+				
+				var tocLinks = tocList.getElementsByTagName('a');
+				for (var i = 0; i < tocLinks.length; i++) {
+					tocLinks[i].addEventListener('click', tocEntryClick, false);
+				}
+				
+				if (window.name == "hideTOC") {
+					toggleTOC.call(tocButton);
+				}
+			}
+			
+			window.onload = init;
+		</script>
+	</body>
+</html>
