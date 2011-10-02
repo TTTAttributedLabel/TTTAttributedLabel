@@ -22,6 +22,26 @@
 
 #import "TTTAttributedLabel.h"
 
+@interface TTTAttributedLabel (PrivateMethods)
+
+-(void)adjustFontSizeToFitWidth;
+
+@end
+
+static inline void CFAttributedStringScaleFontSize(CFMutableAttributedStringRef attributedString, CGFloat scale, CGFloat minSize) {    
+    for (CFIndex i = 0; i < CFAttributedStringGetLength(attributedString); i++) {
+        CFRange charRange = CFRangeMake(i, 1);
+        CTFontRef font = CFAttributedStringGetAttribute(attributedString, i, kCTFontAttributeName, NULL);
+        
+        if (font) {
+            CGFloat scaledSize = scale*CTFontGetSize(font);
+            CGFloat size = (scaledSize < minSize) ? minSize : scaledSize;
+            CTFontRef scaledFont = CTFontCreateCopyWithAttributes(font, size, NULL, NULL);
+            CFAttributedStringSetAttribute(attributedString, charRange, kCTFontAttributeName, scaledFont);
+        }
+    }
+}
+
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
@@ -354,6 +374,18 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     }
 }
 
+-(void)adjustFontSizeToFitWidth {   
+    CGFloat neededWidth = [self sizeThatFits:CGSizeZero].width;
+    CGFloat availableWidth = CGRectGetWidth(self.bounds);
+
+    if (neededWidth > availableWidth) {
+        CFMutableAttributedStringRef attributedString = CFAttributedStringCreateMutableCopy(CFAllocatorGetDefault(), self.attributedText.length, (CFMutableAttributedStringRef)self.attributedText);
+        CFAttributedStringScaleFontSize(attributedString, availableWidth/neededWidth, self.minimumFontSize);
+        
+        [self setText:(NSAttributedString*)attributedString];
+    }
+}
+
 #pragma mark - UILabel
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -365,6 +397,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     if (!self.attributedText) {
         [super drawTextInRect:rect];
         return;
+    }
+    
+    // If necessary, scale the font size as much as possible 
+    if (self.adjustsFontSizeToFitWidth && self.numberOfLines == 1) {
+        [self adjustFontSizeToFitWidth];
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
