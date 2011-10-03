@@ -399,8 +399,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         return;
     }
     
-    // If necessary, scale the font size as much as possible 
+    NSAttributedString* originalString = nil;
+    
+    // If necessary, scale the font size as much as needed 
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines == 1) {
+        originalString = self.attributedText.copy;
         [self adjustFontSizeToFitWidth];
     }
     
@@ -463,6 +466,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     } else {
         [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
     }  
+    
+    // Restore the original string so the font size keeps the same
+    if (originalString) {
+        [self setText:originalString];
+    }
 }
 
 #pragma mark - UIControl
