@@ -1,0 +1,314 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DC7687F7143CD9010078BA4A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7687F6143CD9010078BA4A /* UIKit.framework */; };
+		DC7687F9143CD9010078BA4A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7687F8143CD9010078BA4A /* Foundation.framework */; };
+		DC7687FB143CD9010078BA4A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7687FA143CD9010078BA4A /* CoreGraphics.framework */; };
+		DC768801143CD9010078BA4A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC7687FF143CD9010078BA4A /* InfoPlist.strings */; };
+		DC768803143CD9010078BA4A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC768802143CD9010078BA4A /* main.m */; };
+		DC768807143CD9010078BA4A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC768806143CD9010078BA4A /* AppDelegate.m */; };
+		DC76880A143CD9010078BA4A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC768809143CD9010078BA4A /* ViewController.m */; };
+		DC76880D143CD9010078BA4A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC76880B143CD9010078BA4A /* ViewController.xib */; };
+		DC76881C143CD9D80078BA4A /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DC76881B143CD9D80078BA4A /* TTTAttributedLabel.m */; };
+		DC76881E143CDD6E0078BA4A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC76881D143CDD6E0078BA4A /* CoreText.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		DC7687F2143CD9010078BA4A /* TTTAttributedLabelExample2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TTTAttributedLabelExample2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC7687F6143CD9010078BA4A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DC7687F8143CD9010078BA4A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DC7687FA143CD9010078BA4A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DC7687FE143CD9010078BA4A /* TTTAttributedLabelExample2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TTTAttributedLabelExample2-Info.plist"; sourceTree = "<group>"; };
+		DC768800143CD9010078BA4A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC768802143CD9010078BA4A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC768804143CD9010078BA4A /* TTTAttributedLabelExample2-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTTAttributedLabelExample2-Prefix.pch"; sourceTree = "<group>"; };
+		DC768805143CD9010078BA4A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		DC768806143CD9010078BA4A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		DC768808143CD9010078BA4A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		DC768809143CD9010078BA4A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		DC76880C143CD9010078BA4A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		DC76881A143CD9D80078BA4A /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../TTTAttributedLabel.h; sourceTree = "<group>"; };
+		DC76881B143CD9D80078BA4A /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = ../TTTAttributedLabel.m; sourceTree = "<group>"; };
+		DC76881D143CDD6E0078BA4A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DC7687EF143CD9010078BA4A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC76881E143CDD6E0078BA4A /* CoreText.framework in Frameworks */,
+				DC7687F7143CD9010078BA4A /* UIKit.framework in Frameworks */,
+				DC7687F9143CD9010078BA4A /* Foundation.framework in Frameworks */,
+				DC7687FB143CD9010078BA4A /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DC7687E7143CD9000078BA4A = {
+			isa = PBXGroup;
+			children = (
+				DC7687FC143CD9010078BA4A /* Classes */,
+				DC768818143CD9BC0078BA4A /* Vendor */,
+				DC7687F5143CD9010078BA4A /* Frameworks */,
+				DC7687F3143CD9010078BA4A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DC7687F3143CD9010078BA4A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC7687F2143CD9010078BA4A /* TTTAttributedLabelExample2.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DC7687F5143CD9010078BA4A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC7687F6143CD9010078BA4A /* UIKit.framework */,
+				DC7687F8143CD9010078BA4A /* Foundation.framework */,
+				DC7687FA143CD9010078BA4A /* CoreGraphics.framework */,
+				DC76881D143CDD6E0078BA4A /* CoreText.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC7687FC143CD9010078BA4A /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				DC768817143CD94C0078BA4A /* Controllers */,
+				DC7687FD143CD9010078BA4A /* Supporting Files */,
+			);
+			name = Classes;
+			path = TTTAttributedLabelExample2;
+			sourceTree = "<group>";
+		};
+		DC7687FD143CD9010078BA4A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC768805143CD9010078BA4A /* AppDelegate.h */,
+				DC768806143CD9010078BA4A /* AppDelegate.m */,
+				DC7687FF143CD9010078BA4A /* InfoPlist.strings */,
+				DC768802143CD9010078BA4A /* main.m */,
+				DC768804143CD9010078BA4A /* TTTAttributedLabelExample2-Prefix.pch */,
+				DC7687FE143CD9010078BA4A /* TTTAttributedLabelExample2-Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DC768817143CD94C0078BA4A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				DC768808143CD9010078BA4A /* ViewController.h */,
+				DC768809143CD9010078BA4A /* ViewController.m */,
+				DC76880B143CD9010078BA4A /* ViewController.xib */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		DC768818143CD9BC0078BA4A /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				DC768819143CD9C60078BA4A /* TTTAttributedLabel */,
+			);
+			name = Vendor;
+			sourceTree = "<group>";
+		};
+		DC768819143CD9C60078BA4A /* TTTAttributedLabel */ = {
+			isa = PBXGroup;
+			children = (
+				DC76881A143CD9D80078BA4A /* TTTAttributedLabel.h */,
+				DC76881B143CD9D80078BA4A /* TTTAttributedLabel.m */,
+			);
+			name = TTTAttributedLabel;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DC7687F1143CD9010078BA4A /* TTTAttributedLabelExample2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC768810143CD9010078BA4A /* Build configuration list for PBXNativeTarget "TTTAttributedLabelExample2" */;
+			buildPhases = (
+				DC7687EE143CD9010078BA4A /* Sources */,
+				DC7687EF143CD9010078BA4A /* Frameworks */,
+				DC7687F0143CD9010078BA4A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TTTAttributedLabelExample2;
+			productName = TTTAttributedLabelExample2;
+			productReference = DC7687F2143CD9010078BA4A /* TTTAttributedLabelExample2.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DC7687E9143CD9000078BA4A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = DC7687EC143CD9000078BA4A /* Build configuration list for PBXProject "TTTAttributedLabelExample2" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DC7687E7143CD9000078BA4A;
+			productRefGroup = DC7687F3143CD9010078BA4A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DC7687F1143CD9010078BA4A /* TTTAttributedLabelExample2 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DC7687F0143CD9010078BA4A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC768801143CD9010078BA4A /* InfoPlist.strings in Resources */,
+				DC76880D143CD9010078BA4A /* ViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC7687EE143CD9010078BA4A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC768803143CD9010078BA4A /* main.m in Sources */,
+				DC768807143CD9010078BA4A /* AppDelegate.m in Sources */,
+				DC76880A143CD9010078BA4A /* ViewController.m in Sources */,
+				DC76881C143CD9D80078BA4A /* TTTAttributedLabel.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DC7687FF143CD9010078BA4A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC768800143CD9010078BA4A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DC76880B143CD9010078BA4A /* ViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC76880C143CD9010078BA4A /* en */,
+			);
+			name = ViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DC76880E143CD9010078BA4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DC76880F143CD9010078BA4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DC768811143CD9010078BA4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TTTAttributedLabelExample2/TTTAttributedLabelExample2-Prefix.pch";
+				INFOPLIST_FILE = "TTTAttributedLabelExample2/TTTAttributedLabelExample2-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DC768812143CD9010078BA4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TTTAttributedLabelExample2/TTTAttributedLabelExample2-Prefix.pch";
+				INFOPLIST_FILE = "TTTAttributedLabelExample2/TTTAttributedLabelExample2-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DC7687EC143CD9000078BA4A /* Build configuration list for PBXProject "TTTAttributedLabelExample2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC76880E143CD9010078BA4A /* Debug */,
+				DC76880F143CD9010078BA4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC768810143CD9010078BA4A /* Build configuration list for PBXNativeTarget "TTTAttributedLabelExample2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC768811143CD9010078BA4A /* Debug */,
+				DC768812143CD9010078BA4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DC7687E9143CD9000078BA4A /* Project object */;
+}
