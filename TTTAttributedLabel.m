@@ -433,10 +433,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
-    CGContextTranslateCTM(c, 0.0f, self.bounds.size.height);
+    CGRect textRect = rect;
+    CGContextTranslateCTM(c, 0.0f, textRect.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
-    CGRect textRect = rect;
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
     CFRange fitRange;
 
