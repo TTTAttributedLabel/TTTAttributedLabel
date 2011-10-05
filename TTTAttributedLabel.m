@@ -278,7 +278,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     }
     
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
-    p = CGPointMake(p.x, self.bounds.size.height - p.y);
+    p = CGPointMake(p.x, textRect.size.height - p.y);
 
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
