@@ -111,9 +111,7 @@ typedef enum {
  
  @param text An `NSString` or `NSAttributedString` object to be displayed by the label. If the specified text is an `NSString`, the label will display the text like a `UILabel`, inheriting the text styles of the label. If the specified text is an `NSAttributedString`, the label text styles will be overridden by the styles specified in the attributed string.
   
- @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects.
- 
- @discussion This string is `nil` by default.
+ @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects. This string is `nil` by default.
  */
 - (void)setText:(id)text;
 
