@@ -89,7 +89,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
-@property (readwrite, nonatomic, assign) CTFramesetterRef shadowFramesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
@@ -106,7 +105,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @dynamic text;
 @synthesize attributedText = _attributedText;
 @synthesize framesetter = _framesetter;
-@synthesize shadowFramesetter = _shadowFramesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
 
 @synthesize delegate = _delegate;
@@ -114,6 +112,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
 @synthesize verticalAlignment = _verticalAlignment;
+@synthesize shadowBlur = _shadowBlur;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -147,7 +146,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
 - (void)dealloc {
     if (_framesetter) CFRelease(_framesetter);
-    if (_shadowFramesetter) CFRelease(_shadowFramesetter);
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
     
     [_attributedText release];
@@ -179,11 +177,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     if (_needsFramesetter) {
         @synchronized(self) {
             if (_framesetter) CFRelease(_framesetter);
-            if (_shadowFramesetter) CFRelease(_shadowFramesetter);
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
             
             self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
-            self.shadowFramesetter = nil;
             self.highlightFramesetter = nil;
             _needsFramesetter = NO;
         }
@@ -400,18 +396,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
-        CGRect shadowRect = textRect;
-        // We subtract the height, not add it, because the whole scene is inverted.
-        shadowRect.origin = CGPointMake(shadowRect.origin.x + self.shadowOffset.width, shadowRect.origin.y - self.shadowOffset.height);
-        
-        // Override the text's color attribute to whatever the shadow color is
-        if (!self.shadowFramesetter) {
-            NSMutableAttributedString *shadowAttrString = [[self.attributedText mutableCopy] autorelease];
-            [shadowAttrString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[self.shadowColor CGColor] range:NSMakeRange(0, [self.attributedText length])];
-            self.shadowFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)shadowAttrString);
-        }
-                
-        [self drawFramesetter:self.shadowFramesetter textRange:textRange inRect:shadowRect context:c];
+        CGContextSetShadowWithColor(c, self.shadowOffset, _shadowBlur, self.shadowColor.CGColor);
     }
     
     // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)

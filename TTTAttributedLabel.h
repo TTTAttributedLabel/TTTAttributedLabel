@@ -50,6 +50,7 @@ typedef enum {
     NSArray *_links;
     NSDictionary *_linkAttributes;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
+    CGFloat _shadowBlur;
     BOOL _userInteractionDisabled;
 }
 
@@ -101,6 +102,14 @@ typedef enum {
  @discussion The default vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter`.
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
+
+/**
+ A non-negative number specifying the amount of blur applied to the shadow.
+ 
+ @discussion 
+ */
+@property (nonatomic, assign) CGFloat shadowBlur;
+
 
 ///----------------------------------
 /// @name Setting the Text Attributes
