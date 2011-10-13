@@ -106,13 +106,12 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @synthesize attributedText = _attributedText;
 @synthesize framesetter = _framesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
-
 @synthesize delegate = _delegate;
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
 @synthesize verticalAlignment = _verticalAlignment;
-@synthesize shadowBlur = _shadowBlur;
+@synthesize shadowRadius = _shadowRadius;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -396,7 +395,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
-        CGContextSetShadowWithColor(c, self.shadowOffset, _shadowBlur, self.shadowColor.CGColor);
+        CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
     }
     
     // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)

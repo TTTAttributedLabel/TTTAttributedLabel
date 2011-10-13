@@ -50,7 +50,7 @@ typedef enum {
     NSArray *_links;
     NSDictionary *_linkAttributes;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
-    CGFloat _shadowBlur;
+    CGFloat _shadowRadius;
     BOOL _userInteractionDisabled;
 }
 
@@ -70,9 +70,7 @@ typedef enum {
 ///------------------------------------
 
 /**
- A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text.
- 
- @discussion This bitmask is `UIDataDetectorTypeNone` by default.
+ A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text. This is `UIDataDetectorTypeNone` by default.
  
  @warning You must specify `dataDetectorTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
  */
@@ -88,27 +86,21 @@ typedef enum {
 ///---------------------------------------
 
 /**
- A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text.
- 
- @discussion The default link style is blue and underlined.
- 
+ A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
+  
  @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
  */
 @property (nonatomic, retain) NSDictionary *linkAttributes;
 
 /**
- The vertical text alignment for the label, for when the frame size is greater than the text rect size.
- 
- @discussion The default vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter`.
+ The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter` by default.
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
 /**
- A non-negative number specifying the amount of blur applied to the shadow.
- 
- @discussion 
+ The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0. 
  */
-@property (nonatomic, assign) CGFloat shadowBlur;
+@property (nonatomic, assign) CGFloat shadowRadius;
 
 
 ///----------------------------------
@@ -152,9 +144,7 @@ typedef enum {
  @param addressComponents A dictionary of address components for the address to be linked to
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  
- @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components."
- 
- @see NSTextCheckingResult
+ @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components." 
  */
 - (void)addLinkToAddress:(NSDictionary *)addressComponents withRange:(NSRange)range;
 
