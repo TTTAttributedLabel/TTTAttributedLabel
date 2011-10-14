@@ -22,25 +22,7 @@
 
 #import "TTTAttributedLabel.h"
 
-@interface TTTAttributedLabel (PrivateMethods)
-
--(void)adjustFontSizeToFitWidth;
-
-@end
-
-static inline void CFAttributedStringScaleFontSize(CFMutableAttributedStringRef attributedString, CGFloat scale, CGFloat minSize) {    
-    for (CFIndex i = 0; i < CFAttributedStringGetLength(attributedString); i++) {
-        CFRange charRange = CFRangeMake(i, 1);
-        CTFontRef font = CFAttributedStringGetAttribute(attributedString, i, kCTFontAttributeName, NULL);
-        
-        if (font) {
-            CGFloat scaledSize = scale*CTFontGetSize(font);
-            CGFloat size = (scaledSize < minSize) ? minSize : scaledSize;
-            CTFontRef scaledFont = CTFontCreateCopyWithAttributes(font, size, NULL, NULL);
-            CFAttributedStringSetAttribute(attributedString, charRange, kCTFontAttributeName, scaledFont);
-        }
-    }
-}
+#define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
@@ -91,19 +73,33 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     [mutableAttributes setObject:(id)font forKey:(NSString *)kCTFontAttributeName];
     CFRelease(font);
     
-    [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
+    [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
     CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
     CTParagraphStyleSetting paragraphStyles[2] = {
-		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void*)&alignment},
-		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void*)&lineBreakMode},
+		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
+		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
 	};
 	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 2);
-	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString*)kCTParagraphStyleAttributeName];
+	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
 	CFRelease(paragraphStyle);
     
     return [NSDictionary dictionaryWithDictionary:mutableAttributes];
+}
+
+static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale, CGFloat minimumFontSize) {    
+    NSMutableAttributedString *mutableAttributedString = [[attributedString mutableCopy] autorelease];
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        CTFontRef font = (CTFontRef)value;
+        if (font) {
+            CGFloat scaledFontSize = floorf(CTFontGetSize(font) * scale);
+            CTFontRef scaledFont = CTFontCreateCopyWithAttributes(font, fmaxf(scaledFontSize, minimumFontSize), NULL, NULL);
+            CFAttributedStringSetAttribute((CFMutableAttributedStringRef)mutableAttributedString, CFRangeMake(range.location, range.length), kCTFontAttributeName, scaledFont);
+        }
+    }];
+    
+    return mutableAttributedString;
 }
 
 @interface TTTAttributedLabel ()
@@ -328,8 +324,24 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CGMutablePathRef path = CGPathCreateMutable();
     
     CGPathAddRect(path, NULL, rect);
-    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);
-    CTFrameDraw(frame, c);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
+    
+    if (self.numberOfLines == 0) {
+        CTFrameDraw(frame, c);
+    } else {
+        CFArrayRef lines = CTFrameGetLines(frame);
+        NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
+
+        CGPoint lineOrigins[numberOfLines];
+        CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+        
+        for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+            CGPoint lineOrigin = lineOrigins[lineIndex];
+            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
+            CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+            CTLineDraw(line, c);
+        }
+    }
     
     CFRelease(frame);
     CFRelease(path);
@@ -369,18 +381,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     }
 }
 
--(void)adjustFontSizeToFitWidth {   
-    CGFloat neededWidth = [self sizeThatFits:CGSizeZero].width;
-    CGFloat availableWidth = CGRectGetWidth(self.bounds);
-
-    if (neededWidth > availableWidth) {
-        CFMutableAttributedStringRef attributedString = CFAttributedStringCreateMutableCopy(CFAllocatorGetDefault(), self.attributedText.length, (CFMutableAttributedStringRef)self.attributedText);
-        CFAttributedStringScaleFontSize(attributedString, availableWidth/neededWidth, self.minimumFontSize);
-        
-        [self setText:(NSAttributedString*)attributedString];
-    }
-}
-
 #pragma mark - UILabel
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -394,12 +394,19 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         return;
     }
     
-    NSAttributedString* originalString = nil;
-    
-    // If necessary, scale the font size as much as needed 
-    if (self.adjustsFontSizeToFitWidth && self.numberOfLines == 1) {
-        originalString = self.attributedText.copy;
-        [self adjustFontSizeToFitWidth];
+    NSAttributedString *originalAttributedText = nil;
+    // Adjust the font size to fit width, if necessarry 
+    if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
+        CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
+        CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
+        if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+            textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
+        }
+        
+        if (textWidth > availableWidth && textWidth > 0.0f) {
+            originalAttributedText = [[self.attributedText copy] autorelease];
+            self.text = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
+        }
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
@@ -451,9 +458,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
     }  
     
-    // Restore the original string so the font size keeps the same
-    if (originalString) {
-        [self setText:originalString];
+    // If we adjusted the font size, set it back to its original size
+    if (originalAttributedText) {
+        self.text = originalAttributedText;
     }
 }
 
