@@ -23,6 +23,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
 
+/**
+ Vertical alignment for text in a label whose bounds are larger than its text bounds
+ */
 typedef enum {
     TTTAttributedLabelVerticalAlignmentCenter   = 0,
     TTTAttributedLabelVerticalAlignmentTop      = 1,
@@ -38,6 +41,14 @@ typedef enum {
 
 /**
  `TTTAttributedLabel` is a drop-in replacement for `UILabel` that supports `NSAttributedString`, as well as automatically-detected and manually-added links to URLs, addresses, phone numbers, and dates.
+ 
+ # Differences Between `TTTAttributedLabel` and `UILabel`
+ 
+ For the most part, `TTTAttributedLabel` behaves just like `UILabel`. The following are notable exceptions, in which `TTTAttributedLabel` properties may act differently:
+ 
+ - `text` - This property now takes an `id` type argument, which can either be a kind of `NSString` or `NSAttributedString` (mutable or immutable in both cases)
+ - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
+ - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
 @private
