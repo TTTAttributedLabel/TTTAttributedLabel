@@ -60,8 +60,15 @@ typedef enum {
     UIDataDetectorTypes _dataDetectorTypes;
     NSArray *_links;
     NSDictionary *_linkAttributes;
-    TTTAttributedLabelVerticalAlignment _verticalAlignment;
+    
     CGFloat _shadowRadius;
+    
+    CGFloat _leading;
+    CGFloat _lineHeightMultiple;
+    CGFloat _firstLineIndent;
+    UIEdgeInsets _textInsets;
+    TTTAttributedLabelVerticalAlignment _verticalAlignment;
+    
     BOOL _userInteractionDisabled;
 }
 
@@ -76,9 +83,9 @@ typedef enum {
  */
 @property (nonatomic, assign) id <TTTAttributedLabelDelegate> delegate;
 
-///------------------------------------
-/// @name Detecting and Accessing Links
-///------------------------------------
+///--------------------------------------------
+/// @name Detecting, Accessing, & Styling Links
+///--------------------------------------------
 
 /**
  A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text. This is `UIDataDetectorTypeNone` by default.
@@ -92,26 +99,60 @@ typedef enum {
  */
 @property (readonly, nonatomic, retain) NSArray *links;
 
+/**
+ A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
+ 
+ @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
+ */
+@property (nonatomic, retain) NSDictionary *linkAttributes;
+
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
 ///---------------------------------------
 
 /**
- A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
-  
- @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
+ The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0. 
  */
-@property (nonatomic, retain) NSDictionary *linkAttributes;
+@property (nonatomic, assign) CGFloat shadowRadius;
+
+///--------------------------------------------
+/// @name Acccessing Paragraph Style Attributes
+///--------------------------------------------
+
+/**
+ The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
+ */
+@property (nonatomic, assign) CGFloat firstLineIndent;
+
+/**
+ The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default. 
+ */
+@property (nonatomic, assign) CGFloat leading;
+
+/**
+ The line height multiple. This value is 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat lineHeightMultiple;
+
+/**
+ The distance, in points, from the margin to the text container. This value is `UIEdgeInsetsZero` by default.
+ 
+ @discussion The `UIEdgeInset` members correspond to paragraph style properties rather than a particular geometry, and can change depending on the writing direction. 
+ 
+ ## `UIEdgeInset` Member Correspondence With `CTParagraphStyleSpecifier` Values:
+ 
+ - `top`: `kCTParagraphStyleSpecifierParagraphSpacingBefore`
+ - `left`: `kCTParagraphStyleSpecifierHeadIndent`
+ - `bottom`: `kCTParagraphStyleSpecifierParagraphSpacing`
+ - `right`: `kCTParagraphStyleSpecifierTailIndent`
+ 
+ */
+@property (nonatomic, assign) UIEdgeInsets textInsets;
 
 /**
  The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter` by default.
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
-
-/**
- The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0. 
- */
-@property (nonatomic, assign) CGFloat shadowRadius;
 
 
 ///----------------------------------

@@ -66,7 +66,7 @@ static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIData
     return textCheckingType;
 }
 
-static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *label) {
+static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
     
     CTFontRef font = CTFontCreateWithName((CFStringRef)label.font.fontName, label.font.pointSize, NULL);
@@ -77,11 +77,25 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
     CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
-    CTParagraphStyleSetting paragraphStyles[2] = {
+    CGFloat lineSpacing = label.leading;
+    CGFloat lineHeightMultiple = label.lineHeightMultiple;
+    CGFloat topMargin = label.textInsets.top;
+    CGFloat bottomMargin = label.textInsets.bottom;
+    CGFloat leftMargin = label.textInsets.left;
+    CGFloat rightMargin = label.textInsets.right;
+    CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
+    CTParagraphStyleSetting paragraphStyles[9] = {
 		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
 		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
+        {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
+        {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
+        {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
+        {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
+        {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
+        {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
+        {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin},
 	};
-	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 2);
+	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
 	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
 	CFRelease(paragraphStyle);
     
@@ -126,8 +140,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
-@synthesize verticalAlignment = _verticalAlignment;
 @synthesize shadowRadius = _shadowRadius;
+@synthesize leading = _leading;
+@synthesize lineHeightMultiple = _lineHeightMultiple;
+@synthesize firstLineIndent = _firstLineIndent;
+@synthesize textInsets = _textInsets;
+@synthesize verticalAlignment = _verticalAlignment;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -155,6 +173,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableLinkAttributes setValue:(id)[[UIColor blueColor] CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
     [mutableLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
+    
+    self.textInsets = UIEdgeInsetsZero;
     
     return self;
 }
