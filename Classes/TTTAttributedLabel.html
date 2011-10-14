@@ -44,9 +44,19 @@
 	
 	<option value="//api/name/delegate">&nbsp;&nbsp;&nbsp;&nbsp;delegate</option>
 	
+	<option value="//api/name/firstLineIndent">&nbsp;&nbsp;&nbsp;&nbsp;firstLineIndent</option>
+	
+	<option value="//api/name/leading">&nbsp;&nbsp;&nbsp;&nbsp;leading</option>
+	
+	<option value="//api/name/lineHeightMultiple">&nbsp;&nbsp;&nbsp;&nbsp;lineHeightMultiple</option>
+	
 	<option value="//api/name/linkAttributes">&nbsp;&nbsp;&nbsp;&nbsp;linkAttributes</option>
 	
 	<option value="//api/name/links">&nbsp;&nbsp;&nbsp;&nbsp;links</option>
+	
+	<option value="//api/name/shadowRadius">&nbsp;&nbsp;&nbsp;&nbsp;shadowRadius</option>
+	
+	<option value="//api/name/textInsets">&nbsp;&nbsp;&nbsp;&nbsp;textInsets</option>
 	
 	<option value="//api/name/verticalAlignment">&nbsp;&nbsp;&nbsp;&nbsp;verticalAlignment</option>
 	
@@ -89,9 +99,11 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Accessing the Delegate">Accessing the Delegate</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Detecting and Accessing Links">Detecting and Accessing Links</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Detecting, Accessing, &amp; Styling Links">Detecting, Accessing, &amp; Styling Links</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Acccessing Text Style Attributes">Acccessing Text Style Attributes</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Acccessing Paragraph Style Attributes">Acccessing Paragraph Style Attributes</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Setting the Text Attributes">Setting the Text Attributes</a></span></li>
 	
@@ -109,9 +121,19 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/delegate">delegate</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/firstLineIndent">firstLineIndent</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/leading">leading</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/lineHeightMultiple">lineHeightMultiple</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/linkAttributes">linkAttributes</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/links">links</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/shadowRadius">shadowRadius</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/textInsets">textInsets</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/verticalAlignment">verticalAlignment</a></span></li>
 	
@@ -164,10 +186,10 @@
 	<td class="specification-value">UILabel</td>
 </tr><tr>
 	<td class="specification-title">Conforms to</td>
-	<td class="specification-value">TTTAttributedLabel</td>
+	<td class="specification-value"><a href="../Protocols/TTTAttributedLabel.html">TTTAttributedLabel</a></td>
 </tr><tr>
 	<td class="specification-title">Declared in</td>
-	<td class="specification-value">TTTAttributedLabel.h<br />TTTAttributedLabel.m</td>
+	<td class="specification-value">TTTAttributedLabel.h</td>
 </tr>
 						</tbody></table></div>
 					
@@ -178,6 +200,17 @@
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p><a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> is a drop-in replacement for <code>UILabel</code> that supports <code>NSAttributedString</code>, as well as automatically-detected and manually-added <a href="#//api/name/links">links</a> to URLs, addresses, phone numbers, and dates.</p>
+
+<h1>Differences Between <a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> and <code>UILabel</code></h1>
+
+<p>For the most part, <a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> behaves just like <code>UILabel</code>. The following are notable exceptions, in which <a href="TTTAttributedLabel.html"><code>TTTAttributedLabel</code></a> properties may act differently:</p>
+
+<ul>
+<li><code>text</code> &ndash; This property now takes an <code>id</code> type argument, which can either be a kind of <code>NSString</code> or <code>NSAttributedString</code> (mutable or immutable in both cases)</li>
+<li><code>lineBreakMode</code> &ndash; This property displays only the first line when the value is <code>UILineBreakModeHeadTruncation</code>, <code>UILineBreakModeTailTruncation</code>, or <code>UILineBreakModeMiddleTruncation</code></li>
+<li><code>adjustsFontsizeToFitWidth</code> &ndash; This property is effective for any value of <code>numberOfLines</code> greater than zero</li>
+</ul>
+
 					</div>
 					
 					
@@ -204,14 +237,14 @@
 						</ul>
 						
 						
-						<a title="Detecting and Accessing Links" name="task_Detecting and Accessing Links"></a>
-						<h3 class="subsubtitle task-title">Detecting and Accessing Links</h3>
+						<a title="Detecting, Accessing, &amp; Styling Links" name="task_Detecting, Accessing, &amp; Styling Links"></a>
+						<h3 class="subsubtitle task-title">Detecting, Accessing, &amp; Styling Links</h3>
 
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/dataDetectorTypes">&nbsp;&nbsp;dataDetectorTypes</a></code>
-		<span class="tooltip"><p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p></span>
+		<span class="tooltip"><p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text. This is <code>UIDataDetectorTypeNone</code> by default.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -219,6 +252,13 @@
 	<span class="tooltip">
 		<code><a href="#//api/name/links">&nbsp;&nbsp;links</a></code>
 		<span class="tooltip"><p>An array of <code>NSTextCheckingResult</code> objects for <a href="#//api/name/links">links</a> detected or manually added to the label text.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/linkAttributes">&nbsp;&nbsp;linkAttributes</a></code>
+		<span class="tooltip"><p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text. The default link style is blue and underlined.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -232,15 +272,51 @@
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
-		<code><a href="#//api/name/linkAttributes">&nbsp;&nbsp;linkAttributes</a></code>
-		<span class="tooltip"><p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p></span>
+		<code><a href="#//api/name/shadowRadius">&nbsp;&nbsp;shadowRadius</a></code>
+		<span class="tooltip"><p>The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						<a title="Acccessing Paragraph Style Attributes" name="task_Acccessing Paragraph Style Attributes"></a>
+						<h3 class="subsubtitle task-title">Acccessing Paragraph Style Attributes</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/firstLineIndent">&nbsp;&nbsp;firstLineIndent</a></code>
+		<span class="tooltip"><p>The distance, in points, from the <a href="#//api/name/leading">leading</a> margin of a frame to the beginning of the paragraph&rsquo;s first line. This value is always nonnegative, and is 0.0 by default.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/leading">&nbsp;&nbsp;leading</a></code>
+		<span class="tooltip"><p>The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/lineHeightMultiple">&nbsp;&nbsp;lineHeightMultiple</a></code>
+		<span class="tooltip"><p>The line height multiple. This value is 0.0 by default.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/textInsets">&nbsp;&nbsp;textInsets</a></code>
+		<span class="tooltip"><p>The distance, in points, from the margin to the text container. This value is <code>UIEdgeInsetsZero</code> by default.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/verticalAlignment">&nbsp;&nbsp;verticalAlignment</a></code>
-		<span class="tooltip"><p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p></span>
+		<span class="tooltip"><p>The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is <code>TTTAttributedLabelVerticalAlignmentCenter</code> by default.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -329,7 +405,7 @@
 	
 	
 	<div class="method-subsection brief-description">
-		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p>
+		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text. This is <code>UIDataDetectorTypeNone</code> by default.</p>
 	</div>		
 	
 	
@@ -344,9 +420,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text.</p>
-
-<p>@discussion This bitmask is <code>UIDataDetectorTypeNone</code> by default.</p><div class="warning"><p>You must specify <a href="#//api/name/dataDetectorTypes"><code>dataDetectorTypes</code></a> before setting the <code>text</code>, with either <a href="#//api/name/setText:"><code>setText:</code></a> or <a href="#//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:"><code>setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</code></a>.</p></div>
+		<p>A bitmask of <code>UIDataDetectorTypes</code> which are used to automatically detect <a href="#//api/name/links">links</a> in the label text. This is <code>UIDataDetectorTypeNone</code> by default.</p><div class="warning"><p>You must specify <a href="#//api/name/dataDetectorTypes"><code>dataDetectorTypes</code></a> before setting the <code>text</code>, with either <a href="#//api/name/setText:"><code>setText:</code></a> or <a href="#//api/name/setText:afterInheritingLabelAttributesAndConfiguringWithBlock:"><code>setText:afterInheritingLabelAttributesAndConfiguringWithBlock:</code></a>.</p></div>
 	</div>
 	
 	
@@ -405,13 +479,130 @@
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/firstLineIndent" title="firstLineIndent"></a>
+	<h3 class="subsubtitle method-title">firstLineIndent</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The distance, in points, from the <a href="#//api/name/leading">leading</a> margin of a frame to the beginning of the paragraph&rsquo;s first line. This value is always nonnegative, and is 0.0 by default.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) CGFloat firstLineIndent</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The distance, in points, from the <a href="#//api/name/leading">leading</a> margin of a frame to the beginning of the paragraph&rsquo;s first line. This value is always nonnegative, and is 0.0 by default.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/leading" title="leading"></a>
+	<h3 class="subsubtitle method-title">leading</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) CGFloat leading</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/lineHeightMultiple" title="lineHeightMultiple"></a>
+	<h3 class="subsubtitle method-title">lineHeightMultiple</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The line height multiple. This value is 0.0 by default.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) CGFloat lineHeightMultiple</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The line height multiple. This value is 0.0 by default.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/linkAttributes" title="linkAttributes"></a>
 	<h3 class="subsubtitle method-title">linkAttributes</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
+		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text. The default link style is blue and underlined.</p>
 	</div>		
 	
 	
@@ -426,9 +617,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text.</p>
-
-<p>@discussion The default link style is blue and underlined.</p><div class="warning"><p>You must specify <a href="#//api/name/linkAttributes"><code>linkAttributes</code></a> before setting autodecting or manually-adding <a href="#//api/name/links">links</a> for these attributes to be applied.</p></div>
+		<p>A dictionary containing the <code>NSAttributedString</code> attributes to be applied to <a href="#//api/name/links">links</a> detected or manually added to the label text. The default link style is blue and underlined.</p><div class="warning"><p>You must specify <a href="#//api/name/linkAttributes"><code>linkAttributes</code></a> before setting autodecting or manually-adding <a href="#//api/name/links">links</a> for these attributes to be applied.</p></div>
 	</div>
 	
 	
@@ -485,13 +674,103 @@
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/shadowRadius" title="shadowRadius"></a>
+	<h3 class="subsubtitle method-title">shadowRadius</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) CGFloat shadowRadius</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/textInsets" title="textInsets"></a>
+	<h3 class="subsubtitle method-title">textInsets</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The distance, in points, from the margin to the text container. This value is <code>UIEdgeInsetsZero</code> by default.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) UIEdgeInsets textInsets</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The distance, in points, from the margin to the text container. This value is <code>UIEdgeInsetsZero</code> by default.</p>
+
+<p>@discussion The <code>UIEdgeInset</code> members correspond to paragraph style properties rather than a particular geometry, and can change depending on the writing direction.</p>
+
+<h2><code>UIEdgeInset</code> Member Correspondence With <code>CTParagraphStyleSpecifier</code> Values:</h2>
+
+<ul>
+<li><code>top</code>: <code>kCTParagraphStyleSpecifierParagraphSpacingBefore</code></li>
+<li><code>left</code>: <code>kCTParagraphStyleSpecifierHeadIndent</code></li>
+<li><code>bottom</code>: <code>kCTParagraphStyleSpecifierParagraphSpacing</code></li>
+<li><code>right</code>: <code>kCTParagraphStyleSpecifierTailIndent</code></li>
+</ul>
+
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">TTTAttributedLabel.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/verticalAlignment" title="verticalAlignment"></a>
 	<h3 class="subsubtitle method-title">verticalAlignment</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p>
+		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is <code>TTTAttributedLabelVerticalAlignmentCenter</code> by default.</p>
 	</div>		
 	
 	
@@ -506,9 +785,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size.</p>
-
-<p>@discussion The default vertical alignment is <code>TTTAttributedLabelVerticalAlignmentCenter</code>.</p>
+		<p>The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is <code>TTTAttributedLabelVerticalAlignmentCenter</code> by default.</p>
 	</div>
 	
 	
@@ -838,9 +1115,7 @@
 			<dt><em>text</em></dt>
 			<dd><p>An <code>NSString</code> or <code>NSAttributedString</code> object to be displayed by the label. If the specified text is an <code>NSString</code>, the label will display the text like a <code>UILabel</code>, inheriting the text styles of the label. If the specified text is an <code>NSAttributedString</code>, the label text styles will be overridden by the styles specified in the attributed string.</p>
 
-<p>@discussion This method overrides <code>UILabel </code>setText:<code></code> to accept both <code>NSString</code> and <code>NSAttributedString</code> objects.</p>
-
-<p>@discussion This string is <code>nil</code> by default.</p></dd>
+<p>@discussion This method overrides <code>UILabel </code>setText:<code></code> to accept both <code>NSString</code> and <code>NSAttributedString</code> objects. This string is <code>nil</code> by default.</p></dd>
 		</dl>
 		
 	</div>
@@ -939,7 +1214,7 @@
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Mattt Thompson. All rights reserved. (Last updated: 2011-09-19)</span><br />
+						<p><span class="copyright">&copy; 2011 Mattt Thompson. All rights reserved. (Last updated: 2011-10-14)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.4 (build 703)</a>.</span></p>
 						
