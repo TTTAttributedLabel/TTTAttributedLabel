@@ -13,6 +13,10 @@ Online documentation is available at http://mattt.github.com/TTTAttributedLabel/
 
 To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
 
+## Demo
+
+Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttributedLabel` in action. 
+
 ## Installation
 
 `TTTAttributedLabel` requires the `CoreText` Framework, so the first thing you'll need to do is include the framework into your project. In Xcode 4, go to the project file at the root of your workspace and select your active target. There should be several sections across the top of that window; choose "Build Phases". Next, click "Link Binary With Libraries" to expand that section to see the frameworks currently included in your project. Click the "+" at the bottom left and select "CoreText.framework".

@@ -22,6 +22,8 @@
 
 #import "TTTAttributedLabel.h"
 
+#define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
+
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
@@ -64,32 +66,59 @@ static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIData
     return textCheckingType;
 }
 
-static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *label) {
+static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
     
     CTFontRef font = CTFontCreateWithName((CFStringRef)label.font.fontName, label.font.pointSize, NULL);
     [mutableAttributes setObject:(id)font forKey:(NSString *)kCTFontAttributeName];
     CFRelease(font);
     
-    [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
+    [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
     CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
-    CTParagraphStyleSetting paragraphStyles[2] = {
-		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void*)&alignment},
-		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void*)&lineBreakMode},
+    CGFloat lineSpacing = label.leading;
+    CGFloat lineHeightMultiple = label.lineHeightMultiple;
+    CGFloat topMargin = label.textInsets.top;
+    CGFloat bottomMargin = label.textInsets.bottom;
+    CGFloat leftMargin = label.textInsets.left;
+    CGFloat rightMargin = label.textInsets.right;
+    CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
+    CTParagraphStyleSetting paragraphStyles[9] = {
+		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
+		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
+        {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
+        {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
+        {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
+        {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
+        {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
+        {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
+        {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin},
 	};
-	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 2);
-	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString*)kCTParagraphStyleAttributeName];
+	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
+	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
 	CFRelease(paragraphStyle);
     
     return [NSDictionary dictionaryWithDictionary:mutableAttributes];
 }
 
+static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale, CGFloat minimumFontSize) {    
+    NSMutableAttributedString *mutableAttributedString = [[attributedString mutableCopy] autorelease];
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        CTFontRef font = (CTFontRef)value;
+        if (font) {
+            CGFloat scaledFontSize = floorf(CTFontGetSize(font) * scale);
+            CTFontRef scaledFont = CTFontCreateCopyWithAttributes(font, fmaxf(scaledFontSize, minimumFontSize), NULL, NULL);
+            CFAttributedStringSetAttribute((CFMutableAttributedStringRef)mutableAttributedString, CFRangeMake(range.location, range.length), kCTFontAttributeName, scaledFont);
+        }
+    }];
+    
+    return mutableAttributedString;
+}
+
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
-@property (readwrite, nonatomic, assign) CTFramesetterRef shadowFramesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
@@ -106,13 +135,16 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 @dynamic text;
 @synthesize attributedText = _attributedText;
 @synthesize framesetter = _framesetter;
-@synthesize shadowFramesetter = _shadowFramesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
-
 @synthesize delegate = _delegate;
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
+@synthesize shadowRadius = _shadowRadius;
+@synthesize leading = _leading;
+@synthesize lineHeightMultiple = _lineHeightMultiple;
+@synthesize firstLineIndent = _firstLineIndent;
+@synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -142,12 +174,13 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     [mutableLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
+    self.textInsets = UIEdgeInsetsZero;
+    
     return self;
 }
 
 - (void)dealloc {
     if (_framesetter) CFRelease(_framesetter);
-    if (_shadowFramesetter) CFRelease(_shadowFramesetter);
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
     
     [_attributedText release];
@@ -179,11 +212,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     if (_needsFramesetter) {
         @synchronized(self) {
             if (_framesetter) CFRelease(_framesetter);
-            if (_shadowFramesetter) CFRelease(_shadowFramesetter);
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
             
             self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
-            self.shadowFramesetter = nil;
             self.highlightFramesetter = nil;
             _needsFramesetter = NO;
         }
@@ -313,8 +344,24 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     CGMutablePathRef path = CGPathCreateMutable();
     
     CGPathAddRect(path, NULL, rect);
-    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);
-    CTFrameDraw(frame, c);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
+    
+    if (self.numberOfLines == 0) {
+        CTFrameDraw(frame, c);
+    } else {
+        CFArrayRef lines = CTFrameGetLines(frame);
+        NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
+
+        CGPoint lineOrigins[numberOfLines];
+        CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+        
+        for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+            CGPoint lineOrigin = lineOrigins[lineIndex];
+            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
+            CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+            CTLineDraw(line, c);
+        }
+    }
     
     CFRelease(frame);
     CFRelease(path);
@@ -367,6 +414,21 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
         return;
     }
     
+    NSAttributedString *originalAttributedText = nil;
+    // Adjust the font size to fit width, if necessarry 
+    if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
+        CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
+        CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
+        if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+            textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
+        }
+        
+        if (textWidth > availableWidth && textWidth > 0.0f) {
+            originalAttributedText = [[self.attributedText copy] autorelease];
+            self.text = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
+        }
+    }
+    
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
@@ -400,18 +462,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
-        CGRect shadowRect = textRect;
-        // We subtract the height, not add it, because the whole scene is inverted.
-        shadowRect.origin = CGPointMake(shadowRect.origin.x + self.shadowOffset.width, shadowRect.origin.y - self.shadowOffset.height);
-        
-        // Override the text's color attribute to whatever the shadow color is
-        if (!self.shadowFramesetter) {
-            NSMutableAttributedString *shadowAttrString = [[self.attributedText mutableCopy] autorelease];
-            [shadowAttrString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[self.shadowColor CGColor] range:NSMakeRange(0, [self.attributedText length])];
-            self.shadowFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)shadowAttrString);
-        }
-                
-        [self drawFramesetter:self.shadowFramesetter textRange:textRange inRect:shadowRect context:c];
+        CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
     }
     
     // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
@@ -426,6 +477,11 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(UILabel *labe
     } else {
         [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
     }  
+    
+    // If we adjusted the font size, set it back to its original size
+    if (originalAttributedText) {
+        self.text = originalAttributedText;
+    }
 }
 
 #pragma mark - UIControl

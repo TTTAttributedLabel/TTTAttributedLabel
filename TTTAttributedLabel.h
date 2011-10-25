@@ -23,6 +23,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
 
+/**
+ Vertical alignment for text in a label whose bounds are larger than its text bounds
+ */
 typedef enum {
     TTTAttributedLabelVerticalAlignmentCenter   = 0,
     TTTAttributedLabelVerticalAlignmentTop      = 1,
@@ -38,6 +41,14 @@ typedef enum {
 
 /**
  `TTTAttributedLabel` is a drop-in replacement for `UILabel` that supports `NSAttributedString`, as well as automatically-detected and manually-added links to URLs, addresses, phone numbers, and dates.
+ 
+ # Differences Between `TTTAttributedLabel` and `UILabel`
+ 
+ For the most part, `TTTAttributedLabel` behaves just like `UILabel`. The following are notable exceptions, in which `TTTAttributedLabel` properties may act differently:
+ 
+ - `text` - This property now takes an `id` type argument, which can either be a kind of `NSString` or `NSAttributedString` (mutable or immutable in both cases)
+ - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
+ - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
 @private
@@ -49,7 +60,15 @@ typedef enum {
     UIDataDetectorTypes _dataDetectorTypes;
     NSArray *_links;
     NSDictionary *_linkAttributes;
+    
+    CGFloat _shadowRadius;
+    
+    CGFloat _leading;
+    CGFloat _lineHeightMultiple;
+    CGFloat _firstLineIndent;
+    UIEdgeInsets _textInsets;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
+    
     BOOL _userInteractionDisabled;
 }
 
@@ -64,14 +83,12 @@ typedef enum {
  */
 @property (nonatomic, assign) id <TTTAttributedLabelDelegate> delegate;
 
-///------------------------------------
-/// @name Detecting and Accessing Links
-///------------------------------------
+///--------------------------------------------
+/// @name Detecting, Accessing, & Styling Links
+///--------------------------------------------
 
 /**
- A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text.
- 
- @discussion This bitmask is `UIDataDetectorTypeNone` by default.
+ A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text. This is `UIDataDetectorTypeNone` by default.
  
  @warning You must specify `dataDetectorTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
  */
@@ -82,25 +99,61 @@ typedef enum {
  */
 @property (readonly, nonatomic, retain) NSArray *links;
 
-///---------------------------------------
-/// @name Acccessing Text Style Attributes
-///---------------------------------------
-
 /**
- A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text.
- 
- @discussion The default link style is blue and underlined.
+ A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
  
  @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
  */
 @property (nonatomic, retain) NSDictionary *linkAttributes;
 
+///---------------------------------------
+/// @name Acccessing Text Style Attributes
+///---------------------------------------
+
 /**
- The vertical text alignment for the label, for when the frame size is greater than the text rect size.
+ The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0. 
+ */
+@property (nonatomic, assign) CGFloat shadowRadius;
+
+///--------------------------------------------
+/// @name Acccessing Paragraph Style Attributes
+///--------------------------------------------
+
+/**
+ The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
+ */
+@property (nonatomic, assign) CGFloat firstLineIndent;
+
+/**
+ The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default. 
+ */
+@property (nonatomic, assign) CGFloat leading;
+
+/**
+ The line height multiple. This value is 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat lineHeightMultiple;
+
+/**
+ The distance, in points, from the margin to the text container. This value is `UIEdgeInsetsZero` by default.
  
- @discussion The default vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter`.
+ @discussion The `UIEdgeInset` members correspond to paragraph style properties rather than a particular geometry, and can change depending on the writing direction. 
+ 
+ ## `UIEdgeInset` Member Correspondence With `CTParagraphStyleSpecifier` Values:
+ 
+ - `top`: `kCTParagraphStyleSpecifierParagraphSpacingBefore`
+ - `left`: `kCTParagraphStyleSpecifierHeadIndent`
+ - `bottom`: `kCTParagraphStyleSpecifierParagraphSpacing`
+ - `right`: `kCTParagraphStyleSpecifierTailIndent`
+ 
+ */
+@property (nonatomic, assign) UIEdgeInsets textInsets;
+
+/**
+ The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter` by default.
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
+
 
 ///----------------------------------
 /// @name Setting the Text Attributes
@@ -111,9 +164,7 @@ typedef enum {
  
  @param text An `NSString` or `NSAttributedString` object to be displayed by the label. If the specified text is an `NSString`, the label will display the text like a `UILabel`, inheriting the text styles of the label. If the specified text is an `NSAttributedString`, the label text styles will be overridden by the styles specified in the attributed string.
   
- @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects.
- 
- @discussion This string is `nil` by default.
+ @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects. This string is `nil` by default.
  */
 - (void)setText:(id)text;
 
@@ -145,9 +196,7 @@ typedef enum {
  @param addressComponents A dictionary of address components for the address to be linked to
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  
- @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components."
- 
- @see NSTextCheckingResult
+ @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components." 
  */
 - (void)addLinkToAddress:(NSDictionary *)addressComponents withRange:(NSRange)range;
 
