@@ -516,7 +516,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 break;
         }
     } else {
-        [self.nextResponder touchesBegan:touches withEvent:event];
+        [super touchesBegan:touches withEvent:event];
     }
 }
 
