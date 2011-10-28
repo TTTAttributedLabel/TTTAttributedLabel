@@ -1,0 +1,316 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DC15C3CA145A023D009886EC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC15C3C9145A023D009886EC /* UIKit.framework */; };
+		DC15C3CC145A023D009886EC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC15C3CB145A023D009886EC /* Foundation.framework */; };
+		DC15C3CE145A023D009886EC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC15C3CD145A023D009886EC /* CoreGraphics.framework */; };
+		DC15C3D4145A023D009886EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC15C3D2145A023D009886EC /* InfoPlist.strings */; };
+		DC15C3D6145A023D009886EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC15C3D5145A023D009886EC /* main.m */; };
+		DC15C3DA145A023D009886EC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC15C3D9145A023D009886EC /* AppDelegate.m */; };
+		DC15C3DD145A023D009886EC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC15C3DC145A023D009886EC /* ViewController.m */; };
+		DC15C3E0145A023D009886EC /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC15C3DE145A023D009886EC /* ViewController.xib */; };
+		DC15C3EF145A02F9009886EC /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DC15C3EE145A02F9009886EC /* TTTAttributedLabel.m */; };
+		DC2D29E8145A2D8100EF54DB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC2D29E7145A2D8100EF54DB /* CoreText.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		DC15C3C5145A023D009886EC /* TTTAttributedLabelExample3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TTTAttributedLabelExample3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC15C3C9145A023D009886EC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DC15C3CB145A023D009886EC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DC15C3CD145A023D009886EC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DC15C3D1145A023D009886EC /* TTTAttributedLabelExample3-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TTTAttributedLabelExample3-Info.plist"; sourceTree = "<group>"; };
+		DC15C3D3145A023D009886EC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC15C3D5145A023D009886EC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC15C3D7145A023D009886EC /* TTTAttributedLabelExample3-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTTAttributedLabelExample3-Prefix.pch"; sourceTree = "<group>"; };
+		DC15C3D8145A023D009886EC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		DC15C3D9145A023D009886EC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		DC15C3DB145A023D009886EC /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		DC15C3DC145A023D009886EC /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		DC15C3DF145A023D009886EC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		DC15C3ED145A02F9009886EC /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../../TTTAttributedLabel.h; sourceTree = "<group>"; };
+		DC15C3EE145A02F9009886EC /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = ../../TTTAttributedLabel.m; sourceTree = "<group>"; };
+		DC2D29E7145A2D8100EF54DB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DC15C3C2145A023D009886EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC2D29E8145A2D8100EF54DB /* CoreText.framework in Frameworks */,
+				DC15C3CA145A023D009886EC /* UIKit.framework in Frameworks */,
+				DC15C3CC145A023D009886EC /* Foundation.framework in Frameworks */,
+				DC15C3CE145A023D009886EC /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DC15C3BA145A023D009886EC = {
+			isa = PBXGroup;
+			children = (
+				DC15C3CF145A023D009886EC /* Classes */,
+				DC15C3EB145A02D5009886EC /* Vendor */,
+				DC15C3C8145A023D009886EC /* Frameworks */,
+				DC15C3C6145A023D009886EC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DC15C3C6145A023D009886EC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3C5145A023D009886EC /* TTTAttributedLabelExample3.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DC15C3C8145A023D009886EC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3C9145A023D009886EC /* UIKit.framework */,
+				DC15C3CB145A023D009886EC /* Foundation.framework */,
+				DC15C3CD145A023D009886EC /* CoreGraphics.framework */,
+				DC2D29E7145A2D8100EF54DB /* CoreText.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC15C3CF145A023D009886EC /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3EA145A0273009886EC /* Controllers */,
+				DC15C3D0145A023D009886EC /* Supporting Files */,
+			);
+			name = Classes;
+			path = TTTAttributedLabelExample3;
+			sourceTree = "<group>";
+		};
+		DC15C3D0145A023D009886EC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3D8145A023D009886EC /* AppDelegate.h */,
+				DC15C3D9145A023D009886EC /* AppDelegate.m */,
+				DC15C3D2145A023D009886EC /* InfoPlist.strings */,
+				DC15C3D5145A023D009886EC /* main.m */,
+				DC15C3D7145A023D009886EC /* TTTAttributedLabelExample3-Prefix.pch */,
+				DC15C3D1145A023D009886EC /* TTTAttributedLabelExample3-Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DC15C3EA145A0273009886EC /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3DB145A023D009886EC /* ViewController.h */,
+				DC15C3DC145A023D009886EC /* ViewController.m */,
+				DC15C3DE145A023D009886EC /* ViewController.xib */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		DC15C3EB145A02D5009886EC /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3EC145A02E3009886EC /* TTTAttributedLabel */,
+			);
+			name = Vendor;
+			path = TTTAttributedLabelExample3;
+			sourceTree = "<group>";
+		};
+		DC15C3EC145A02E3009886EC /* TTTAttributedLabel */ = {
+			isa = PBXGroup;
+			children = (
+				DC15C3ED145A02F9009886EC /* TTTAttributedLabel.h */,
+				DC15C3EE145A02F9009886EC /* TTTAttributedLabel.m */,
+			);
+			name = TTTAttributedLabel;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DC15C3C4145A023D009886EC /* TTTAttributedLabelExample3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC15C3E3145A023D009886EC /* Build configuration list for PBXNativeTarget "TTTAttributedLabelExample3" */;
+			buildPhases = (
+				DC15C3C1145A023D009886EC /* Sources */,
+				DC15C3C2145A023D009886EC /* Frameworks */,
+				DC15C3C3145A023D009886EC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TTTAttributedLabelExample3;
+			productName = TTTAttributedLabelExample3;
+			productReference = DC15C3C5145A023D009886EC /* TTTAttributedLabelExample3.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DC15C3BC145A023D009886EC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = DC15C3BF145A023D009886EC /* Build configuration list for PBXProject "TTTAttributedLabelExample3" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DC15C3BA145A023D009886EC;
+			productRefGroup = DC15C3C6145A023D009886EC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DC15C3C4145A023D009886EC /* TTTAttributedLabelExample3 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DC15C3C3145A023D009886EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC15C3D4145A023D009886EC /* InfoPlist.strings in Resources */,
+				DC15C3E0145A023D009886EC /* ViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC15C3C1145A023D009886EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC15C3D6145A023D009886EC /* main.m in Sources */,
+				DC15C3DA145A023D009886EC /* AppDelegate.m in Sources */,
+				DC15C3DD145A023D009886EC /* ViewController.m in Sources */,
+				DC15C3EF145A02F9009886EC /* TTTAttributedLabel.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DC15C3D2145A023D009886EC /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC15C3D3145A023D009886EC /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DC15C3DE145A023D009886EC /* ViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC15C3DF145A023D009886EC /* en */,
+			);
+			name = ViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DC15C3E1145A023D009886EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DC15C3E2145A023D009886EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DC15C3E4145A023D009886EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TTTAttributedLabelExample3/TTTAttributedLabelExample3-Prefix.pch";
+				INFOPLIST_FILE = "TTTAttributedLabelExample3/TTTAttributedLabelExample3-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DC15C3E5145A023D009886EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TTTAttributedLabelExample3/TTTAttributedLabelExample3-Prefix.pch";
+				INFOPLIST_FILE = "TTTAttributedLabelExample3/TTTAttributedLabelExample3-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DC15C3BF145A023D009886EC /* Build configuration list for PBXProject "TTTAttributedLabelExample3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC15C3E1145A023D009886EC /* Debug */,
+				DC15C3E2145A023D009886EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC15C3E3145A023D009886EC /* Build configuration list for PBXNativeTarget "TTTAttributedLabelExample3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC15C3E4145A023D009886EC /* Debug */,
+				DC15C3E5145A023D009886EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DC15C3BC145A023D009886EC /* Project object */;
+}
