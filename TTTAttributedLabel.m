@@ -353,7 +353,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
 
         CGPoint lineOrigins[numberOfLines];
-        CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+        CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
         
         for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
             CGPoint lineOrigin = lineOrigins[lineIndex];
