@@ -63,7 +63,6 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     [_attributedLabel setFrame:UIEdgeInsetsInsetRect([[self contentView] bounds], [self attributedLabelEdgeInsets])];
-    NSLog(@"Layout subviews, frame is %@", NSStringFromCGRect(_attributedLabel.frame));
 }
 
 - (CGFloat)heightForTableView:(UITableView *)tableView {
