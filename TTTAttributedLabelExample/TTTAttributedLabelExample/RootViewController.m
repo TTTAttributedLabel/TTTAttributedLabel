@@ -22,25 +22,75 @@
 
 #import "RootViewController.h"
 
-#import "AttributedTableViewCell.h"
+static CGFloat const kSummaryTextFontSize = 17;
 
 @implementation RootViewController
-@synthesize espressos = _espressos;
 
 - (id)init {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super initWithStyle:UITableViewStyleGrouped];
     if (!self) {
         return nil;
     }
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"espressos" ofType:@"txt"];
-    self.espressos = [[NSString stringWithContentsOfFile:filePath usedEncoding:nil error:nil] componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    NSArray *espressoTexts = [[NSString stringWithContentsOfFile:filePath usedEncoding:nil error:nil] componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    NSMutableArray *espressos = [NSMutableArray arrayWithCapacity:[espressoTexts count]];
+    
+    static NSRegularExpression *nameRegularExpression;
+    static NSRegularExpression *parenthesisRegularExpression;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        nameRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"^\\w+" options:NSRegularExpressionCaseInsensitive error:nil];
+        parenthesisRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"\\([^\\(\\)]+\\)" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
+    
+    [espressoTexts enumerateObjectsUsingBlock:^(id string, NSUInteger idx, BOOL *stop) {
+        NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithString:string] autorelease];
+        NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
         
+        UIFont *systemFont = [UIFont systemFontOfSize:kSummaryTextFontSize]; 
+        CTFontRef plainFont = CTFontCreateWithName((CFStringRef)systemFont.fontName, systemFont.pointSize, NULL);
+        if (plainFont) {
+            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)plainFont range:stringRange];
+        }
+        
+        NSRange nameRange = [nameRegularExpression rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
+        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kSummaryTextFontSize]; 
+        CTFontRef boldFont = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+        if (boldFont) {
+            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)boldFont range:nameRange];
+            CFRelease(boldFont);
+        }
+        
+        [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
+        
+        [parenthesisRegularExpression enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {            
+            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kSummaryTextFontSize];
+            CTFontRef italicFont = CTFontCreateWithName((CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
+            if (italicFont) {
+                [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)italicFont range:result.range];
+                CFRelease(italicFont);
+                
+                [mutableAttributedString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[[UIColor grayColor] CGColor] range:result.range];
+            }
+        }];
+        
+        [espressos addObject:mutableAttributedString];
+    }];
+    
+    _espressos = [espressos copy];
+    _checkedIndexPaths = [[NSMutableSet alloc] init];
+    
+    _sizingCell = [[TTTAttributedTableViewCell alloc] initWithReuseIdentifier:nil];
+    _sizingCell.attributedLabel.font = [UIFont systemFontOfSize:17.0];
+    
     return self;
 }
 
 - (void)dealloc {
     [_espressos release];
+    [_checkedIndexPaths release];
+    [_sizingCell release];
     [super dealloc];
 }
 
@@ -51,37 +101,56 @@
     
     self.title = NSLocalizedString(@"Espressos", nil);
     [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 #pragma mark - UITableViewDatasource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.espressos count];
+    return [_espressos count];
+}
+
+- (void)updateCell:(TTTAttributedTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    cell.attributedLabel.text = [_espressos objectAtIndex:indexPath.row];
+    cell.accessoryType = [_checkedIndexPaths containsObject:indexPath] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:indexPath.row]];
+    [self updateCell:_sizingCell forRowAtIndexPath:indexPath];
+    return [_sizingCell heightForTableView:tableView];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     
-    AttributedTableViewCell *cell = (AttributedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    TTTAttributedTableViewCell *cell = (TTTAttributedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[AttributedTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[TTTAttributedTableViewCell alloc] initWithReuseIdentifier:CellIdentifier] autorelease];
+        cell.attributedLabel.font = [UIFont systemFontOfSize:17.0];
+        cell.attributedLabel.delegate = self;
+        cell.attributedLabel.userInteractionEnabled = YES;
     }
     
-    NSString *description = [self.espressos objectAtIndex:indexPath.row];
-    cell.summaryText = description;
-    cell.summaryLabel.delegate = self;
-    cell.summaryLabel.userInteractionEnabled = YES;
-
+    [self updateCell:cell forRowAtIndexPath:indexPath];
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Since setting the accessory may change the cell's height, wrap these
+    // changes in beginUpdates/endUpdates.
+    [tableView beginUpdates];
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if ([_checkedIndexPaths containsObject:indexPath]) {
+        [_checkedIndexPaths removeObject:indexPath];
+        [cell setAccessoryType:UITableViewCellAccessoryNone];
+    } else {
+        [_checkedIndexPaths addObject:indexPath];
+        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    }
+    [tableView endUpdates];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

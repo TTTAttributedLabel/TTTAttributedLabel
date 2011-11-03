@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C43792781462F2C3008D635D /* TTTAttributedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C43792771462F2C3008D635D /* TTTAttributedTableViewCell.m */; };
 		F877A36113782AF10022A8AB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36013782AF10022A8AB /* UIKit.framework */; };
 		F877A36313782AF10022A8AB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36213782AF10022A8AB /* Foundation.framework */; };
 		F877A36513782AF10022A8AB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36413782AF10022A8AB /* CoreGraphics.framework */; };
@@ -15,11 +16,12 @@
 		F877A37713782AF10022A8AB /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A37613782AF10022A8AB /* RootViewController.m */; };
 		F877A38213782B360022A8AB /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A38113782B360022A8AB /* TTTAttributedLabel.m */; };
 		F877A39513782FC10022A8AB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A39413782FC10022A8AB /* CoreText.framework */; };
-		F877A39813782FF50022A8AB /* AttributedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F877A39713782FF50022A8AB /* AttributedTableViewCell.m */; };
 		F877A3A2137833EB0022A8AB /* espressos.txt in Resources */ = {isa = PBXBuildFile; fileRef = F877A3A1137833EB0022A8AB /* espressos.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C43792761462F2C3008D635D /* TTTAttributedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedTableViewCell.h; path = ../../TTTAttributedTableViewCell.h; sourceTree = "<group>"; };
+		C43792771462F2C3008D635D /* TTTAttributedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedTableViewCell.m; path = ../../TTTAttributedTableViewCell.m; sourceTree = "<group>"; };
 		F877A35C13782AF10022A8AB /* Espressos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Espressos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F877A36013782AF10022A8AB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F877A36213782AF10022A8AB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -34,8 +36,6 @@
 		F877A38013782B360022A8AB /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../../TTTAttributedLabel.h; sourceTree = "<group>"; };
 		F877A38113782B360022A8AB /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = ../../TTTAttributedLabel.m; sourceTree = "<group>"; };
 		F877A39413782FC10022A8AB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
-		F877A39613782FF50022A8AB /* AttributedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributedTableViewCell.h; sourceTree = "<group>"; };
-		F877A39713782FF50022A8AB /* AttributedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributedTableViewCell.m; sourceTree = "<group>"; };
 		F877A3A1137833EB0022A8AB /* espressos.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = espressos.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,7 +87,6 @@
 			isa = PBXGroup;
 			children = (
 				F877A39013782E870022A8AB /* Controllers */,
-				F877A39113782E9C0022A8AB /* Views */,
 				F877A36713782AF10022A8AB /* Supporting Files */,
 			);
 			name = Classes;
@@ -110,6 +109,8 @@
 		F877A38313782B450022A8AB /* TTTAttributedLabel */ = {
 			isa = PBXGroup;
 			children = (
+				C43792761462F2C3008D635D /* TTTAttributedTableViewCell.h */,
+				C43792771462F2C3008D635D /* TTTAttributedTableViewCell.m */,
 				F877A38013782B360022A8AB /* TTTAttributedLabel.h */,
 				F877A38113782B360022A8AB /* TTTAttributedLabel.m */,
 			);
@@ -123,15 +124,6 @@
 				F877A37613782AF10022A8AB /* RootViewController.m */,
 			);
 			name = Controllers;
-			sourceTree = "<group>";
-		};
-		F877A39113782E9C0022A8AB /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				F877A39613782FF50022A8AB /* AttributedTableViewCell.h */,
-				F877A39713782FF50022A8AB /* AttributedTableViewCell.m */,
-			);
-			name = Views;
 			sourceTree = "<group>";
 		};
 		F8D8E2221405FB6900AB38FB /* Vendor */ = {
@@ -209,7 +201,7 @@
 				F877A37113782AF10022A8AB /* AppDelegate.m in Sources */,
 				F877A37713782AF10022A8AB /* RootViewController.m in Sources */,
 				F877A38213782B360022A8AB /* TTTAttributedLabel.m in Sources */,
-				F877A39813782FF50022A8AB /* AttributedTableViewCell.m in Sources */,
+				C43792781462F2C3008D635D /* TTTAttributedTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
