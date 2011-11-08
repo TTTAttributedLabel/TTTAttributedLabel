@@ -50,7 +50,7 @@ typedef enum {
  - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
  - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero
  */
-@interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
+@interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate> {
 @private
     NSAttributedString *_attributedText;
     CTFramesetterRef _framesetter;

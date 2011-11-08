@@ -177,6 +177,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.textInsets = UIEdgeInsetsZero;
     self.userInteractionEnabled = YES;
     _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+    [_tapRecognizer setDelegate:self];
     [self addGestureRecognizer:_tapRecognizer];
     
     return self;
@@ -480,7 +481,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
 }
 
-#pragma mark - UIControl
+#pragma mark - Gestures
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
+    return (result != nil);
+}
 
 - (void)tap:(id)sender {
     if ([_tapRecognizer state] != UIGestureRecognizerStateEnded) return;
