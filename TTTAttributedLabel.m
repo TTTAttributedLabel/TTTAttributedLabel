@@ -110,6 +110,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CGFloat scaledFontSize = floorf(CTFontGetSize(font) * scale);
             CTFontRef scaledFont = CTFontCreateCopyWithAttributes(font, fmaxf(scaledFontSize, minimumFontSize), NULL, NULL);
             CFAttributedStringSetAttribute((CFMutableAttributedStringRef)mutableAttributedString, CFRangeMake(range.location, range.length), kCTFontAttributeName, scaledFont);
+            CFRelease(scaledFont);
         }
     }];
     
