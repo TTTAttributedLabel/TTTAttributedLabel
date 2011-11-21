@@ -21,12 +21,12 @@
 // THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
-#import "TTTAttributedLabel.h"
+#import "TTTAttributedTableViewCell.h"
 
 @interface RootViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate> {
     NSArray *_espressos;
+    TTTAttributedTableViewCell *_sizingCell;
+    NSMutableSet *_checkedIndexPaths;
 }
-
-@property (nonatomic, retain) NSArray *espressos;
 
 @end
