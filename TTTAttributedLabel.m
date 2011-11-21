@@ -122,7 +122,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
-- (id)initCommon;
+- (id)commonInit;
 - (void)setNeedsFramesetter;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
@@ -153,7 +153,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self initCommon];
+    return [self commonInit];
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
@@ -162,10 +162,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self initCommon];
+    return [self commonInit];
 }
 
-- (id)initCommon {
+- (id)commonInit {
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.links = [NSArray array];
     
@@ -191,6 +191,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [_links release];
     [_linkAttributes release];
     [_tapRecognizer release];
+    [_dataDetector release];
     [super dealloc];
 }
 
@@ -230,13 +231,22 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 #pragma mark -
 
+- (void)setDataDetectorTypes:(UIDataDetectorTypes)newTypes {
+    [_dataDetector release];
+    if (newTypes == UIDataDetectorTypeNone) {
+        _dataDetector = nil;
+    } else {
+        _dataDetector = [[NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(newTypes) error:NULL] retain];
+    }
+    _dataDetectorTypes = newTypes;
+}
+
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
     if (!string) {
         return [NSArray array];
     }
     NSMutableArray *mutableLinks = [NSMutableArray array];
-    NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:error];
-    [dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+    [_dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [mutableLinks addObject:result];
     }];
     
