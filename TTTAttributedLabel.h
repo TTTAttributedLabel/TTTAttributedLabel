@@ -58,6 +58,7 @@ typedef enum {
     
     id _delegate;
     UIDataDetectorTypes _dataDetectorTypes;
+    NSDataDetector *_dataDetector;
     NSArray *_links;
     NSDictionary *_linkAttributes;
     
