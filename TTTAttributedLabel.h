@@ -50,7 +50,7 @@ typedef enum {
  - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
  - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero
  */
-@interface TTTAttributedLabel : UILabel <TTTAttributedLabel> {
+@interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate> {
 @private
     NSAttributedString *_attributedText;
     CTFramesetterRef _framesetter;
@@ -58,6 +58,7 @@ typedef enum {
     
     id _delegate;
     UIDataDetectorTypes _dataDetectorTypes;
+    NSDataDetector *_dataDetector;
     NSArray *_links;
     NSDictionary *_linkAttributes;
     
@@ -70,6 +71,7 @@ typedef enum {
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
     
     BOOL _userInteractionDisabled;
+    UITapGestureRecognizer *_tapRecognizer;
 }
 
 ///-----------------------------
@@ -181,6 +183,16 @@ typedef enum {
 ///-------------------
 /// @name Adding Links
 ///-------------------
+
+/**
+ Adds a link to an `NSTextCheckingResult`.
+ 
+ @param result An `NSTextCheckingResult` representing the link's location and type.
+ @param applyLinkAttributes If `YES`, the `linkAttributes` property is applied to the created link. If `NO`, the style is left unchanged.
+ 
+ @discussion The helper functions such as `addLinkToURL:withRange:` call through to this function with `applyLinkAttributes` set to `YES`.
+ */
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result applyLinkAttributes:(BOOL)applyLinkAttributes;
 
 /**
  Adds a link to a URL for a specified range in the label text.

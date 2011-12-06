@@ -123,7 +123,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
-- (id)initCommon;
+- (id)commonInit;
 - (void)setNeedsFramesetter;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
@@ -154,7 +154,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self initCommon];
+    return [self commonInit];
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
@@ -163,10 +163,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self initCommon];
+    return [self commonInit];
 }
 
-- (id)initCommon {
+- (id)commonInit {
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.links = [NSArray array];
     
@@ -176,6 +176,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     self.textInsets = UIEdgeInsetsZero;
+    self.userInteractionEnabled = YES;
+    _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+    [_tapRecognizer setDelegate:self];
+    [self addGestureRecognizer:_tapRecognizer];
     
     return self;
 }
@@ -187,6 +191,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [_attributedText release];
     [_links release];
     [_linkAttributes release];
+    [_tapRecognizer release];
+    [_dataDetector release];
     [super dealloc];
 }
 
@@ -224,41 +230,42 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return _framesetter;
 }
 
-- (BOOL)isUserInteractionEnabled {
-    return !_userInteractionDisabled && [self.links count] > 0;
-}
-
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
-    _userInteractionDisabled = !userInteractionEnabled;
-}
-
-- (BOOL)isExclusiveTouch {
-    return [self.links count] > 0;
-}
-
 #pragma mark -
+
+- (void)setDataDetectorTypes:(UIDataDetectorTypes)newTypes {
+    [_dataDetector release];
+    if (newTypes == UIDataDetectorTypeNone) {
+        _dataDetector = nil;
+    } else {
+        _dataDetector = [[NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(newTypes) error:NULL] retain];
+    }
+    _dataDetectorTypes = newTypes;
+}
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
     if (!string) {
         return [NSArray array];
     }
     NSMutableArray *mutableLinks = [NSMutableArray array];
-    NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:error];
-    [dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+    [_dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [mutableLinks addObject:result];
     }];
     
     return [NSArray arrayWithArray:mutableLinks];
 }
 
-- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result applyLinkAttributes:(BOOL)applyLinkAttributes {
     self.links = [self.links arrayByAddingObject:result];
     
-    if (self.linkAttributes) {
+    if (applyLinkAttributes && self.linkAttributes) {
         NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
         [mutableAttributedString addAttributes:self.linkAttributes range:result.range];
         self.attributedText = mutableAttributedString;        
     }
+}
+
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
+    [self addLinkWithTextCheckingResult:result applyLinkAttributes:YES];
 }
 
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range {
@@ -487,39 +494,41 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
 }
 
-#pragma mark - UIControl
+#pragma mark - Gestures
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];	
-	NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
+    return (result != nil);
+}
+
+- (void)tap:(id)sender {
+    if ([_tapRecognizer state] != UIGestureRecognizerStateEnded) return;
+    NSTextCheckingResult *result = [self linkAtPoint:[_tapRecognizer locationInView:self]];
+    if (!result || !self.delegate) return;
     
-    if (result && self.delegate) {
-        switch (result.resultType) {
-            case NSTextCheckingTypeLink:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-                }
-                break;
-            case NSTextCheckingTypeAddress:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-                }
-                break;
-            case NSTextCheckingTypePhoneNumber:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-                }
-                break;
-            case NSTextCheckingTypeDate:
-                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-                }
-                break;
-        }
-    } else {
-        [super touchesBegan:touches withEvent:event];
+    switch (result.resultType) {
+        case NSTextCheckingTypeLink:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+            }
+            break;
+        case NSTextCheckingTypeAddress:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+            }
+            break;
+        case NSTextCheckingTypePhoneNumber:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+            }
+            break;
+        case NSTextCheckingTypeDate:
+            if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+            } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+            }
+            break;
     }
 }
 
