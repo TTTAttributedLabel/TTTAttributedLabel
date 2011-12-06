@@ -187,9 +187,9 @@ typedef enum {
  Adds a link to an `NSTextCheckingResult`.
  
  @param result An `NSTextCheckingResult` representing the link's location and type.
- @param applyLinkAttributes If `YES`, `linkAttributes` is added to attributed text in the range of the created link.
+ @param attributes The attributes to be added to the text in the range of the specified link. If `nil`, no attributes are added.
  */
-- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result applyLinkAttributes:(BOOL)applyLinkAttributes;
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes;
 
 /**
  Adds a link to a URL for a specified range in the label text.

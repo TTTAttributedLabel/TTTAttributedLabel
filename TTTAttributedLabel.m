@@ -262,18 +262,18 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return [NSArray arrayWithArray:mutableLinks];
 }
 
-- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result applyLinkAttributes:(BOOL)applyLinkAttributes {
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
     self.links = [self.links arrayByAddingObject:result];
     
-    if (applyLinkAttributes && self.linkAttributes) {
+    if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
-        [mutableAttributedString addAttributes:self.linkAttributes range:result.range];
+        [mutableAttributedString addAttributes:attributes range:result.range];
         self.attributedText = mutableAttributedString;        
     }
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
-    [self addLinkWithTextCheckingResult:result applyLinkAttributes:YES];
+    [self addLinkWithTextCheckingResult:result attributes:self.linkAttributes];
 }
 
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range {
