@@ -70,7 +70,7 @@ typedef enum {
     UIEdgeInsets _textInsets;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
     
-    UITapGestureRecognizer *_tapRecognizer;
+    UITapGestureRecognizer *_tapGestureRecognizer;
 }
 
 ///-----------------------------
@@ -291,4 +291,3 @@ typedef enum {
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
 @end
-

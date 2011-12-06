@@ -122,6 +122,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
+@property (readwrite, nonatomic, retain) UITapGestureRecognizer *tapGestureRecognizer;
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
@@ -148,6 +149,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize firstLineIndent = _firstLineIndent;
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
+@synthesize tapGestureRecognizer = _tapGestureRecognizer;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -181,10 +183,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     self.textInsets = UIEdgeInsetsZero;
+    
     self.userInteractionEnabled = YES;
-    _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
-    [_tapRecognizer setDelegate:self];
-    [self addGestureRecognizer:_tapRecognizer];
+    self.tapGestureRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)] autorelease];
+    [self.tapGestureRecognizer setDelegate:self];
+    [self addGestureRecognizer:self.tapGestureRecognizer];
 }
 
 - (void)dealloc {
@@ -195,7 +198,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [_dataDetector release];
     [_links release];
     [_linkAttributes release];
-    [_tapRecognizer release];
+    [_tapGestureRecognizer release];
     [super dealloc];
 }
 
@@ -498,44 +501,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
 }
 
-#pragma mark - Gestures
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
-    return (result != nil);
-}
-
-- (void)tap:(id)sender {
-    if ([_tapRecognizer state] != UIGestureRecognizerStateEnded) return;
-    NSTextCheckingResult *result = [self linkAtPoint:[_tapRecognizer locationInView:self]];
-    if (!result || !self.delegate) return;
-    
-    switch (result.resultType) {
-        case NSTextCheckingTypeLink:
-            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-            }
-            break;
-        case NSTextCheckingTypeAddress:
-            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-            }
-            break;
-        case NSTextCheckingTypePhoneNumber:
-            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-            }
-            break;
-        case NSTextCheckingTypeDate:
-            if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-            } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-            }
-            break;
-    }
-}
-
 #pragma mark - UIView
 
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -570,6 +535,48 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, rangeToSize, NULL, constraints, NULL);
     
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
+}
+
+#pragma mark - UIGestureRecognizer
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    return [self linkAtPoint:[touch locationInView:self]] != nil;
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
+    if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]];
+    if (!result || !self.delegate) {
+        return;
+    }
+    
+    switch (result.resultType) {
+        case NSTextCheckingTypeLink:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+            }
+            break;
+        case NSTextCheckingTypeAddress:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+            }
+            break;
+        case NSTextCheckingTypePhoneNumber:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+            }
+            break;
+        case NSTextCheckingTypeDate:
+            if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+            } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+            }
+            break;
+    }
 }
 
 @end
