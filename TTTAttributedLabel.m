@@ -535,12 +535,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (self.numberOfLines == 1) {
         // If there is one line, the size that fits is the full width of the line
         constraints = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    }
-    else if (self.numberOfLines > 0) {
+    } else if (self.numberOfLines > 0) {
         // If the line count of the label more than 1, limit the range to size to the number of lines that have been set
-        CGMutablePathRef path = CGPathCreateMutable();
-        CGPathAddRect(path, NULL, CGRectMake(0, 0, self.bounds.size.width, CGFLOAT_MAX));
-
+        CGPathRef path = CGPathCreateWithRect(CGRectMake(0.0f, 0.0f, self.bounds.size.width, CGFLOAT_MAX), NULL);
         CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, 0), path, NULL);
         CFArrayRef lines = CTFrameGetLines(frame);
         
@@ -557,6 +554,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, rangeToSize, NULL, constraints, NULL);
+    
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
 }
 
