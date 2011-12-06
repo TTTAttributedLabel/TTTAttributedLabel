@@ -386,19 +386,20 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [super setText:[self.attributedText string]];
 }
 
-- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {
+- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {    
+    NSMutableAttributedString *mutableAttributedString = nil;
     if ([text isKindOfClass:[NSString class]]) {
-        self.attributedText = [[[NSAttributedString alloc] initWithString:text] autorelease];
+        mutableAttributedString = [[[NSMutableAttributedString alloc] initWithString:text attributes:NSAttributedStringAttributesFromLabel(self)] autorelease];
+    } else {
+        mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:text] autorelease];
+        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
     }
-    
-    NSMutableAttributedString *mutableAttributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText] autorelease];
-    [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
     
     if (block) {
-        [self setText:block(mutableAttributedString)];
-    } else {
-        [self setText:mutableAttributedString];
+        mutableAttributedString = block(mutableAttributedString);
     }
+    
+    [self setText:mutableAttributedString];
 }
 
 #pragma mark - UILabel
