@@ -117,7 +117,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     
     NSRegularExpression *regexp = NameRegularExpression();
     NSRange linkRange = [regexp rangeOfFirstMatchInString:self.summaryText options:0 range:NSMakeRange(0, [self.summaryText length])];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://wikipedia.org/wiki/%@", [self.summaryText substringWithRange:linkRange]]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://en.wikipedia.org/wiki/%@", [self.summaryText substringWithRange:linkRange]]];
     [self.summaryLabel addLinkToURL:url withRange:linkRange];
 }
 
