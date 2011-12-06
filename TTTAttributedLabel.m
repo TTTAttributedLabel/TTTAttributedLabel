@@ -120,7 +120,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
+@property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
+
 
 - (id)commonInit;
 - (void)setNeedsFramesetter;
@@ -138,6 +140,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize highlightFramesetter = _highlightFramesetter;
 @synthesize delegate = _delegate;
 @synthesize dataDetectorTypes = _dataDetectorTypes;
+@synthesize dataDetector = _dataDetector;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
 @synthesize shadowRadius = _shadowRadius;
@@ -188,10 +191,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
     
     [_attributedText release];
+    [_dataDetector release];
     [_links release];
     [_linkAttributes release];
     [_tapRecognizer release];
-    [_dataDetector release];
     [super dealloc];
 }
 
@@ -231,14 +234,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 #pragma mark -
 
-- (void)setDataDetectorTypes:(UIDataDetectorTypes)newTypes {
-    [_dataDetector release];
-    if (newTypes == UIDataDetectorTypeNone) {
-        _dataDetector = nil;
-    } else {
-        _dataDetector = [[NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(newTypes) error:NULL] retain];
+- (void)setDataDetectorTypes:(UIDataDetectorTypes)dataDetectorTypes {
+    [self willChangeValueForKey:@"dataDetectorTypes"];
+    _dataDetectorTypes = dataDetectorTypes;
+    [self didChangeValueForKey:@"dataDetectorTypes"];
+    
+    if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
+        self.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:nil];
     }
-    _dataDetectorTypes = newTypes;
 }
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
@@ -246,7 +249,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return [NSArray array];
     }
     NSMutableArray *mutableLinks = [NSMutableArray array];
-    [_dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+    [self.dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [mutableLinks addObject:result];
     }];
     
