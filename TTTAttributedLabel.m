@@ -446,19 +446,20 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
+        CGFloat heightChange = (textRect.size.height - textSize.height);
         switch (self.verticalAlignment) {
             case TTTAttributedLabelVerticalAlignmentTop:
+                heightChange = 0.0f;
                 break;
             case TTTAttributedLabelVerticalAlignmentCenter:
                 yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
-                yOffset = (textRect.size.height - textSize.height);
                 break;
         }
         
         textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - yOffset);
+        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
     }
 
     // Second, trace the shadow before the actual text, if we have one
