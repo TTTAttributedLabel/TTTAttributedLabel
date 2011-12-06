@@ -70,7 +70,6 @@ typedef enum {
     UIEdgeInsets _textInsets;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
     
-    BOOL _userInteractionDisabled;
     UITapGestureRecognizer *_tapRecognizer;
 }
 
