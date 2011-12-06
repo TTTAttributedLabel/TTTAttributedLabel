@@ -123,8 +123,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
 
-
-- (id)commonInit;
+- (void)commonInit;
 - (void)setNeedsFramesetter;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
@@ -156,7 +155,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self commonInit];
+    [self commonInit];
+    
+    return self;
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
@@ -165,10 +166,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return nil;
     }
     
-    return [self commonInit];
+    [self commonInit];
+    
+    return self;
 }
 
-- (id)commonInit {
+- (void)commonInit {
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.links = [NSArray array];
     
@@ -182,8 +185,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
     [_tapRecognizer setDelegate:self];
     [self addGestureRecognizer:_tapRecognizer];
-    
-    return self;
 }
 
 - (void)dealloc {
