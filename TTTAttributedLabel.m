@@ -246,9 +246,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
-    if (!string) {
+    if (!string || !self.dataDetector) {
         return [NSArray array];
     }
+    
     NSMutableArray *mutableLinks = [NSMutableArray array];
     [self.dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [mutableLinks addObject:result];
