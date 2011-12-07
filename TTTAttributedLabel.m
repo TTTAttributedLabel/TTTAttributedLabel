@@ -151,6 +151,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
+@synthesize truncateLastLine = _truncateLastLine;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -184,6 +185,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     self.textInsets = UIEdgeInsetsZero;
+    self.truncateLastLine = NO;
     
     self.userInteractionEnabled = YES;
     self.tapGestureRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)] autorelease];
@@ -375,7 +377,31 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CGPoint lineOrigin = lineOrigins[lineIndex];
             CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-            CTLineDraw(line, c);
+
+            if (lineIndex == numberOfLines - 1 && self.truncateLastLine) {
+                // Check if the range of text in the last line reaches the end of the full attributed string
+                CFRange lastLineRange = CTLineGetStringRange(line);
+                
+                if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
+                    // Get the attributes of the last character in the line and use them to create the truncation token string
+                    NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
+                    NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"…" attributes:tokenAttributes] autorelease];
+                    
+                    // Create and draw a truncated line
+                    CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
+                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, kCTLineTruncationEnd, truncationToken);
+                    CTLineDraw(truncatedLine, c);
+                    
+                    CFRelease(truncatedLine);
+                    CFRelease(truncationToken);
+                }
+                else {
+                    CTLineDraw(line, c);
+                }
+            }
+            else {
+                CTLineDraw(line, c);
+            }
         }
     }
     
