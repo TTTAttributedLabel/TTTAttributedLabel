@@ -127,6 +127,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
+- (void)setNeedsAttributes;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
@@ -220,6 +221,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)setNeedsFramesetter {
     _needsFramesetter = YES;
+}
+
+- (void)setNeedsAttributes {
+    _needsAttributes = YES;
 }
 
 - (CTFramesetterRef)framesetter {
@@ -326,7 +331,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
     p = CGPointMake(p.x, textRect.size.height - p.y);
-
+    
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
@@ -336,7 +341,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
     NSUInteger lineIndex;
-
+    
     for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         if (lineOrigin.y < p.y) {
@@ -352,7 +357,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     CFRelease(frame);
     CFRelease(path);
-        
+    
     return idx;
 }
 
@@ -367,7 +372,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else {
         CFArrayRef lines = CTFrameGetLines(frame);
         NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
-
+        
         CGPoint lineOrigins[numberOfLines];
         CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
         
@@ -391,14 +396,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else {
         self.attributedText = text;
     }
-
+    
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
         for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
             [self addLinkWithTextCheckingResult:result];
         }
     }
-        
+    
     [super setText:[self.attributedText string]];
 }
 
@@ -418,6 +423,38 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self setText:mutableAttributedString];
 }
 
+-(void)setLeading:(CGFloat)leading {
+    if (_leading != leading) {
+        _leading = leading;
+        
+        [self setNeedsAttributes];
+    }
+}
+
+-(void)setLineHeightMultiple:(CGFloat)lineHeightMultiple {
+    if (_lineHeightMultiple != lineHeightMultiple) {
+        _lineHeightMultiple = lineHeightMultiple;
+        
+        [self setNeedsAttributes];
+    }
+}
+
+-(void)setTextInsets:(UIEdgeInsets)textInsets {
+    if (UIEdgeInsetsEqualToEdgeInsets(_textInsets, textInsets)) {
+        _textInsets = textInsets;
+        
+        [self setNeedsAttributes];
+    }
+}
+
+-(void)setFirstLineIndent:(CGFloat)firstLineIndent {
+    if (_firstLineIndent != firstLineIndent) {
+        _firstLineIndent = firstLineIndent;
+        
+        [self setNeedsAttributes];
+    }
+}
+
 #pragma mark - UILabel
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -425,10 +462,32 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self setNeedsDisplay];
 }
 
+-(void)setTextAlignment:(UITextAlignment)textAlignment {
+    if (self.textAlignment != textAlignment) {
+        [super setTextAlignment:textAlignment];
+        
+        [self setNeedsAttributes];
+    }
+}
+
+-(void)setLineBreakMode:(UILineBreakMode)lineBreakMode {
+    if (self.lineBreakMode != lineBreakMode) {
+        [super setLineBreakMode:lineBreakMode];
+        
+        [self setNeedsAttributes];
+    }
+}
+
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
         return;
+    }
+    
+    // Refresh attributes if needed
+    if (_needsAttributes) {
+        self.attributedText = [[[NSAttributedString alloc] initWithString:self.text attributes:NSAttributedStringAttributesFromLabel(self)] autorelease];
+        _needsAttributes = NO;
     }
     
     NSAttributedString *originalAttributedText = nil;
@@ -448,7 +507,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
-
+    
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
     CGRect textRect = rect;
     CGContextTranslateCTM(c, 0.0f, textRect.size.height);
@@ -456,7 +515,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
     CFRange fitRange;
-
+    
     // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
     
@@ -477,7 +536,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
         textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
     }
-
+    
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
         CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
