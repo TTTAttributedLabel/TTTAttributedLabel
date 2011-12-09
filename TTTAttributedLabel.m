@@ -76,7 +76,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
-    CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
     CGFloat lineSpacing = label.leading;
     CGFloat lineHeightMultiple = label.lineHeightMultiple;
     CGFloat topMargin = label.textInsets.top;
@@ -84,6 +83,15 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     CGFloat leftMargin = label.textInsets.left;
     CGFloat rightMargin = label.textInsets.right;
     CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
+
+    CTLineBreakMode lineBreakMode;
+    if (label.numberOfLines != 1) {
+        lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+    }
+    else {
+        lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
+    }
+	
     CTParagraphStyleSetting paragraphStyles[9] = {
 		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
 		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
@@ -95,7 +103,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
         {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin},
 	};
-	CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
+
+    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
 	[mutableAttributes setObject:(id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
 	CFRelease(paragraphStyle);
     
@@ -151,7 +160,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
-@synthesize truncateLastLine = _truncateLastLine;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -185,7 +193,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     self.textInsets = UIEdgeInsetsZero;
-    self.truncateLastLine = NO;
     
     self.userInteractionEnabled = YES;
     self.tapGestureRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)] autorelease];
@@ -369,6 +376,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else {
         CFArrayRef lines = CTFrameGetLines(frame);
         NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
+        BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
 
         CGPoint lineOrigins[numberOfLines];
         CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
@@ -378,7 +386,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
 
-            if (lineIndex == numberOfLines - 1 && self.truncateLastLine) {
+            if (lineIndex == numberOfLines - 1 && truncateLastLine) {
                 // Check if the range of text in the last line reaches the end of the full attributed string
                 CFRange lastLineRange = CTLineGetStringRange(line);
                 
@@ -388,8 +396,24 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"…" attributes:tokenAttributes] autorelease];
                     
                     // Create and draw a truncated line
+                    CTLineTruncationType truncationType;
+                    switch (self.lineBreakMode) {
+                        case UILineBreakModeHeadTruncation:
+                            truncationType = kCTLineTruncationStart;
+                            break;
+
+                        case UILineBreakModeMiddleTruncation:
+                            truncationType = kCTLineTruncationMiddle;
+                            break;
+                        
+                        case UILineBreakModeTailTruncation:
+                        default:
+                            truncationType = kCTLineTruncationEnd;
+                            break;
+                    }
+                    
                     CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
-                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, kCTLineTruncationEnd, truncationToken);
+                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, truncationType, truncationToken);
                     CTLineDraw(truncatedLine, c);
                     
                     CFRelease(truncatedLine);

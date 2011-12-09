@@ -157,11 +157,6 @@ typedef enum {
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
-/**
- A Boolean value that determines whether the last line of the `NSAttributedString` attribute should be trunctated. This property is effective for any value of `numberOfLines` greater than zero
- */
-@property (nonatomic, assign) BOOL truncateLastLine;
-
 ///----------------------------------
 /// @name Setting the Text Attributes
 ///----------------------------------
