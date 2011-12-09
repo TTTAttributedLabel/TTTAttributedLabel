@@ -72,7 +72,12 @@
     }
     
     NSString *description = [self.espressos objectAtIndex:indexPath.row];
-    cell.summaryText = description;
+    [cell.summaryLabel setText:description afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+        if (indexPath.row % 3 == 1) { //we don't apply strikethrough on every cell
+            [mutableAttributedString addAttribute:@"TTTCustomStrikeOut" value:[NSNumber numberWithBool:YES] range:NSMakeRange(0, [description length])];
+        }
+        return mutableAttributedString;
+    }];
     cell.summaryLabel.delegate = self;
     cell.summaryLabel.userInteractionEnabled = YES;
 

@@ -132,6 +132,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
+- (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
 @end
 
 @implementation TTTAttributedLabel
@@ -378,9 +379,94 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CTLineDraw(line, c);
         }
     }
+    //draw strikeout
+    [self drawStrike:frame inRect:rect context:c];
     
     CFRelease(frame);
     CFRelease(path);
+}
+
+- (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
+    
+    NSArray *lines = (NSArray *)CTFrameGetLines(frame);
+    
+    CGPoint origins[[lines count]]; //the origins of each line at the baseline
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
+    
+    NSUInteger lineIndex = 0;
+    for (id lineObj in lines) {
+        CTLineRef line = (CTLineRef)lineObj;
+        
+        CGRect lineBounds = CTLineGetImageBounds((CTLineRef)lineObj, c);
+        lineBounds.origin.x = origins[lineIndex].x;
+        lineBounds.origin.y = origins[lineIndex].y;
+        
+        for (id runObj in (NSArray *)CTLineGetGlyphRuns(line)) {
+            
+            NSDictionary *attributes = (NSDictionary *)CTRunGetAttributes((CTRunRef) runObj);
+            BOOL strikeOut = [[attributes objectForKey:@"TTTCustomStrikeOut"] boolValue];
+            NSInteger superscriptStyle = [[attributes objectForKey:(id)kCTSuperscriptAttributeName] integerValue];
+            
+            if (strikeOut)
+            {
+                CTRunRef run = (CTRunRef)runObj;
+                
+                CGRect runBounds;
+                CGFloat ascent;     //height above the baseline
+                CGFloat descent;    //height below the baseline
+                runBounds.size.width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, NULL);
+                runBounds.size.height = ascent + descent;
+                
+                CGFloat xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, NULL);
+                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y;
+                runBounds.origin.y -= descent;
+                
+                // don't draw too far to the right
+                if (runBounds.origin.x + runBounds.size.width > CGRectGetMaxX(lineBounds))
+                {
+                    runBounds.size.width = CGRectGetMaxX(lineBounds) - runBounds.origin.x;
+                }
+                
+				switch (superscriptStyle) 
+				{
+					case 1:
+					{
+						runBounds.origin.y -= ascent * 0.47f;
+						break;
+					}	
+					case -1:
+					{
+						runBounds.origin.y += ascent * 0.25f;
+						break;
+					}	
+					default:
+						break;
+				}
+                
+                // get text color or use black
+                id color = [attributes objectForKey:(id)kCTForegroundColorAttributeName];
+                
+                if (color)
+                {
+                    CGContextSetStrokeColorWithColor(c, (CGColorRef)color);
+                }
+                else
+                {
+                    CGContextSetGrayStrokeColor(c, 0, 1.0);
+                }
+                
+                CTFontRef font = CTFontCreateWithName((CFStringRef)self.font.fontName, self.font.pointSize, NULL);
+                CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
+                CGFloat y = roundf(runBounds.origin.y + runBounds.size.height/2.0f);
+                CGContextMoveToPoint(c, runBounds.origin.x, y);
+                CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
+                
+                CGContextStrokePath(c);
+            }
+        }
+        lineIndex++;
+    }
 }
 
 #pragma mark - TTTAttributedLabel
