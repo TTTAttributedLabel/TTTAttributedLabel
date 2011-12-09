@@ -393,7 +393,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
                     // Get the attributes of the last character in the line and use them to create the truncation token string
                     NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
-                    NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"…" attributes:tokenAttributes] autorelease];
+                    NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease];
                     
                     // Create and draw a truncated line
                     CTLineTruncationType truncationType;
