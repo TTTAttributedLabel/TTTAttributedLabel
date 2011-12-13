@@ -541,7 +541,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 #pragma mark - UIGestureRecognizer
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    return [self linkAtPoint:[touch locationInView:self]] != nil;
+    // This class can only ever receive touches if attributedText (i.e. possibly a link?) is set
+    return (self.attributedText && ([self linkAtPoint:[touch locationInView:self]] != nil));
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
