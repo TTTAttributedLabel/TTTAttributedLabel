@@ -132,6 +132,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
+- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
 @end
 
 @implementation TTTAttributedLabel
@@ -301,7 +302,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
         NSRange range = result.range;
-        if (range.location <= idx && idx <= range.location + range.length) {
+        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length)) {
             return result;
         }
     }
