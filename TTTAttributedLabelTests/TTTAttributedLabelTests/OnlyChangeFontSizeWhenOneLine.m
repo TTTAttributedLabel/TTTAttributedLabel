@@ -10,10 +10,11 @@
 
 @implementation OnlyChangeFontSizeWhenOneLine
 
-@synthesize ourLabel;
+@synthesize oneLineLabel, twoLineLabel;
 
 - (void) dealloc {
-    [ourLabel release];
+    [oneLineLabel release];
+    [twoLineLabel release];
     [super dealloc];
 }
 
@@ -23,16 +24,18 @@
     [super viewDidLoad];
   
     // Set the attributed string with no attributes
-    NSAttributedString *theString = [[[NSAttributedString alloc] initWithString:self.ourLabel.text] autorelease];
+    NSAttributedString *theString = [[[NSAttributedString alloc] initWithString:self.oneLineLabel.text] autorelease];
   
     // Since our attributable string has no attributes, we would expect drawing
     // to look like the UILabel??
-    [self.ourLabel setText:theString afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
+    [self.oneLineLabel setText:theString afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
+    [self.twoLineLabel setText:theString afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    self.ourLabel = nil;
+    self.oneLineLabel = nil;
+    self.twoLineLabel = nil;
 }
 
 @end

@@ -11,6 +11,7 @@
 
 @interface OnlyChangeFontSizeWhenOneLine : UIViewController
 
-@property (nonatomic, retain) IBOutlet TTTAttributedLabel *ourLabel;
+@property (nonatomic, retain) IBOutlet TTTAttributedLabel *twoLineLabel;
+@property (nonatomic, retain) IBOutlet TTTAttributedLabel *oneLineLabel;
 
 @end
