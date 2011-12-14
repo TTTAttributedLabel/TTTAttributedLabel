@@ -19,6 +19,7 @@
         self.title = NSLocalizedString(@"TTTAttributedLabel Tests", @"TTTAttributedLabel Tests");
         _testArray = [[NSArray alloc] initWithObjects:
                       @"TreatAsUILabel",
+                      @"OnlyChangeFontSizeWhenOneLine",
                       //@"AddNewTestControllerNameHere"
                       nil];
     }
