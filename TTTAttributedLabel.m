@@ -541,8 +541,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 #pragma mark - UIGestureRecognizer
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    // This class can only ever receive touches if attributedText (i.e. possibly a link?) is set
-    return (self.attributedText && ([self linkAtPoint:[touch locationInView:self]] != nil));
+    // In case the user adds multiple gesture recognizers on this class, we only want to pay attention to this one.
+    if (gestureRecognizer == self.tapGestureRecognizer) {
+        // This class can only ever receive gesture touches if attributedText (i.e. possibly a link?) is set
+        return (self.attributedText && ([self linkAtPoint:[touch locationInView:self]] != nil));
+    } else {
+        // The default behavior for this delegate callback, if not implemented, is yes.  So we'll return that.
+        return YES;
+    }
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
