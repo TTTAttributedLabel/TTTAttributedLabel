@@ -132,6 +132,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
+- (NSAttributedString *) attributedStringAfterAdjustingFontSize:(NSAttributedString *)attrString;
+- (CGRect) verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect;
 @end
 
 @implementation TTTAttributedLabel
@@ -226,10 +228,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (_needsFramesetter) {
         @synchronized(self) {
             if (_framesetter) CFRelease(_framesetter);
-            if (_highlightFramesetter) CFRelease(_highlightFramesetter);
-            
             self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
+          
+            // _needsFramesetter was set to YES because something changed; clear our cached highlight one as well.
+            if (_highlightFramesetter) CFRelease(_highlightFramesetter);
             self.highlightFramesetter = nil;
+          
             _needsFramesetter = NO;
         }
     }
@@ -383,22 +387,69 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CFRelease(path);
 }
 
+- (NSAttributedString *) attributedStringAfterAdjustingFontSize:(NSAttributedString *)attrString {
+  NSAttributedString *returnString = nil;
+  CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
+  CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
+  // REVIEW: Mark Makdad / Dec 15 2011 / According to the UILabel docs, this property (adjustsFontSizeToFitWidth)
+  // should ONLY have an effect when numberOfLines == 1, so this seems to be implementing some special sauce.
+  if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+    textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
+  }
+  
+  if (textWidth > availableWidth && textWidth > 0.0f) {
+    returnString = [[attrString copy] autorelease];
+    self.text = NSAttributedStringByScalingFontSize(attrString, availableWidth / textWidth, self.minimumFontSize);
+  }
+  return returnString;
+}
+
+- (CGRect) verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
+  CFRange fitRange;
+  CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
+  
+  if (textSize.height < textRect.size.height) {
+    CGFloat yOffset = 0.0f;
+    CGFloat heightChange = (textRect.size.height - textSize.height);
+    switch (self.verticalAlignment) {
+      case TTTAttributedLabelVerticalAlignmentTop:
+        heightChange = 0.0f;
+        break;
+      case TTTAttributedLabelVerticalAlignmentCenter:
+        yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+        break;
+      case TTTAttributedLabelVerticalAlignmentBottom:
+        break;
+    }
+    
+    textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
+    textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
+  }
+  return textRect;
+}
+
 #pragma mark - TTTAttributedLabel
 
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
+        // The method call below will call back to this method with an NSAttributedString
+        // By returning here we avoid making the link array + calling super twice.
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-    } else {
-        self.attributedText = text;
+        return;
     }
-
+    else if ([text isKindOfClass:[NSAttributedString class]] == NO) {
+        [NSException raise:NSGenericException format:@"setText: only receives NSString or NSAttributedString instances."];
+    }
+  
+    self.attributedText = text;
+  
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-        for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
+        NSArray *detectedLinks = [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil];
+        for (NSTextCheckingResult *result in detectedLinks) {
             [self addLinkWithTextCheckingResult:result];
         }
     }
-        
     [super setText:[self.attributedText string]];
 }
 
@@ -426,64 +477,36 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (void)drawTextInRect:(CGRect)rect {
+    // REVIEW: Mark Makdad / Dec 15 2011 / This code block is never called, because even static text is 
+    // re-created as an attributedText string now.
     if (!self.attributedText) {
         [super drawTextInRect:rect];
         return;
     }
     
+    // Adjust the font size to fit width, if necessary.  Cache the original attributed text, as we re-set it later. 
     NSAttributedString *originalAttributedText = nil;
-    // Adjust the font size to fit width, if necessarry 
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
-        CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
-        CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
-        if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
-            textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
-        }
-        
-        if (textWidth > availableWidth && textWidth > 0.0f) {
-            originalAttributedText = [[self.attributedText copy] autorelease];
-            self.text = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
-        }
+        originalAttributedText = [self attributedStringAfterAdjustingFontSize:self.attributedText];
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
-    CGRect textRect = rect;
-    CGContextTranslateCTM(c, 0.0f, textRect.size.height);
+    CGContextTranslateCTM(c, 0.0f, rect.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
+    // First, re-position the rect of the text to match the vertical alignment setting.
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
-    CFRange fitRange;
-
-    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
-    
-    if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = 0.0f;
-        CGFloat heightChange = (textRect.size.height - textSize.height);
-        switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
-                break;
-            case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
-                break;
-            case TTTAttributedLabelVerticalAlignmentBottom:
-                break;
-        }
-        
-        textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
-    }
+    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:textRange fromRect:rect];
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
         CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
     }
     
-    // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
+    // Finally, draw the text or highlighted text itself
     if (self.highlightedTextColor && self.highlighted) {
         if (!self.highlightFramesetter) {
             NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
