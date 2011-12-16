@@ -119,6 +119,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
+@property (readwrite, nonatomic, copy) NSAttributedString *resizedAttributedText; 
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
@@ -132,13 +133,15 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
-- (NSAttributedString *) attributedStringAfterAdjustingFontSize:(NSAttributedString *)attrString;
+- (NSAttributedString *) attributedTextToDisplay;
+- (BOOL)shouldAdjustFontSize;
 - (CGRect) verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect;
 @end
 
 @implementation TTTAttributedLabel
 @dynamic text;
 @synthesize attributedText = _attributedText;
+@synthesize resizedAttributedText = _resizedAttributedText;
 @synthesize framesetter = _framesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
 @synthesize delegate = _delegate;
@@ -198,6 +201,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
     
     [_attributedText release];
+    [_resizedAttributedText release];
     [_dataDetector release];
     [_links release];
     [_linkAttributes release];
@@ -220,6 +224,25 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self setNeedsFramesetter];
 }
 
+- (void)setResizedAttributedText:(NSAttributedString *)text {
+    // Quick return on re-nil'ing
+    if (self.resizedAttributedText == nil && text == nil) {
+        return;
+    }
+  
+    // Quick return if it is the same text as before
+    if ([text isEqualToAttributedString:self.resizedAttributedText]) {
+        return;
+    }
+
+    [self willChangeValueForKey:@"resizedAttributedText"];
+    [_resizedAttributedText release];
+    _resizedAttributedText = [text copy];
+    [self didChangeValueForKey:@"resizedAttributedText"];
+    
+    [self setNeedsFramesetter];
+}
+
 - (void)setNeedsFramesetter {
     _needsFramesetter = YES;
 }
@@ -228,7 +251,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (_needsFramesetter) {
         @synchronized(self) {
             if (_framesetter) CFRelease(_framesetter);
-            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.attributedText);
+            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)[self attributedTextToDisplay]);
           
             // _needsFramesetter was set to YES because something changed; clear our cached highlight one as well.
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
@@ -387,24 +410,36 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CFRelease(path);
 }
 
-- (NSAttributedString *) attributedStringAfterAdjustingFontSize:(NSAttributedString *)attrString {
-  NSAttributedString *returnString = nil;
-  CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
-  CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
-  // REVIEW: Mark Makdad / Dec 15 2011 / According to the UILabel docs, this property (adjustsFontSizeToFitWidth)
-  // should ONLY have an effect when numberOfLines == 1, so this seems to be implementing some special sauce.
-  if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
-    textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
+- (NSAttributedString *) attributedTextToDisplay {
+  if (self.resizedAttributedText) {
+      return self.resizedAttributedText;
+  } else {
+      return self.attributedText;
   }
-  
-  if (textWidth > availableWidth && textWidth > 0.0f) {
-    returnString = [[attrString copy] autorelease];
-    self.text = NSAttributedStringByScalingFontSize(attrString, availableWidth / textWidth, self.minimumFontSize);
-  }
-  return returnString;
 }
 
-- (CGRect) verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
+- (BOOL)shouldAdjustFontSize {
+    // Quick return if we're not supposed to adjust, or if the numLines isn't appropriate.
+    if (self.adjustsFontSizeToFitWidth == NO || self.numberOfLines != 1) {
+        return NO;
+    }
+
+    // sizeThatFits: will return a CGRect of the full line if numberOfLines == 1
+    CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
+
+    // REVIEW: Mark Makdad / Dec 15 2011 / According to the UILabel docs, this property (adjustsFontSizeToFitWidth)
+    // should ONLY have an effect when numberOfLines == 1, so this seems to be implementing some special sauce.
+    // I have left this code here for now, but it is dead code and won't do anything until I find another place
+    // for it.
+    if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+        textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
+    }
+    
+    // If the text is wider than our frame, we should scale it down.
+    return ((textWidth > self.frame.size.width) && (textWidth > 0.0f));
+}
+
+- (CGRect)verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
   CFRange fitRange;
   CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
   
@@ -484,21 +519,23 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return;
     }
     
-    // Adjust the font size to fit width, if necessary.  Cache the original attributed text, as we re-set it later. 
-    NSAttributedString *originalAttributedText = nil;
-    if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
-        originalAttributedText = [self attributedStringAfterAdjustingFontSize:self.attributedText];
+    // Adjust the font size to fit width, if necessary.  By setting resizedAttributedText, we use it instead.
+    if ([self shouldAdjustFontSize]) {
+        CGFloat scaleFactor = ([self sizeThatFits:CGSizeZero].width / self.frame.size.width);
+        self.resizedAttributedText = NSAttributedStringByScalingFontSize(self.attributedText, scaleFactor, self.minimumFontSize);
+    } else {
+        self.resizedAttributedText = nil;
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
-    // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
+    // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; CoreText's (from Mac OSX) system is different)
     CGContextTranslateCTM(c, 0.0f, rect.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
     // First, re-position the rect of the text to match the vertical alignment setting.
-    CFRange textRange = CFRangeMake(0, [self.attributedText length]);
+    CFRange textRange = CFRangeMake(0, [[self attributedTextToDisplay] length]);
     CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:textRange fromRect:rect];
 
     // Second, trace the shadow before the actual text, if we have one
@@ -509,7 +546,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     // Finally, draw the text or highlighted text itself
     if (self.highlightedTextColor && self.highlighted) {
         if (!self.highlightFramesetter) {
-            NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
+            NSMutableAttributedString *mutableAttributedString = [[[self attributedTextToDisplay] mutableCopy] autorelease];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
         }
@@ -518,16 +555,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else {
         [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
     }  
-    
-    // If we adjusted the font size, set it back to its original size
-    if (originalAttributedText) {
-        self.text = originalAttributedText;
-    }
 }
 
 #pragma mark - UIView
 
 - (CGSize)sizeThatFits:(CGSize)size {
+    // REVIEW: Mark Makdad - Dec 16 2011 - does this logic even return true now?
     if (!self.attributedText) {
         return [super sizeThatFits:size];
     }
