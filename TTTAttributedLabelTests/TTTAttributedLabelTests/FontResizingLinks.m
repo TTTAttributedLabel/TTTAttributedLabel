@@ -10,6 +10,7 @@
 
 @implementation FontResizingLinks
 @synthesize linkLabel;
+@synthesize multiLineLinkLabel;
 
 #pragma mark - View lifecycle
 
@@ -19,9 +20,11 @@
     
     // Turn link detection "on" in the label.  There's no way to set this in the XIB.
     self.linkLabel.dataDetectorTypes = UIDataDetectorTypeLink;
+    self.multiLineLinkLabel.dataDetectorTypes = UIDataDetectorTypeLink;
   
     // So we can confirm link tapping is working
     self.linkLabel.delegate = self;
+    self.multiLineLinkLabel.delegate = self;
 }
 
 #pragma mark - TTTAttributedLabelDelegate
@@ -39,11 +42,13 @@
 
 - (void)viewDidUnload
 {
+    [self setMultiLineLinkLabel:nil];
     [self setLinkLabel:nil];
     [super viewDidUnload];
 }
 
 - (void)dealloc {
+    [multiLineLinkLabel release];
     [linkLabel release];
     [super dealloc];
 }

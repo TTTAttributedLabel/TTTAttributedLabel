@@ -11,5 +11,6 @@
 
 @interface FontResizingLinks : UIViewController <TTTAttributedLabelDelegate>
 @property (retain, nonatomic) IBOutlet TTTAttributedLabel *linkLabel;
+@property (retain, nonatomic) IBOutlet TTTAttributedLabel *multiLineLinkLabel;
 
 @end

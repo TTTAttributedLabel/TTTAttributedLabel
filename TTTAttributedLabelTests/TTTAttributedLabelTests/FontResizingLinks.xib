@@ -35,13 +35,13 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">274</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUILabel" id="621807923">
+					<object class="IBUILabel" id="274303412">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 10}, {147, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="218679562"/>
+						<reference key="NSNextKeyView" ref="179650926"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -49,35 +49,35 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">TTTAttributedLabel</string>
-						<object class="NSColor" key="IBUITextColor" id="540121716">
+						<object class="NSColor" key="IBUITextColor" id="144625933">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
 						</object>
 						<nil key="IBUIHighlightedColor"/>
-						<object class="NSColor" key="IBUIShadowColor" id="985178038">
+						<object class="NSColor" key="IBUIShadowColor" id="1010357214">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
 						<string key="IBUIShadowOffset">{1, 1}</string>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="632573626">
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="741278507">
 							<int key="type">1</int>
 							<double key="pointSize">17</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="105312343">
+						<object class="NSFont" key="IBUIFont" id="813359639">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">17</double>
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUILabel" id="93417727">
+					<object class="IBUILabel" id="841444016">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 215}, {59, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="64738487"/>
+						<reference key="NSNextKeyView" ref="837165128"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -85,22 +85,22 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">UILabel</string>
-						<reference key="IBUITextColor" ref="540121716"/>
+						<reference key="IBUITextColor" ref="144625933"/>
 						<nil key="IBUIHighlightedColor"/>
-						<reference key="IBUIShadowColor" ref="985178038"/>
+						<reference key="IBUIShadowColor" ref="1010357214"/>
 						<string key="IBUIShadowOffset">{1, 1}</string>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<reference key="IBUIFontDescription" ref="632573626"/>
-						<reference key="IBUIFont" ref="105312343"/>
+						<reference key="IBUIFontDescription" ref="741278507"/>
+						<reference key="IBUIFont" ref="813359639"/>
 					</object>
-					<object class="IBUILabel" id="218679562">
+					<object class="IBUILabel" id="179650926">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 41}, {289, 50}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="887844511"/>
+						<reference key="NSNextKeyView" ref="980952074"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">2</int>
@@ -112,27 +112,27 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">Hey you should check out this awesome project at https://github.com/mattt/TTTAttributedLabel/</string>
-						<reference key="IBUITextColor" ref="540121716"/>
+						<reference key="IBUITextColor" ref="144625933"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="92401416">
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="96703817">
 							<int key="type">1</int>
 							<double key="pointSize">20</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="888187480">
+						<object class="NSFont" key="IBUIFont" id="580414426">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">20</double>
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUILabel" id="64738487">
+					<object class="IBUILabel" id="837165128">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 244}, {289, 50}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="593207290"/>
+						<reference key="NSNextKeyView" ref="404207571"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">2</int>
@@ -144,20 +144,20 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">Hey you should check out this awesome project at https://github.com/mattt/TTTAttributedLabel/</string>
-						<reference key="IBUITextColor" ref="540121716"/>
+						<reference key="IBUITextColor" ref="144625933"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<reference key="IBUIFontDescription" ref="92401416"/>
-						<reference key="IBUIFont" ref="888187480"/>
+						<reference key="IBUIFontDescription" ref="96703817"/>
+						<reference key="IBUIFont" ref="580414426"/>
 					</object>
-					<object class="IBUILabel" id="887844511">
+					<object class="IBUILabel" id="980952074">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 105}, {289, 92}}</string>
+						<string key="NSFrame">{{20, 105}, {289, 100}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="93417727"/>
+						<reference key="NSNextKeyView" ref="841444016"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">2</int>
@@ -169,18 +169,18 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">This is a much longer label that will span multiple lines.  This is to address issue #36.  Look at https://github.com/mattt/TTTAttributedLabel/issues/36</string>
-						<reference key="IBUITextColor" ref="540121716"/>
+						<reference key="IBUITextColor" ref="144625933"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUINumberOfLines">0</int>
-						<reference key="IBUIFontDescription" ref="92401416"/>
-						<reference key="IBUIFont" ref="888187480"/>
+						<reference key="IBUIFontDescription" ref="96703817"/>
+						<reference key="IBUIFont" ref="580414426"/>
 					</object>
-					<object class="IBUILabel" id="593207290">
+					<object class="IBUILabel" id="404207571">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 314}, {289, 92}}</string>
+						<string key="NSFrame">{{20, 308}, {289, 100}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -195,19 +195,19 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">This is a much longer label that will span multiple lines.  This is to address issue #36.  Look at https://github.com/mattt/TTTAttributedLabel/issues/36</string>
-						<reference key="IBUITextColor" ref="540121716"/>
+						<reference key="IBUITextColor" ref="144625933"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUINumberOfLines">0</int>
-						<reference key="IBUIFontDescription" ref="92401416"/>
-						<reference key="IBUIFont" ref="888187480"/>
+						<reference key="IBUIFontDescription" ref="96703817"/>
+						<reference key="IBUIFont" ref="580414426"/>
 					</object>
 				</array>
 				<string key="NSFrame">{{0, 64}, {320, 416}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="621807923"/>
+				<reference key="NSNextKeyView" ref="274303412"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
@@ -233,9 +233,17 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">linkLabel</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="218679562"/>
+						<reference key="destination" ref="179650926"/>
 					</object>
 					<int key="connectionID">12</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">multiLineLinkLabel</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="980952074"/>
+					</object>
+					<int key="connectionID">15</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -250,12 +258,12 @@
 						<int key="objectID">1</int>
 						<reference key="object" ref="191373211"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="621807923"/>
-							<reference ref="93417727"/>
-							<reference ref="218679562"/>
-							<reference ref="64738487"/>
-							<reference ref="887844511"/>
-							<reference ref="593207290"/>
+							<reference ref="274303412"/>
+							<reference ref="841444016"/>
+							<reference ref="179650926"/>
+							<reference ref="837165128"/>
+							<reference ref="980952074"/>
+							<reference ref="404207571"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -272,32 +280,32 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">4</int>
-						<reference key="object" ref="621807923"/>
+						<reference key="object" ref="274303412"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">5</int>
-						<reference key="object" ref="93417727"/>
+						<reference key="object" ref="841444016"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">9</int>
-						<reference key="object" ref="218679562"/>
+						<reference key="object" ref="179650926"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">11</int>
-						<reference key="object" ref="64738487"/>
+						<reference key="object" ref="837165128"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">13</int>
-						<reference key="object" ref="887844511"/>
+						<reference key="object" ref="980952074"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">14</int>
-						<reference key="object" ref="593207290"/>
+						<reference key="object" ref="404207571"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</array>
@@ -321,24 +329,27 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">14</int>
+			<int key="maxID">15</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">FontResizingLinks</string>
 					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">linkLabel</string>
-						<string key="NS.object.0">TTTAttributedLabel</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">linkLabel</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="linkLabel">TTTAttributedLabel</string>
+						<string key="multiLineLinkLabel">TTTAttributedLabel</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="linkLabel">
 							<string key="name">linkLabel</string>
 							<string key="candidateClassName">TTTAttributedLabel</string>
 						</object>
-					</object>
+						<object class="IBToOneOutletInfo" key="multiLineLinkLabel">
+							<string key="name">multiLineLinkLabel</string>
+							<string key="candidateClassName">TTTAttributedLabel</string>
+						</object>
+					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FontResizingLinks.h</string>
