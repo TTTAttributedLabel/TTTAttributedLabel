@@ -467,6 +467,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGFloat heightChange = (textRect.size.height - textSize.height);
     switch (self.verticalAlignment) {
       case TTTAttributedLabelVerticalAlignmentTop:
+        // CoreText's coordinate y-axis is backwards from iOS, so "top of bounds" means having an offset (starting from bottom)
         yOffset = heightChange;
         break;
       case TTTAttributedLabelVerticalAlignmentCenter:
