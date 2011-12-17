@@ -128,7 +128,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
+- (void)detectLinksInString:(NSString *)text;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
@@ -175,6 +177,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     [self commonInit];
+    self.text = self.text;
     
     return self;
 }
@@ -273,7 +276,20 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
         self.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:nil];
+      
+        // Now re-parse our links, since we are detecting types now
+        [self detectLinksInString:[self.attributedText string]];
     }
+}
+
+- (void)detectLinksInString:(NSString *)text {
+  self.links = [NSArray array];
+  if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
+    NSArray *detectedLinks = [self detectedLinksInString:text range:NSMakeRange(0, [text length]) error:nil];
+    for (NSTextCheckingResult *result in detectedLinks) {
+      [self addLinkWithTextCheckingResult:result];
+    }
+  }
 }
 
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
@@ -286,7 +302,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         [mutableLinks addObject:result];
     }];
     
-    return [NSArray arrayWithArray:mutableLinks];
+    return (NSArray *)mutableLinks;
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
@@ -400,7 +416,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         
         for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
             CGPoint lineOrigin = lineOrigins[lineIndex];
-            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
+            // The lineOrigin values provided by CTFrameGetLineOrigins will be based in CoreText's
+            // coordinate system; we are now drawing in iOS.  Adding rect.origin.y makes the verticalAlignment work as expected.
+            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y + rect.origin.y);
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
             CTLineDraw(line, c);
         }
@@ -443,15 +461,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
   CFRange fitRange;
   CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
   
+  // If the textRect is larger than the suggested size, we will have open space, so alignment begins to matter.
   if (textSize.height < textRect.size.height) {
     CGFloat yOffset = 0.0f;
     CGFloat heightChange = (textRect.size.height - textSize.height);
     switch (self.verticalAlignment) {
       case TTTAttributedLabelVerticalAlignmentTop:
-        heightChange = 0.0f;
+        yOffset = heightChange;
         break;
       case TTTAttributedLabelVerticalAlignmentCenter:
-        yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+        yOffset = ((textRect.size.height - textSize.height) / 2.0f);
         break;
       case TTTAttributedLabelVerticalAlignmentBottom:
         break;
@@ -477,15 +496,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
   
     self.attributedText = text;
+    [self detectLinksInString:[text string]];
   
-    self.links = [NSArray array];
-    if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-        NSArray *detectedLinks = [self detectedLinksInString:[text string] range:NSMakeRange(0, [text length]) error:nil];
-        for (NSTextCheckingResult *result in detectedLinks) {
-            [self addLinkWithTextCheckingResult:result];
-        }
-    }
-    [super setText:[self.attributedText string]];
+    [super setText:[text string]];
 }
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {    
@@ -506,6 +519,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 #pragma mark - UILabel
 
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    CFRange textRange = CFRangeMake(0, [[self attributedTextToDisplay] length]);
+    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:textRange fromRect:bounds];
+    return textRect;
+}
+
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     [self setNeedsDisplay];
@@ -513,7 +532,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)drawTextInRect:(CGRect)rect {
     // REVIEW: Mark Makdad / Dec 15 2011 / This code block is never called, because even static text is 
-    // re-created as an attributedText string now.
+    // re-created as an attributedText string now.  
+    // Dec 16 2011 !! Never mind, this is called when the label is instantiated from a NIB
+    // Since it is a freeze-dried object, there is no call to "setText:".
     if (!self.attributedText) {
         [super drawTextInRect:rect];
         return;
@@ -521,7 +542,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     // Adjust the font size to fit width, if necessary.  By setting resizedAttributedText, we use it instead.
     if ([self shouldAdjustFontSize]) {
-        CGFloat scaleFactor = ([self sizeThatFits:CGSizeZero].width / self.frame.size.width);
+        CGFloat scaleFactor = (self.frame.size.width / [self sizeThatFits:CGSizeZero].width);
         self.resizedAttributedText = NSAttributedStringByScalingFontSize(self.attributedText, scaleFactor, self.minimumFontSize);
     } else {
         self.resizedAttributedText = nil;
@@ -561,6 +582,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (CGSize)sizeThatFits:(CGSize)size {
     // REVIEW: Mark Makdad - Dec 16 2011 - does this logic even return true now?
+    // Dec 16 2011 !! Never mind, this is called when the label is instantiated from a NIB
+    // Since it is a freeze-dried object, there is no call to "setText:".
     if (!self.attributedText) {
         return [super sizeThatFits:size];
     }
