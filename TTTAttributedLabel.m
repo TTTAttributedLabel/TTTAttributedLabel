@@ -406,6 +406,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
     if (self.numberOfLines == 0) {
+        // Draw the whole frame; we don't care if it doesn't fit or not; numLines = 0 is "best effort"
         CTFrameDraw(frame, c);
     } else {
         CFArrayRef lines = CTFrameGetLines(frame);
@@ -417,7 +418,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
             CGPoint lineOrigin = lineOrigins[lineIndex];
             // The lineOrigin values provided by CTFrameGetLineOrigins will be based in CoreText's
-            // coordinate system; we are now drawing in iOS.  Adding rect.origin.y makes the verticalAlignment work as expected.
+            // coordinate system; we are now drawing in an iOS context.  Adding rect.origin.y makes
+            // the verticalAlignment positioning work as expected.  In addition, the glyphs will
+            // actually be drawn upside down, but we've applied a CTM transform to the context in drawTextInRect:
             CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y + rect.origin.y);
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
             CTLineDraw(line, c);
@@ -459,7 +462,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (CGRect)verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
   CFRange fitRange;
-  CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
+  CGSize textSize = CGSizeZero;
+  //  if (self.numberOfLines == 0) {
+  //  textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), NULL, textRect.size, &fitRange);
+  //}
+  //else {
+    textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
+  //}
   
   // If the textRect is larger than the suggested size, we will have open space, so alignment begins to matter.
   if (textSize.height < textRect.size.height) {
@@ -574,12 +583,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (CGSize)sizeThatFits:(CGSize)size {    
     CFRange rangeToSize = CFRangeMake(0, [self.attributedText length]);
+  
+    // Default constraint (numberOfLines = 0) -- fixed width, but infinite height
     CGSize constraints = CGSizeMake(size.width, CGFLOAT_MAX);
     
     if (self.numberOfLines == 1) {
         // If there is one line, the size that fits is the full width of the line
         constraints = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    } else if (self.numberOfLines > 0) {
+    } else if (self.numberOfLines > 1) {
         // If the line count of the label more than 1, limit the range to size to the number of lines that have been set
         CGPathRef path = CGPathCreateWithRect(CGRectMake(0.0f, 0.0f, self.bounds.size.width, CGFLOAT_MAX), NULL);
         CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, 0), path, NULL);
