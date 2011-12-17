@@ -24,6 +24,17 @@
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
+static inline CGPoint CGPointConvertFromCoreTextPointInRect(CGPoint point, CGRect rect) {
+  // e.g. rect: (0,0),(100,200).  CGPoint (80,130) in CoreText (bottom left origin) would be 
+  // CGPoint(80,70) in iOS (top left origin) coords.
+  return CGPointMake(point.x, rect.size.height - point.y);
+}
+
+static inline CGPoint CGPointConvertToCoreTextPointInRect(CGPoint point, CGRect rect) {
+  // Magically, these functions are inverse, so you can actually use the same function to toggle between.
+  return CGPointConvertFromCoreTextPointInRect(point, rect);
+}
+
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
@@ -76,6 +87,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
+    // REVIEW: Mark Makdad - Dec 17 2011 - This line doesn't do exactly what UILabel does with this info.  It should only
+    // be applied to the last line if numLines = 0
     CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
     CGFloat lineSpacing = label.leading;
     CGFloat lineHeightMultiple = label.lineHeightMultiple;
@@ -86,7 +99,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
     CTParagraphStyleSetting paragraphStyles[9] = {
 		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
-		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
+        {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
         {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
         {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
         {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
@@ -177,6 +190,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     [self commonInit];
+    
+    // TODO: This line is still a bit of a hack but it's what creates attributedText out of text stored in a nib.
     self.text = self.text;
     
     return self;
@@ -353,23 +368,30 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p {
+    // Don't do anything if there are no links.
+    if ([self.links count] == 0) {
+        return nil;
+    }
+  
     CFIndex idx = [self characterIndexAtPoint:p];
     return [self linkAtCharacterIndex:idx];
 }
 
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p {
+    // Quick return if point isn't in this view's bounds
     if (!CGRectContainsPoint(self.bounds, p)) {
         return NSNotFound;
     }
     
+    // Quick return if point is outside of rect used for drawing text
     CGRect textRect = [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines];
     if (!CGRectContainsPoint(textRect, p)) {
         return NSNotFound;
     }
+  
+    // OK, convert tap coordinates (origin at top left) to CT coordinates (origin at bottom left)
+    CGPoint coreTextPoint = CGPointConvertToCoreTextPointInRect(p, textRect);
     
-    // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
-    p = CGPointMake(p.x, textRect.size.height - p.y);
-
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
@@ -379,18 +401,21 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
     NSUInteger lineIndex;
-
+  
+    // Loop through each line of text to find out which line the point would be located in
     for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
-        if (lineOrigin.y < p.y) {
+        if (lineOrigin.y < coreTextPoint.y) {
             break;
         }
     }
-    
-    CGPoint lineOrigin = lineOrigins[lineIndex];
-    CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+
     // Convert CT coordinates to line-relative coordinates
-    CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
+    CGPoint lineOrigin = lineOrigins[lineIndex];
+    CGPoint relativePoint = CGPointMake(coreTextPoint.x - lineOrigin.x, coreTextPoint.y - lineOrigin.y);
+  
+    // And now finally get the index of the character
+    CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     idx = CTLineGetStringIndexForPosition(line, relativePoint);
     
     CFRelease(frame);
@@ -462,32 +487,25 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (CGRect)verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
   CFRange fitRange;
-  CGSize textSize = CGSizeZero;
-  //  if (self.numberOfLines == 0) {
-  //  textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), NULL, textRect.size, &fitRange);
-  //}
-  //else {
-    textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
-  //}
+  CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
   
   // If the textRect is larger than the suggested size, we will have open space, so alignment begins to matter.
   if (textSize.height < textRect.size.height) {
     CGFloat yOffset = 0.0f;
-    CGFloat heightChange = (textRect.size.height - textSize.height);
     switch (self.verticalAlignment) {
       case TTTAttributedLabelVerticalAlignmentTop:
         // CoreText's coordinate y-axis is backwards from iOS, so "top of bounds" means having an offset (starting from bottom)
-        yOffset = heightChange;
+        yOffset = (textRect.size.height - textSize.height);
         break;
       case TTTAttributedLabelVerticalAlignmentCenter:
-        yOffset = ((textRect.size.height - textSize.height) / 2.0f);
+        yOffset = (textRect.size.height - textSize.height) / 2.0f;
         break;
       case TTTAttributedLabelVerticalAlignmentBottom:
         break;
     }
     
     textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-    textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
+    textRect.size = CGSizeMake(textRect.size.width, textSize.height);
   }
   return textRect;
 }
@@ -619,7 +637,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     // In case the user adds multiple gesture recognizers on this class, we only want to pay attention to this one.
     if (gestureRecognizer == self.tapGestureRecognizer) {
         // This class can only ever receive gesture touches if attributedText (i.e. possibly a link?) is set
-        return (self.attributedText && ([self linkAtPoint:[touch locationInView:self]] != nil));
+        return ([self linkAtPoint:[touch locationInView:self]] != nil);
     } else {
         // The default behavior for this delegate callback, if not implemented, is yes.  So we'll return that.
         return YES;
