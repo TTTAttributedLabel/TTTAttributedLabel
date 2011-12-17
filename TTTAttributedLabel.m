@@ -531,15 +531,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (void)drawTextInRect:(CGRect)rect {
-    // REVIEW: Mark Makdad / Dec 15 2011 / This code block is never called, because even static text is 
-    // re-created as an attributedText string now.  
-    // Dec 16 2011 !! Never mind, this is called when the label is instantiated from a NIB
-    // Since it is a freeze-dried object, there is no call to "setText:".
-    if (!self.attributedText) {
-        [super drawTextInRect:rect];
-        return;
-    }
-    
     // Adjust the font size to fit width, if necessary.  By setting resizedAttributedText, we use it instead.
     if ([self shouldAdjustFontSize]) {
         CGFloat scaleFactor = (self.frame.size.width / [self sizeThatFits:CGSizeZero].width);
@@ -580,14 +571,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 #pragma mark - UIView
 
-- (CGSize)sizeThatFits:(CGSize)size {
-    // REVIEW: Mark Makdad - Dec 16 2011 - does this logic even return true now?
-    // Dec 16 2011 !! Never mind, this is called when the label is instantiated from a NIB
-    // Since it is a freeze-dried object, there is no call to "setText:".
-    if (!self.attributedText) {
-        return [super sizeThatFits:size];
-    }
-    
+- (CGSize)sizeThatFits:(CGSize)size {    
     CFRange rangeToSize = CFRangeMake(0, [self.attributedText length]);
     CGSize constraints = CGSizeMake(size.width, CGFLOAT_MAX);
     
