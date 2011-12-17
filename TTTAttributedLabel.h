@@ -65,6 +65,7 @@ typedef enum {
     CGFloat _shadowRadius;
     
     CGFloat _leading;
+    // REVIEW: Mark Makdad - Dec 17 2011 : This property appears unused?
     CGFloat _lineHeightMultiple;
     CGFloat _firstLineIndent;
     UIEdgeInsets _textInsets;
