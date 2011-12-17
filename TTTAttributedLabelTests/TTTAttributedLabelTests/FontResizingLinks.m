@@ -16,29 +16,35 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-  
-  // We have to set this programmatically.  Ideally, 
+    
+    // Turn link detection "on" in the label.  There's no way to set this in the XIB.
     self.linkLabel.dataDetectorTypes = UIDataDetectorTypeLink;
-  self.linkLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentCenter;
-  //   self.linkLabel.text = self.linkLabel.text;
+  
+    // So we can confirm link tapping is working
+    self.linkLabel.delegate = self;
 }
+
+#pragma mark - TTTAttributedLabelDelegate
+
+- (void) attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"URL Tapped"
+                                                     message:[url description]
+                                                    delegate:nil
+                                           cancelButtonTitle:nil
+                                           otherButtonTitles:@"OK", nil] autorelease];
+    [alert show];
+}
+
+#pragma mark - Class Plumbing
 
 - (void)viewDidUnload
 {
-  [self setLinkLabel:nil];
+    [self setLinkLabel:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (void)dealloc {
-  [linkLabel release];
-  [super dealloc];
+    [linkLabel release];
+    [super dealloc];
 }
 @end

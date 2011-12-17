@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "TTTAttributedLabel.h"
 
-@interface FontResizingLinks : UIViewController
+@interface FontResizingLinks : UIViewController <TTTAttributedLabelDelegate>
 @property (retain, nonatomic) IBOutlet TTTAttributedLabel *linkLabel;
 
 @end
