@@ -21,6 +21,12 @@
 		499E56FD149754DF00088BD3 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499E56FC149754DF00088BD3 /* CoreText.framework */; };
 		499E570A14975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 499E570814975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.m */; };
 		499E570B14975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.xib in Resources */ = {isa = PBXBuildFile; fileRef = 499E570914975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.xib */; };
+		499E5762149B148B00088BD3 /* FontResizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 499E5760149B148B00088BD3 /* FontResizing.m */; };
+		499E5763149B148B00088BD3 /* FontResizing.xib in Resources */ = {isa = PBXBuildFile; fileRef = 499E5761149B148B00088BD3 /* FontResizing.xib */; };
+		499E5768149B1BAB00088BD3 /* FontResizingLinks.m in Sources */ = {isa = PBXBuildFile; fileRef = 499E5766149B1BAB00088BD3 /* FontResizingLinks.m */; };
+		499E5769149B1BAB00088BD3 /* FontResizingLinks.xib in Resources */ = {isa = PBXBuildFile; fileRef = 499E5767149B1BAB00088BD3 /* FontResizingLinks.xib */; };
+		499E576F149B3B0D00088BD3 /* VerticalAlignment.m in Sources */ = {isa = PBXBuildFile; fileRef = 499E576D149B3B0D00088BD3 /* VerticalAlignment.m */; };
+		499E5770149B3B0D00088BD3 /* VerticalAlignment.xib in Resources */ = {isa = PBXBuildFile; fileRef = 499E576E149B3B0D00088BD3 /* VerticalAlignment.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +52,15 @@
 		499E570714975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnlyChangeFontSizeWhenOneLine.h; sourceTree = "<group>"; };
 		499E570814975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnlyChangeFontSizeWhenOneLine.m; sourceTree = "<group>"; };
 		499E570914975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OnlyChangeFontSizeWhenOneLine.xib; sourceTree = "<group>"; };
+		499E575F149B148B00088BD3 /* FontResizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontResizing.h; sourceTree = "<group>"; };
+		499E5760149B148B00088BD3 /* FontResizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontResizing.m; sourceTree = "<group>"; };
+		499E5761149B148B00088BD3 /* FontResizing.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FontResizing.xib; sourceTree = "<group>"; };
+		499E5765149B1BAB00088BD3 /* FontResizingLinks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontResizingLinks.h; sourceTree = "<group>"; };
+		499E5766149B1BAB00088BD3 /* FontResizingLinks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontResizingLinks.m; sourceTree = "<group>"; };
+		499E5767149B1BAB00088BD3 /* FontResizingLinks.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FontResizingLinks.xib; sourceTree = "<group>"; };
+		499E576C149B3B0D00088BD3 /* VerticalAlignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerticalAlignment.h; sourceTree = "<group>"; };
+		499E576D149B3B0D00088BD3 /* VerticalAlignment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerticalAlignment.m; sourceTree = "<group>"; };
+		499E576E149B3B0D00088BD3 /* VerticalAlignment.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VerticalAlignment.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,7 +131,10 @@
 			isa = PBXGroup;
 			children = (
 				499E57001497570D00088BD3 /* 1 Treat as UILabel */,
-				499E570514975EF100088BD3 /* 2 Only Adjust Font if Lines = 1 */,
+				499E576B149B3AEA00088BD3 /* 2 Vertical Alignment */,
+				499E570514975EF100088BD3 /* 3 Only Adjust Font if Lines = 1 */,
+				499E5764149B1B9200088BD3 /* 4 Font Resizing Links */,
+				499E575E149B147500088BD3 /* 5 Font Resizing Animation */,
 			);
 			name = "Test Controllers & XIBs";
 			sourceTree = "<group>";
@@ -145,14 +163,44 @@
 			name = "1 Treat as UILabel";
 			sourceTree = "<group>";
 		};
-		499E570514975EF100088BD3 /* 2 Only Adjust Font if Lines = 1 */ = {
+		499E570514975EF100088BD3 /* 3 Only Adjust Font if Lines = 1 */ = {
 			isa = PBXGroup;
 			children = (
 				499E570714975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.h */,
 				499E570814975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.m */,
 				499E570914975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.xib */,
 			);
-			name = "2 Only Adjust Font if Lines = 1";
+			name = "3 Only Adjust Font if Lines = 1";
+			sourceTree = "<group>";
+		};
+		499E575E149B147500088BD3 /* 5 Font Resizing Animation */ = {
+			isa = PBXGroup;
+			children = (
+				499E575F149B148B00088BD3 /* FontResizing.h */,
+				499E5760149B148B00088BD3 /* FontResizing.m */,
+				499E5761149B148B00088BD3 /* FontResizing.xib */,
+			);
+			name = "5 Font Resizing Animation";
+			sourceTree = "<group>";
+		};
+		499E5764149B1B9200088BD3 /* 4 Font Resizing Links */ = {
+			isa = PBXGroup;
+			children = (
+				499E5765149B1BAB00088BD3 /* FontResizingLinks.h */,
+				499E5766149B1BAB00088BD3 /* FontResizingLinks.m */,
+				499E5767149B1BAB00088BD3 /* FontResizingLinks.xib */,
+			);
+			name = "4 Font Resizing Links";
+			sourceTree = "<group>";
+		};
+		499E576B149B3AEA00088BD3 /* 2 Vertical Alignment */ = {
+			isa = PBXGroup;
+			children = (
+				499E576C149B3B0D00088BD3 /* VerticalAlignment.h */,
+				499E576D149B3B0D00088BD3 /* VerticalAlignment.m */,
+				499E576E149B3B0D00088BD3 /* VerticalAlignment.xib */,
+			);
+			name = "2 Vertical Alignment";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,6 +258,9 @@
 				499E56EB149753A400088BD3 /* TTTMasterViewController.xib in Resources */,
 				499E56EE149753A400088BD3 /* TreatAsUILabel.xib in Resources */,
 				499E570B14975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.xib in Resources */,
+				499E5763149B148B00088BD3 /* FontResizing.xib in Resources */,
+				499E5769149B1BAB00088BD3 /* FontResizingLinks.xib in Resources */,
+				499E5770149B3B0D00088BD3 /* VerticalAlignment.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +277,9 @@
 				499E56E8149753A400088BD3 /* TreatAsUILabel.m in Sources */,
 				499E56FA149753F400088BD3 /* TTTAttributedLabel.m in Sources */,
 				499E570A14975F1D00088BD3 /* OnlyChangeFontSizeWhenOneLine.m in Sources */,
+				499E5762149B148B00088BD3 /* FontResizing.m in Sources */,
+				499E5768149B1BAB00088BD3 /* FontResizingLinks.m in Sources */,
+				499E576F149B3B0D00088BD3 /* VerticalAlignment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
