@@ -153,7 +153,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (NSAttributedString *) attributedTextToDisplay;
 - (BOOL)shouldAdjustFontSize;
-- (CGRect) verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect;
 @end
 
 @implementation TTTAttributedLabel
@@ -331,7 +330,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return _highlightFramesetter;
 }
 
-#pragma mark -
+#pragma mark - Public Methods
 
 - (void)setDataDetectorTypes:(UIDataDetectorTypes)dataDetectorTypes {
     [self willChangeValueForKey:@"dataDetectorTypes"];
@@ -403,7 +402,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult dateCheckingResultWithRange:range date:date timeZone:timeZone duration:duration]];
 }
 
-#pragma mark -
+#pragma mark - Private Methods
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
@@ -526,49 +525,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return ((textWidth > self.frame.size.width) && (textWidth > 0.0f));
 }
 
-- (CGRect)verticallyAlignedRectForFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange fromRect:(CGRect)textRect {
-  CFRange fitRange;
-  CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, textRange, NULL, textRect.size, &fitRange);
-  
-  // If the textRect is larger than the suggested size, we will have open space, so alignment begins to matter.
-  if (textSize.height < textRect.size.height) {
-    CGFloat yOffset = 0.0f;
-    switch (self.verticalAlignment) {
-      case TTTAttributedLabelVerticalAlignmentTop:
-        // CoreText's coordinate y-axis is backwards from iOS, so "top of bounds" means having an offset (starting from bottom)
-        yOffset = (textRect.size.height - textSize.height);
-        break;
-      case TTTAttributedLabelVerticalAlignmentCenter:
-        yOffset = (textRect.size.height - textSize.height) / 2.0f;
-        break;
-      case TTTAttributedLabelVerticalAlignmentBottom:
-        break;
-    }
-    
-    textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-    textRect.size = CGSizeMake(textRect.size.width, textSize.height);
-  }
-  return textRect;
-}
-
 #pragma mark - TTTAttributedLabel
-
-- (void)setText:(id)text {
-    if ([text isKindOfClass:[NSString class]]) {
-        // The method call below will call back to this method with an NSAttributedString
-        // By returning here we avoid making the link array + calling super twice.
-        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-        return;
-    }
-    else if ([text isKindOfClass:[NSAttributedString class]] == NO) {
-        [NSException raise:NSGenericException format:@"setText: only receives NSString or NSAttributedString instances."];
-    }
-  
-    self.attributedText = text;
-    [self detectLinksInString:[text string]];
-  
-    [super setText:[text string]];
-}
 
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {    
     NSMutableAttributedString *mutableAttributedString = nil;
@@ -588,8 +545,50 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 #pragma mark - UILabel
 
+- (void)setText:(id)text {
+    if ([text isKindOfClass:[NSString class]]) {
+        // The method call below will call back to this method with an NSAttributedString
+        // By returning here we avoid making the link array + calling super twice.
+        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
+        return;
+    }
+    else if ([text isKindOfClass:[NSAttributedString class]] == NO) {
+        [NSException raise:NSGenericException format:@"setText: only receives NSString or NSAttributedString instances."];
+    }
+    
+    self.attributedText = text;
+    [self detectLinksInString:[text string]];
+    
+    [super setText:[text string]];
+}
+
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
-    return [self verticallyAlignedRectForFramesetter:self.framesetter textRange:[self fullTextCFRange] fromRect:bounds];
+    // By default, the text will take the full bounds
+    CGRect textRect = bounds;
+
+    // Check the text size to see if the above assumption is reasonable
+    CFRange fitRange;
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, [self fullTextCFRange], NULL, bounds.size, &fitRange);
+
+    // If the textRect is larger than the suggested size, we will have open space, so alignment begins to matter.
+    if (textSize.height < bounds.size.height) {
+        CGFloat yOffset = 0.0f;
+        switch (self.verticalAlignment) {
+            case TTTAttributedLabelVerticalAlignmentTop:
+                // CoreText's coordinate y-axis is backwards from iOS, so "top of bounds" means having an offset (starting from bottom)
+                yOffset = (bounds.size.height - textSize.height);
+                break;
+            case TTTAttributedLabelVerticalAlignmentCenter:
+                yOffset = (bounds.size.height - textSize.height) / 2.0f;
+                break;
+            case TTTAttributedLabelVerticalAlignmentBottom:
+                break;
+        }
+        
+        textRect.origin = CGPointMake(bounds.origin.x, bounds.origin.y + yOffset);
+        textRect.size = CGSizeMake(bounds.size.width, textSize.height);
+    }
+    return textRect;
 }
 
 - (void)drawTextInRect:(CGRect)rect {
@@ -614,7 +613,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
   
     // First, re-position the rect of the text to match the vertical alignment setting.
     CFRange range = [self fullTextCFRange];
-    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:range fromRect:rect];
+    CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
   
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
@@ -625,7 +624,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (self.highlightedTextColor && self.highlighted) {
         [self drawFramesetter:self.highlightFramesetter textRange:range inRect:textRect context:c];
     } else {
-        [self drawFramesetter:self.framesetter textRange:range inRect:textRect context:c];
+        [self drawFramesetter:self.framesetter textRange:range inRect:rect context:c];
     }  
     CGContextRestoreGState(c);
 }
