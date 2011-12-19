@@ -141,6 +141,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
+- (NSMutableAttributedString *) mutableAttributedText;
+- (NSRange) fullTextRange;
+- (CFRange) fullTextCFRange;
 - (void)detectLinksInString:(NSString *)text;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
@@ -233,7 +236,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if ([text isEqualToAttributedString:self.attributedText]) {
         return;
     }
-    
+
     [self willChangeValueForKey:@"attributedText"];
     [_attributedText release];
     _attributedText = [text copy];
@@ -265,11 +268,39 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     _needsFramesetter = YES;
 }
 
+- (NSMutableAttributedString *) mutableAttributedText {
+    // Get the original string
+    NSAttributedString *originalAttrString = [self attributedTextToDisplay];
+    NSRange fullRange = NSMakeRange(0,[originalAttrString length]);
+  
+    // Initialize a new mutable attributed string & add the label's attributes to it
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[originalAttrString string]];
+    [attrString addAttributes:NSAttributedStringAttributesFromLabel(self) range:fullRange];
+  
+    // Now add the original attributed text's attributes on top (override) the UILabel options
+    [originalAttrString enumerateAttributesInRange:fullRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        [attrString addAttributes:attrs range:range];
+    }];
+    return [attrString autorelease];
+}
+
+- (NSRange) fullTextRange {
+    return NSMakeRange(0, [[self text] length]);
+}
+
+- (CFRange) fullTextCFRange {
+    return CFRangeMake(0, [[self text] length]);
+}
+
 - (CTFramesetterRef)framesetter {
-    if (_needsFramesetter) {
+    // If we have been explicitly instructed to recreate, or we don't have one, make a new framesetter
+    if (_needsFramesetter || _framesetter == nil) {
         @synchronized(self) {
+            // This method muxes the label's properties with the attributed text set by the user
+            NSMutableAttributedString *attrText = [self mutableAttributedText];
+          
             if (_framesetter) CFRelease(_framesetter);
-            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)[self attributedTextToDisplay]);
+            self.framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attrText);
           
             // _needsFramesetter was set to YES because something changed; clear our cached highlight one as well.
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
@@ -278,8 +309,26 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             _needsFramesetter = NO;
         }
     }
-    
     return _framesetter;
+}
+
+- (CTFramesetterRef)highlightFramesetter {
+    // Consider making this an assert -- it is a programmer error to call this method w/o a highlighted text color
+    if (self.highlightedTextColor == nil) {
+        return nil;
+    }
+  
+    if (_highlightFramesetter == nil) {
+        @synchronized(self) {
+            // This method muxes the label's properties with the attributed text set by the user
+            NSMutableAttributedString *attrString = [self mutableAttributedText];
+            
+            // Add the highlighted text color
+            [attrString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, attrString.length)];
+            self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attrString);
+        }
+    }
+    return _highlightFramesetter;
 }
 
 #pragma mark -
@@ -395,7 +444,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
-    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
+    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, [self fullTextCFRange], path, NULL);
     CFArrayRef lines = CTFrameGetLines(frame);
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     CGPoint lineOrigins[numberOfLines];
@@ -472,14 +521,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
     // sizeThatFits: will return a CGRect of the full line if numberOfLines == 1
     CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
-
-    // REVIEW: Mark Makdad / Dec 15 2011 / According to the UILabel docs, this property (adjustsFontSizeToFitWidth)
-    // should ONLY have an effect when numberOfLines == 1, so this seems to be implementing some special sauce.
-    // I have left this code here for now, but it is dead code and won't do anything until I find another place
-    // for it.
-    if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
-        textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
-    }
     
     // If the text is wider than our frame, we should scale it down.
     return ((textWidth > self.frame.size.width) && (textWidth > 0.0f));
@@ -548,17 +589,21 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 #pragma mark - UILabel
 
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
-    CFRange textRange = CFRangeMake(0, [[self attributedTextToDisplay] length]);
-    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:textRange fromRect:bounds];
-    return textRect;
-}
-
-- (void)setHighlighted:(BOOL)highlighted {
-    [super setHighlighted:highlighted];
-    [self setNeedsDisplay];
+    return [self verticallyAlignedRectForFramesetter:self.framesetter textRange:[self fullTextCFRange] fromRect:bounds];
 }
 
 - (void)drawTextInRect:(CGRect)rect {
+    // Get the graphics context and push the state so we are a good CoreGraphics citizen
+    CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(c);
+
+    // Inverts the CTM to match iOS coordinates - otherwise text draws upside-down.
+    // CoreText's (from Mac OSX) system is different)
+    CGContextSetTextMatrix(c, CGAffineTransformIdentity);
+    CGContextTranslateCTM(c, rect.origin.x, rect.origin.y);
+    CGContextScaleCTM(c, 1.0f, -1.0f);
+    CGContextTranslateCTM(c, rect.origin.x, - (rect.origin.y + rect.size.height));
+    
     // Adjust the font size to fit width, if necessary.  By setting resizedAttributedText, we use it instead.
     if ([self shouldAdjustFontSize]) {
         CGFloat scaleFactor = (self.frame.size.width / [self sizeThatFits:CGSizeZero].width);
@@ -566,18 +611,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else {
         self.resizedAttributedText = nil;
     }
-    
-    CGContextRef c = UIGraphicsGetCurrentContext();
-    CGContextSetTextMatrix(c, CGAffineTransformIdentity);
-
-    // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; CoreText's (from Mac OSX) system is different)
-    CGContextTranslateCTM(c, 0.0f, rect.size.height);
-    CGContextScaleCTM(c, 1.0f, -1.0f);
-    
+  
     // First, re-position the rect of the text to match the vertical alignment setting.
-    CFRange textRange = CFRangeMake(0, [[self attributedTextToDisplay] length]);
-    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:textRange fromRect:rect];
-
+    CFRange range = [self fullTextCFRange];
+    CGRect textRect = [self verticallyAlignedRectForFramesetter:self.framesetter textRange:range fromRect:rect];
+  
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
         CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
@@ -585,23 +623,18 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     // Finally, draw the text or highlighted text itself
     if (self.highlightedTextColor && self.highlighted) {
-        if (!self.highlightFramesetter) {
-            NSMutableAttributedString *mutableAttributedString = [[[self attributedTextToDisplay] mutableCopy] autorelease];
-            [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
-            self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
-        }
-        
-        [self drawFramesetter:self.highlightFramesetter textRange:textRange inRect:textRect context:c];
+        [self drawFramesetter:self.highlightFramesetter textRange:range inRect:textRect context:c];
     } else {
-        [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
+        [self drawFramesetter:self.framesetter textRange:range inRect:textRect context:c];
     }  
+    CGContextRestoreGState(c);
 }
 
 #pragma mark - UIView
 
 - (CGSize)sizeThatFits:(CGSize)size {    
-    CFRange rangeToSize = CFRangeMake(0, [self.attributedText length]);
-  
+    CFRange rangeToSize = [self fullTextCFRange];
+    
     // Default constraint (numberOfLines = 0) -- fixed width, but infinite height
     CGSize constraints = CGSizeMake(size.width, CGFLOAT_MAX);
     
