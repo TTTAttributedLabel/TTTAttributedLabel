@@ -174,6 +174,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
 
+#pragma mark - Class Plumbing
+
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (!self) {
@@ -229,7 +231,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [super dealloc];
 }
 
-#pragma mark -
+#pragma mark - Setters & Getters
 
 - (void)setAttributedText:(NSAttributedString *)text {
     if ([text isEqualToAttributedString:self.attributedText]) {
@@ -265,30 +267,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)setNeedsFramesetter {
     _needsFramesetter = YES;
-}
-
-- (NSMutableAttributedString *) mutableAttributedText {
-    // Get the original string
-    NSAttributedString *originalAttrString = [self attributedTextToDisplay];
-    NSRange fullRange = NSMakeRange(0,[originalAttrString length]);
-  
-    // Initialize a new mutable attributed string & add the label's attributes to it
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[originalAttrString string]];
-    [attrString addAttributes:NSAttributedStringAttributesFromLabel(self) range:fullRange];
-  
-    // Now add the original attributed text's attributes on top (override) the UILabel options
-    [originalAttrString enumerateAttributesInRange:fullRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
-        [attrString addAttributes:attrs range:range];
-    }];
-    return [attrString autorelease];
-}
-
-- (NSRange) fullTextRange {
-    return NSMakeRange(0, [[self text] length]);
-}
-
-- (CFRange) fullTextCFRange {
-    return CFRangeMake(0, [[self text] length]);
 }
 
 - (CTFramesetterRef)framesetter {
@@ -403,6 +381,30 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 #pragma mark - Private Methods
+
+- (NSMutableAttributedString *) mutableAttributedText {
+    // Get the original string
+    NSAttributedString *originalAttrString = [self attributedTextToDisplay];
+    NSRange fullRange = NSMakeRange(0,[originalAttrString length]);
+    
+    // Initialize a new mutable attributed string & add the label's attributes to it
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[originalAttrString string]];
+    [attrString addAttributes:NSAttributedStringAttributesFromLabel(self) range:fullRange];
+    
+    // Now add the original attributed text's attributes on top (override) the UILabel options
+    [originalAttrString enumerateAttributesInRange:fullRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+      [attrString addAttributes:attrs range:range];
+    }];
+    return [attrString autorelease];
+}
+
+- (NSRange) fullTextRange {
+    return NSMakeRange(0, [[self text] length]);
+}
+
+- (CFRange) fullTextCFRange {
+    return CFRangeMake(0, [[self text] length]);
+}
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
@@ -585,8 +587,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 break;
         }
         
-        textRect.origin = CGPointMake(bounds.origin.x, bounds.origin.y + yOffset);
-        textRect.size = CGSizeMake(bounds.size.width, textSize.height);
+        textRect.origin = CGPointMake(bounds.origin.x, ceilf(bounds.origin.y + yOffset));
+        textRect.size = CGSizeMake(bounds.size.width, ceilf(textSize.height));
     }
     return textRect;
 }
@@ -624,7 +626,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (self.highlightedTextColor && self.highlighted) {
         [self drawFramesetter:self.highlightFramesetter textRange:range inRect:textRect context:c];
     } else {
-        [self drawFramesetter:self.framesetter textRange:range inRect:rect context:c];
+        [self drawFramesetter:self.framesetter textRange:range inRect:textRect context:c];
     }  
     CGContextRestoreGState(c);
 }
