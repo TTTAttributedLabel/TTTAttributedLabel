@@ -73,6 +73,8 @@ typedef enum {
     UITapGestureRecognizer *_tapGestureRecognizer;
 }
 
+@property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
+
 ///-----------------------------
 /// @name Accessing the Delegate
 ///-----------------------------

@@ -118,7 +118,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 @interface TTTAttributedLabel ()
-@property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
