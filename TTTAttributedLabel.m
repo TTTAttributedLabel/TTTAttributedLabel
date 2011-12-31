@@ -472,9 +472,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 runBounds.origin.y -= descent;
                 
                 // don't draw too far to the right
-                if (runBounds.origin.x + runBounds.size.width > CGRectGetMaxX(lineBounds))
+                if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds))
                 {
-                    runBounds.size.width = CGRectGetMaxX(lineBounds) - runBounds.origin.x;
+                    runBounds.size.width = CGRectGetWidth(lineBounds);
                 }
                 
 				switch (superscriptStyle) 
