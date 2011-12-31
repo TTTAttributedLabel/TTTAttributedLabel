@@ -101,7 +101,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
         {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
         {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
-        {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin},
+        {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin}
 	};
 
     CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
@@ -594,6 +594,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
     // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
+    textSize = CGSizeMake( ceilf(textSize.width), ceilf(textSize.height)); //fractional heights cause last line not to be drawn on iOS 4.3
     
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
