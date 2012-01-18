@@ -71,6 +71,7 @@ typedef enum {
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
     
     UITapGestureRecognizer *_tapGestureRecognizer;
+    NSMutableDictionary *_linkHandlers;
 }
 
 ///-----------------------------
@@ -198,6 +199,8 @@ typedef enum {
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range;
+
+- (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range handler:(void(^)())handler;
 
 /**
  Adds a link to an address for a specified range in the label text.
