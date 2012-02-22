@@ -334,6 +334,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CFArrayRef lines = CTFrameGetLines(frame);
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     if (numberOfLines == 0) {
+        CFRelease(frame);
+        CFRelease(path);
         return NSNotFound;
     }
     CGPoint lineOrigins[numberOfLines];
