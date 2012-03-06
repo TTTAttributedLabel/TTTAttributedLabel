@@ -328,12 +328,20 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
     p = CGPointMake(p.x, textRect.size.height - p.y);
 
-    CFIndex idx = NSNotFound;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
     CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
+    if (frame == NULL) {
+        CFRelease(path);
+        return NSNotFound;
+    }
     CFArrayRef lines = CTFrameGetLines(frame);
     NSUInteger numberOfLines = CFArrayGetCount(lines);
+    if (numberOfLines == 0) {
+        CFRelease(frame);
+        CFRelease(path);
+        return NSNotFound;
+    }
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
     NSUInteger lineIndex;
@@ -349,7 +357,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     // Convert CT coordinates to line-relative coordinates
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-    idx = CTLineGetStringIndexForPosition(line, relativePoint);
+    CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
     
     CFRelease(frame);
     CFRelease(path);
