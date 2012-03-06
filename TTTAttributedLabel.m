@@ -331,6 +331,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
     CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
+    if (frame == NULL) {
+        CFRelease(path);
+        return NSNotFound;
+    }
     CFArrayRef lines = CTFrameGetLines(frame);
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     if (numberOfLines == 0) {
