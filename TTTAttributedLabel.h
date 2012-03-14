@@ -155,7 +155,6 @@ typedef enum {
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
-
 ///----------------------------------
 /// @name Setting the Text Attributes
 ///----------------------------------
