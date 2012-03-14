@@ -35,12 +35,14 @@ label.numberOfLines = 0;
 NSString *text = @"Lorem ipsum dolar sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
   NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
+  NSRange strikeRange = [[mutableAttributedString string] rangeOfString:@"sit amet" options:NSCaseInsensitiveSearch];
   
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14]; 
 	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
 	if (font) {
 	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+	  [mutableAttributedString addAttribute:@"TTTCustomStrikeOut" value:[NSNumber numberWithBool:YES] range:strikeRange];
 	  CFRelease(font);
 	}
 	

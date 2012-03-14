@@ -50,7 +50,7 @@
     [super viewDidLoad];
     
     self.title = NSLocalizedString(@"Espressos", nil);
-    [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+    [self.navigationController.navigationBar setTintColor:[UIColor darkGrayColor]];
 }
 
 #pragma mark - UITableViewDatasource

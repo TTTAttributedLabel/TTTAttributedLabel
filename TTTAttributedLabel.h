@@ -32,6 +32,11 @@ typedef enum {
     TTTAttributedLabelVerticalAlignmentBottom   = 2,
 } TTTAttributedLabelVerticalAlignment;
 
+/**
+ Determines whether the text to which this attribute applies has a strikeout drawn through itself.
+ */
+extern NSString * const kTTTStrikeOutAttributeName;
+
 @protocol TTTAttributedLabelDelegate;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
