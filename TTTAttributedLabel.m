@@ -347,6 +347,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         CFRelease(path);
         return NSNotFound;
     }
+
     CFArrayRef lines = CTFrameGetLines(frame);
     NSUInteger numberOfLines = CFArrayGetCount(lines);
     if (numberOfLines == 0) {
@@ -354,23 +355,30 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         CFRelease(path);
         return NSNotFound;
     }
+
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
-    NSUInteger lineIndex;
 
+    NSUInteger lineIndex;
     for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         if (lineOrigin.y < p.y) {
             break;
         }
     }
-    
+
+    if (lineIndex >= numberOfLines) {
+        CFRelease(frame);
+        CFRelease(path);
+        return NSNotFound;
+    }
+
     CGPoint lineOrigin = lineOrigins[lineIndex];
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     // Convert CT coordinates to line-relative coordinates
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
-    
+
     CFRelease(frame);
     CFRelease(path);
         
