@@ -484,7 +484,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         }
         
         textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange);
+        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange + yOffset);
     }
 
     // Second, trace the shadow before the actual text, if we have one
