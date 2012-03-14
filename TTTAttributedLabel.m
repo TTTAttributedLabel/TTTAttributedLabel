@@ -392,6 +392,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         
         for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
             CGPoint lineOrigin = lineOrigins[lineIndex];
+            lineOrigin.x += rect.origin.x;
+            lineOrigin.y += rect.origin.y;
             CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
 
