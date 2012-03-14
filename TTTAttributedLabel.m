@@ -518,7 +518,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
     // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
-    
+    textSize.height = ceil(textSize.height); // fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns sizes that are ever so slightly too small
+
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
         CGFloat heightChange = (textRect.size.height - textSize.height);
