@@ -432,7 +432,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                                 truncationType = kCTLineTruncationEnd;
                                 break;
                         }    
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, truncationType, truncationToken);
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);
                         CTLineDraw(truncatedLine, c);
                         CFRelease(truncatedLine);
                     }
