@@ -414,27 +414,34 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     // Get the attributes of the last character in the line and use them to create the truncation token string
                     NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
                     NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease]; // \u2026 is the Unicode horizontal ellipsis character code
-                    
-                    // Create and draw a truncated line
-                    CTLineTruncationType truncationType;
-                    switch (self.lineBreakMode) {
-                        case UILineBreakModeHeadTruncation:
-                            truncationType = kCTLineTruncationStart;
-                            break;
-                        case UILineBreakModeMiddleTruncation:
-                            truncationType = kCTLineTruncationMiddle;
-                            break;
-                        case UILineBreakModeTailTruncation:
-                        default:
-                            truncationType = kCTLineTruncationEnd;
-                            break;
-                    }
-                    
                     CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
-                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, truncationType, truncationToken);
-                    CTLineDraw(truncatedLine, c);
                     
-                    CFRelease(truncatedLine);
+                    if (lineIndex == 0) {
+                        // there is only one line, do head, middle, or tail truncation
+                        // Create and draw a truncated line
+                        CTLineTruncationType truncationType;
+                        switch (self.lineBreakMode) {
+                            case UILineBreakModeHeadTruncation:
+                                truncationType = kCTLineTruncationStart;
+                                break;
+                            case UILineBreakModeMiddleTruncation:
+                                truncationType = kCTLineTruncationMiddle;
+                                break;
+                            case UILineBreakModeTailTruncation:
+                            default:
+                                truncationType = kCTLineTruncationEnd;
+                                break;
+                        }    
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, truncationType, truncationToken);
+                        CTLineDraw(truncatedLine, c);
+                        CFRelease(truncatedLine);
+                    }
+                    else {
+                        // there are multiple lines, only do tail truncation
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, kCTLineTruncationEnd, truncationToken);
+                        CTLineDraw(truncatedLine, c);
+                        CFRelease(truncatedLine);                        
+                    }
                     CFRelease(truncationToken);
                 }
                 else {
