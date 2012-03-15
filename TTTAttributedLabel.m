@@ -391,9 +391,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
-    if (self.numberOfLines == 0) {
-        CTFrameDraw(frame, c);
-    } else {
         CFArrayRef lines = CTFrameGetLines(frame);
         NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
         BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
@@ -469,7 +466,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 CTLineDraw(line, c);
             }
         }
-    }
 
     [self drawStrike:frame inRect:rect context:c];
     
