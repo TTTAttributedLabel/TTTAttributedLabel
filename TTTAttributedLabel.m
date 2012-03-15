@@ -391,82 +391,82 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
-        CFArrayRef lines = CTFrameGetLines(frame);
-        NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
-        BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
-
-        CGPoint lineOrigins[numberOfLines];
-        CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
+    CFArrayRef lines = CTFrameGetLines(frame);
+    NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
+    BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
+    
+    CGPoint lineOrigins[numberOfLines];
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
+    
+    for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+        CGPoint lineOrigin = lineOrigins[lineIndex];
+        CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
+        CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
         
-        for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-            CGPoint lineOrigin = lineOrigins[lineIndex];
-            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
-            CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-
-            if (lineIndex == numberOfLines - 1 && truncateLastLine) {
-                // Check if the range of text in the last line reaches the end of the full attributed string
-                CFRange lastLineRange = CTLineGetStringRange(line);
+        if (lineIndex == numberOfLines - 1 && truncateLastLine) {
+            // Check if the range of text in the last line reaches the end of the full attributed string
+            CFRange lastLineRange = CTLineGetStringRange(line);
+            
+            if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
+                // Get the attributes of the last character in the line and use them to create the truncation token string
+                NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
+                NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease]; // \u2026 is the Unicode horizontal ellipsis character code
+                CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
                 
-                if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
-                    // Get the attributes of the last character in the line and use them to create the truncation token string
-                    NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
-                    NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease]; // \u2026 is the Unicode horizontal ellipsis character code
-                    CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
-                    
-                    if (lineIndex == 0) {
-                        // there is only one line, do head, middle, or tail truncation
-                        // Create and draw a truncated line
-                        CTLineTruncationType truncationType;
-                        switch (self.lineBreakMode) {
-                            case UILineBreakModeHeadTruncation:
-                                truncationType = kCTLineTruncationStart;
-                                break;
-                            case UILineBreakModeMiddleTruncation:
-                                truncationType = kCTLineTruncationMiddle;
-                                break;
-                            case UILineBreakModeTailTruncation:
-                            default:
-                                truncationType = kCTLineTruncationEnd;
-                                break;
-                        }    
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);
-                        CTLineDraw(truncatedLine, c);
-                        CFRelease(truncatedLine);
-                    }
-                    else {
-                        // There are multiple lines, only do tail truncation
-                        
-                        // CoreText will only truncate if this line is too long, but it needs the truncation token even if it's not, so we need to append one
-                        NSMutableAttributedString *stringWithToken = [[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
-                        if (lastLineRange.length > 0) {
-                            // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
-                            unichar lastCharacter = [[stringWithToken string] characterAtIndex:lastLineRange.length - 1];
-                            if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
-                                [stringWithToken deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
-                            }
-                        }
-                        [stringWithToken appendAttributedString:tokenString];
-                        CTLineRef stringWithTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)stringWithToken);
-                        
-                        // Truncate the line in case it is too long.
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(stringWithTokenLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
-                        CTLineDraw(truncatedLine, c);
-                        
-                        CFRelease(truncatedLine);
-                        CFRelease(stringWithTokenLine);
-                        [stringWithToken release];
-                    }
-                    CFRelease(truncationToken);
+                if (lineIndex == 0) {
+                    // there is only one line, do head, middle, or tail truncation
+                    // Create and draw a truncated line
+                    CTLineTruncationType truncationType;
+                    switch (self.lineBreakMode) {
+                        case UILineBreakModeHeadTruncation:
+                            truncationType = kCTLineTruncationStart;
+                            break;
+                        case UILineBreakModeMiddleTruncation:
+                            truncationType = kCTLineTruncationMiddle;
+                            break;
+                        case UILineBreakModeTailTruncation:
+                        default:
+                            truncationType = kCTLineTruncationEnd;
+                            break;
+                    }    
+                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);
+                    CTLineDraw(truncatedLine, c);
+                    CFRelease(truncatedLine);
                 }
                 else {
-                    CTLineDraw(line, c);
+                    // There are multiple lines, only do tail truncation
+                    
+                    // CoreText will only truncate if this line is too long, but it needs the truncation token even if it's not, so we need to append one
+                    NSMutableAttributedString *stringWithToken = [[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
+                    if (lastLineRange.length > 0) {
+                        // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
+                        unichar lastCharacter = [[stringWithToken string] characterAtIndex:lastLineRange.length - 1];
+                        if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
+                            [stringWithToken deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
+                        }
+                    }
+                    [stringWithToken appendAttributedString:tokenString];
+                    CTLineRef stringWithTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)stringWithToken);
+                    
+                    // Truncate the line in case it is too long.
+                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(stringWithTokenLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
+                    CTLineDraw(truncatedLine, c);
+                    
+                    CFRelease(truncatedLine);
+                    CFRelease(stringWithTokenLine);
+                    [stringWithToken release];
                 }
+                CFRelease(truncationToken);
             }
             else {
                 CTLineDraw(line, c);
             }
         }
-
+        else {
+            CTLineDraw(line, c);
+        }
+    }
+    
     [self drawStrike:frame inRect:rect context:c];
     
     CFRelease(frame);
