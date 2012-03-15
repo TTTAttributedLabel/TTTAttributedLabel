@@ -395,7 +395,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         CTFrameDraw(frame, c);
     } else {
         CFArrayRef lines = CTFrameGetLines(frame);
-        NSUInteger numberOfLines = MIN(self.numberOfLines, CFArrayGetCount(lines));
+        NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
         BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
 
         CGPoint lineOrigins[numberOfLines];
