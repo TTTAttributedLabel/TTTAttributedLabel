@@ -437,10 +437,27 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                         CFRelease(truncatedLine);
                     }
                     else {
-                        // there are multiple lines, only do tail truncation
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, CTLineGetImageBounds(line, c).size.width, kCTLineTruncationEnd, truncationToken);
+                        // There are multiple lines, only do tail truncation
+                        
+                        // CoreText will only truncate if this line is too long, but it needs the truncation token even if it's not, so we need to append one
+                        NSMutableAttributedString *stringWithToken = [[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
+                        if (lastLineRange.length > 0) {
+                            // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
+                            unichar lastCharacter = [[stringWithToken string] characterAtIndex:lastLineRange.length - 1];
+                            if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
+                                [stringWithToken deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
+                            }
+                        }
+                        [stringWithToken appendAttributedString:tokenString];
+                        CTLineRef stringWithTokenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)stringWithToken);
+                        
+                        // Truncate the line in case it is too long.
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(stringWithTokenLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
                         CTLineDraw(truncatedLine, c);
-                        CFRelease(truncatedLine);                        
+                        
+                        CFRelease(truncatedLine);
+                        CFRelease(stringWithTokenLine);
+                        [stringWithToken release];
                     }
                     CFRelease(truncationToken);
                 }
