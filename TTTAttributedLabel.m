@@ -314,7 +314,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
         NSRange range = result.range;
-        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length)) {
+        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length - 1)) {
             return result;
         }
     }
@@ -379,6 +379,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
 
+    // We should check if we are outside the string range
+    CFIndex glyphCount = CTLineGetGlyphCount(line);
+    CFRange stringRange = CTLineGetStringRange(line);
+    CFIndex stringRelativeStart = stringRange.location;
+    if ((idx - stringRelativeStart) == glyphCount) {
+        CFRelease(frame);
+        CFRelease(path);
+        return NSNotFound;
+    }
+    
     CFRelease(frame);
     CFRelease(path);
         
