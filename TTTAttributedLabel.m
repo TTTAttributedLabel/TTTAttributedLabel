@@ -427,7 +427,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
                     
                     if (lineIndex == 0) {
-                        // there is only one line, do head, middle, or tail truncation
+                        // There is only one line, do head, middle, or tail truncation
+                        
                         // Create and draw a truncated line
                         CTLineTruncationType truncationType;
                         switch (self.lineBreakMode) {
@@ -441,8 +442,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                             default:
                                 truncationType = kCTLineTruncationEnd;
                                 break;
-                        }    
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);
+                        }
+
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);                        
+                        if (!truncatedLine) {
+                            // If the line is not as wide as the truncationToken, truncatedLine is NULL
+                            truncatedLine = CFRetain(truncationToken);
+                        }
                         CTLineDraw(truncatedLine, c);
                         CFRelease(truncatedLine);
                     }
