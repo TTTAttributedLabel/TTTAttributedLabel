@@ -185,6 +185,17 @@ extern NSString * const kTTTStrikeOutAttributeName;
  */
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
 
+///--------------------------
+/// @name Defining Text Paths
+///--------------------------
+
+/**
+ Specifies a block that defines the text path to be used in given frame.
+ 
+ @param block A block object that returns a `CGPathRef` and takes a single arguemnt, a `CGRect` defining the frame in which the path will be drawn. If `nil`, the text will draw in the frame normally. 
+ */
+- (void)setTextPathBlock:(CGPathRef (^)(CGRect rect))block; 
+
 ///-------------------
 /// @name Adding Links
 ///-------------------

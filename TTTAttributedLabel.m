@@ -24,6 +24,8 @@
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
+typedef CGPathRef (^TTTTextPathBlock)(CGRect rect);
+
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
@@ -135,12 +137,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
 @property (readwrite, nonatomic, retain) UITapGestureRecognizer *tapGestureRecognizer;
+@property (readwrite, nonatomic, copy) TTTTextPathBlock textPathBlock;
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
+- (CGPathRef)textPathInRect:(CGRect)rect;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
@@ -164,6 +168,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
+@synthesize textPathBlock = _textPathBlock;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -213,6 +218,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [_links release];
     [_linkAttributes release];
     [_tapGestureRecognizer release];
+    [_textPathBlock release];
     [super dealloc];
 }
 
@@ -327,6 +333,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return [self linkAtCharacterIndex:idx];
 }
 
+- (CGPathRef)textPathInRect:(CGRect)rect {
+    if (self.textPathBlock) {
+        return self.textPathBlock(rect);
+    } else {
+        CGMutablePathRef mutablePath = CGPathCreateMutable();
+        CGPathAddRect(mutablePath, NULL, rect);
+        return mutablePath;
+    } 
+}
+
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p {
     if (!CGRectContainsPoint(self.bounds, p)) {
         return NSNotFound;
@@ -340,8 +356,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
     p = CGPointMake(p.x, textRect.size.height - p.y);
 
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, textRect);
+    CGPathRef path = [self textPathInRect:textRect];
     CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, [self.attributedText length]), path, NULL);
     if (frame == NULL) {
         CFRelease(path);
@@ -396,9 +411,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
-    CGMutablePathRef path = CGPathCreateMutable();
-    
-    CGPathAddRect(path, NULL, rect);
+    CGPathRef path = [self textPathInRect:rect];
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
     if (self.numberOfLines == 0) {
@@ -696,8 +709,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         constraints = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
     } else if (self.numberOfLines > 0) {
         // If the line count of the label more than 1, limit the range to size to the number of lines that have been set
-        CGMutablePathRef path = CGPathCreateMutable();
-        CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, constraints.width, CGFLOAT_MAX));
+        CGPathRef path = [self textPathInRect:CGRectMake(0.0f, 0.0f, constraints.width, CGFLOAT_MAX)];
         CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, 0), path, NULL);
         CFArrayRef lines = CTFrameGetLines(frame);
         
