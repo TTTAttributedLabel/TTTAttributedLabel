@@ -196,6 +196,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
+    _linkHandlers = [[NSMutableDictionary alloc] init];
+    
     self.textInsets = UIEdgeInsetsZero;
     
     self.userInteractionEnabled = YES;
@@ -287,6 +289,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
     [self addLinkWithTextCheckingResult:result attributes:self.linkAttributes];
+}
+
+- (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range handler:(void(^)())handler {
+    if (handler != NULL) [_linkHandlers setObject:[handler copy] forKey:url];
+    [self addLinkToURL:url withRange:range];
 }
 
 - (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range {
@@ -730,15 +737,19 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]];
-    if (!result || !self.delegate) {
+    if (!result) {
         return;
     }
     
     switch (result.resultType) {
-        case NSTextCheckingTypeLink:
+        case NSTextCheckingTypeLink:{
+            void (^handler)() = [_linkHandlers objectForKey:result.URL];
+            if (handler) handler();
+            
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
             }
+        }
             break;
         case NSTextCheckingTypeAddress:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
