@@ -469,6 +469,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                         
                         // Truncate the line in case it is too long.
                         CTLineRef truncatedLine = CTLineCreateTruncatedLine(stringWithTokenLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
+                        if (!truncatedLine) {
+                            // if the line is less wide than the truncationToken, truncatedLine is NULL
+                            truncatedLine = CFRetain(truncationToken);
+                        }
                         CTLineDraw(truncatedLine, c);
                         
                         CFRelease(truncatedLine);
