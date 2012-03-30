@@ -429,6 +429,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     if (lineIndex == 0) {
                         // There is only one line, do head, middle, or tail truncation
                         
+                        // CTFramesetter implicitly performs word wrap when generating a CTFrameRef. If there is too much text to fit in the rect, CTFrameGetVisibleStringRange and CTFrameGetStringRange will differ. CTFrameGetLines returns an array of CTLines that only reflects the range of text from CTFrameGetStringRange. Calling CTLineCreateTruncatedLine on the last CTLine essentially does nothing, since the CTLine is already truncated to fit (by word wrap).
+
+                        // Instead of using the CTLine generated from the CTFramesetter, we directly generate a line from the CTTypesetter within the CTFramesetter.
+                        CTTypesetterRef typesetter = CTFramesetterGetTypesetter(framesetter);
+                        CTLineRef singleLine = CTTypesetterCreateLine(typesetter, textRange);
+
                         // Create and draw a truncated line
                         CTLineTruncationType truncationType;
                         switch (self.lineBreakMode) {
@@ -444,13 +450,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                                 break;
                         }
 
-                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);                        
+                        CTLineRef truncatedLine = CTLineCreateTruncatedLine(singleLine, rect.size.width, truncationType, truncationToken);                        
                         if (!truncatedLine) {
                             // If the line is not as wide as the truncationToken, truncatedLine is NULL
                             truncatedLine = CFRetain(truncationToken);
                         }
                         CTLineDraw(truncatedLine, c);
                         CFRelease(truncatedLine);
+                        CFRelease(singleLine);
                     }
                     else {
                         // There are multiple lines, only do tail truncation
