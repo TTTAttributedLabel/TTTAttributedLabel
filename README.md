@@ -1,5 +1,5 @@
 # TTTAttributedLabel
-## A drop-in replacement for UILabel that supports NSAttributedStrings 
+## A drop-in replacement for UILabel that supports NSAttributedStrings
 
 ![Screenshot of TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/raw/master/TTTAttributedLabelExample/screenshot.png "TTTAttributedLabel Screenshot")
 
@@ -9,13 +9,13 @@
 
 ## Documentation
 
-Online documentation is available at http://mattt.github.com/TTTAttributedLabel/. 
+Online documentation is available at http://mattt.github.com/TTTAttributedLabel/.
 
 To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
 
 ## Demo
 
-Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttributedLabel` in action. 
+Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttributedLabel` in action.
 
 ## Installation
 
@@ -36,16 +36,16 @@ NSString *text = @"Lorem ipsum dolar sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
   NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
   NSRange strikeRange = [[mutableAttributedString string] rangeOfString:@"sit amet" options:NSCaseInsensitiveSearch];
-  
+
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
-  UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14]; 
+  UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
 	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
 	if (font) {
 	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
 	  [mutableAttributedString addAttribute:@"TTTCustomStrikeOut" value:[NSNumber numberWithBool:YES] range:strikeRange];
 	  CFRelease(font);
 	}
-	
+
 	return mutableAttributedString;
 }];
 ```
@@ -72,7 +72,7 @@ NSRange range = [label.text rangeOfString:@"me"];
 
 Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
 
-Thanks to [Tyler Bunnell](https://github.com/tylerb) for his fix to how touches are mapped onto their corresponding embedded links, [Mark Makdad](https://github.com/makdad) for implementing shadow color and vertical text alignment, and [Daniel Tull](https://github.com/danielctull) for implementing support for highlight color.
+Many thanks to [the contributors to TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/contributors), for all of their features, fixes, and feedback.
 
 ## Contact
 

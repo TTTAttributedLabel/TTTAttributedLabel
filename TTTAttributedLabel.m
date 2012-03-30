@@ -314,7 +314,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
         NSRange range = result.range;
-        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length)) {
+        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length - 1)) {
             return result;
         }
     }
@@ -379,6 +379,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
     CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
 
+    // We should check if we are outside the string range
+    CFIndex glyphCount = CTLineGetGlyphCount(line);
+    CFRange stringRange = CTLineGetStringRange(line);
+    CFIndex stringRelativeStart = stringRange.location;
+    if ((idx - stringRelativeStart) == glyphCount) {
+        CFRelease(frame);
+        CFRelease(path);
+        return NSNotFound;
+    }
+    
     CFRelease(frame);
     CFRelease(path);
         
@@ -414,7 +424,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
                 
                 if (lineIndex == 0) {
-                    // there is only one line, do head, middle, or tail truncation
+                    // There is only one line, do head, middle, or tail truncation
+                    
                     // Create and draw a truncated line
                     CTLineTruncationType truncationType;
                     switch (self.lineBreakMode) {
@@ -428,8 +439,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                         default:
                             truncationType = kCTLineTruncationEnd;
                             break;
-                    }    
-                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);
+                    }
+                    
+                    CTLineRef truncatedLine = CTLineCreateTruncatedLine(line, rect.size.width, truncationType, truncationToken);                        
+                    if (!truncatedLine) {
+                        // If the line is not as wide as the truncationToken, truncatedLine is NULL
+                        truncatedLine = CFRetain(truncationToken);
+                    }
                     CTLineDraw(truncatedLine, c);
                     CFRelease(truncatedLine);
                 }
@@ -450,6 +466,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     
                     // Truncate the line in case it is too long.
                     CTLineRef truncatedLine = CTLineCreateTruncatedLine(stringWithTokenLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
+                    if (!truncatedLine) {
+                        // If the line is not as wide as the truncationToken, truncatedLine is NULL
+                        truncatedLine = CFRetain(truncationToken);
+                    }
                     CTLineDraw(truncatedLine, c);
                     
                     CFRelease(truncatedLine);
@@ -466,7 +486,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CTLineDraw(line, c);
         }
     }
-    
+
     [self drawStrike:frame inRect:rect context:c];
     
     CFRelease(frame);
@@ -677,7 +697,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     } else if (self.numberOfLines > 0) {
         // If the line count of the label more than 1, limit the range to size to the number of lines that have been set
         CGMutablePathRef path = CGPathCreateMutable();
-        CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, self.bounds.size.width, CGFLOAT_MAX));
+        CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, constraints.width, CGFLOAT_MAX));
         CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter, CFRangeMake(0, 0), path, NULL);
         CFArrayRef lines = CTFrameGetLines(frame);
         
