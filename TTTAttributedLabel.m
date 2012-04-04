@@ -438,13 +438,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     truncationType = kCTLineTruncationEnd;
                 else
                     switch (self.lineBreakMode) {
-                        case kCTLineBreakByTruncatingHead:
+                        case UILineBreakModeHeadTruncation:
                             truncationType = kCTLineTruncationStart;
                             break;
-                        case kCTLineBreakByTruncatingMiddle:
+                        case UILineBreakModeMiddleTruncation:
                             truncationType = kCTLineTruncationMiddle;
                             break;
-                        case kCTLineBreakByTruncatingTail:
+                        case UILineBreakModeTailTruncation:
                         default:
                             truncationType = kCTLineTruncationEnd;
                             break;
