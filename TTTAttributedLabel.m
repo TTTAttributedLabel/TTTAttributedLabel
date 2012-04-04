@@ -418,8 +418,34 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CFRange lastLineRange = CTLineGetStringRange(line);
             
             if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
-                // Get the attributes of the last character in the line and use them to create the truncation token string
-                NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
+                
+                // Get correct truncstionType and attribute position
+                CTLineTruncationType truncationType;
+                NSInteger truncationAttrubutePosition;
+                UILineBreakMode lineBreakMode = self.lineBreakMode;
+                
+                // Multiple lines, only use UILineBreakModeTailTruncation
+                if (numberOfLines != 1)
+                    lineBreakMode = UILineBreakModeTailTruncation;
+                
+                switch (lineBreakMode) {
+                    case UILineBreakModeHeadTruncation:
+                        truncationType = kCTLineTruncationStart;
+                        truncationAttrubutePosition = lastLineRange.location;
+                        break;
+                    case UILineBreakModeMiddleTruncation:
+                        truncationType = kCTLineTruncationMiddle;
+                        truncationAttrubutePosition = lastLineRange.location + lastLineRange.length/2;
+                        break;
+                    case UILineBreakModeTailTruncation:
+                    default:
+                        truncationType = kCTLineTruncationEnd;
+                        truncationAttrubutePosition = lastLineRange.location + lastLineRange.length - 1;
+                        break;
+                }
+                
+                // Get the attributes and use them to create the truncation token string
+                NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:truncationAttrubutePosition effectiveRange:NULL];
                 // \u2026 is the Unicode horizontal ellipsis character code
                 NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
@@ -430,28 +456,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 CFAttributedStringRef truncationString = CFAttributedStringCreateWithSubstring(kCFAllocatorDefault, (CFAttributedStringRef)self.attributedText, lastLineRange);
                 CTLineRef truncationLine = CTLineCreateWithAttributedString(truncationString);
 
-                // Get correct truncstionType
-                CTLineTruncationType truncationType;
-                
-                // Multiple lines, only use kCTLineTruncationEnd
-                if (numberOfLines != 1)
-                    truncationType = kCTLineTruncationEnd;
-                else
-                    switch (self.lineBreakMode) {
-                        case UILineBreakModeHeadTruncation:
-                            truncationType = kCTLineTruncationStart;
-                            break;
-                        case UILineBreakModeMiddleTruncation:
-                            truncationType = kCTLineTruncationMiddle;
-                            break;
-                        case UILineBreakModeTailTruncation:
-                        default:
-                            truncationType = kCTLineTruncationEnd;
-                            break;
-                    }
-
                 // Truncate the line in case it is too long.
-                CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine, rect.size.width, kCTLineTruncationEnd, truncationToken);
+                CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine, rect.size.width, truncationType, truncationToken);
                 if (!truncatedLine) {
                     // If the line is not as wide as the truncationToken, truncatedLine is NULL
                     truncatedLine = CFRetain(truncationToken);
