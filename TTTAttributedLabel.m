@@ -575,9 +575,10 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-    } else {
-        self.attributedText = text;
+        return;
     }
+    
+    self.attributedText = text;
 
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
