@@ -94,6 +94,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kSummaryTextFontSize]; 
         CTFontRef boldFont = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
         if (boldFont) {
+            [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
             [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)boldFont range:nameRange];
             CFRelease(boldFont);
         }
@@ -105,9 +106,11 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
             UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kSummaryTextFontSize];
             CTFontRef italicFont = CTFontCreateWithName((CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
             if (italicFont) {
+                [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
                 [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)italicFont range:result.range];
                 CFRelease(italicFont);
                 
+                [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:result.range];
                 [mutableAttributedString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[[UIColor grayColor] CGColor] range:result.range];
             }
         }];
