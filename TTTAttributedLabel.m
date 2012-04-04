@@ -25,6 +25,7 @@
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
+NSString * const kTTTTemporaryAttributesAttributeName = @"TTTTemporaryAttributesAttribute";
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
@@ -145,6 +146,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
+- (void)temporarilyHighlightSubstringWithRange:(NSRange)range;
+- (void)resetTemporarilyHighlightedSubstringWithRange:(NSRange)range;
 @end
 
 @implementation TTTAttributedLabel
@@ -307,6 +310,25 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)addLinkToDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration withRange:(NSRange)range {
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult dateCheckingResultWithRange:range date:date timeZone:timeZone duration:duration]];
+}
+
+#pragma mark -
+
+- (void)temporarilyHighlightSubstringWithRange:(NSRange)range {
+    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    [mutableAttributedString addAttribute:(NSString *)kTTTTemporaryAttributesAttributeName value:(id)[mutableAttributedString attributesAtIndex:range.location effectiveRange:nil] range:range];
+    [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:range];
+    [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:range];
+    self.attributedText = mutableAttributedString;
+    [self setNeedsDisplay];
+}
+
+- (void)resetTemporarilyHighlightedSubstringWithRange:(NSRange)range {
+    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:range];
+    [mutableAttributedString addAttributes:[mutableAttributedString attribute:(NSString *)kTTTTemporaryAttributesAttributeName atIndex:range.location effectiveRange:nil] range:range];
+    self.attributedText = mutableAttributedString;
+    [self setNeedsDisplay];
 }
 
 #pragma mark -
@@ -676,6 +698,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (self.highlightedTextColor && self.highlighted) {
         if (!self.highlightFramesetter) {
             NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
+            [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:NSMakeRange(0, mutableAttributedString.length)];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
         }
@@ -731,7 +754,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 #pragma mark - UIGestureRecognizer
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    return [self linkAtPoint:[touch locationInView:self]] != nil;
+    NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
+    if (!result) {
+        return NO;
+    }
+    
+    [self temporarilyHighlightSubstringWithRange:result.range];
+    
+    return YES;
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
@@ -768,6 +798,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             }
             break;
     }
+    
+    [self resetTemporarilyHighlightedSubstringWithRange:result.range];
 }
 
 @end
