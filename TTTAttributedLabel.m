@@ -132,6 +132,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
+@property (readwrite, nonatomic, retain) NSAttributedString *highlightAttributedText;
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
 @property (readwrite, nonatomic, retain) UITapGestureRecognizer *tapGestureRecognizer;
@@ -142,7 +143,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (NSUInteger)characterIndexAtPoint:(CGPoint)p;
-- (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
+- (void)drawFramesetter:(CTFramesetterRef)framesetter attributedString:(NSAttributedString *)attributedString textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
 @end
@@ -152,6 +153,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize attributedText = _attributedText;
 @synthesize framesetter = _framesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
+@synthesize highlightAttributedText = _highlightAttributedText;
 @synthesize delegate = _delegate;
 @synthesize dataDetectorTypes = _dataDetectorTypes;
 @synthesize dataDetector = _dataDetector;
@@ -209,6 +211,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
     
     [_attributedText release];
+    [_highlightAttributedText release];
     [_dataDetector release];
     [_links release];
     [_linkAttributes release];
@@ -395,7 +398,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return idx;
 }
 
-- (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
+- (void)drawFramesetter:(CTFramesetterRef)framesetter attributedString:(NSAttributedString *)attributedString textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
     CGMutablePathRef path = CGPathCreateMutable();
     
     CGPathAddRect(path, NULL, rect);
@@ -419,7 +422,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             
             if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
                 // Get the attributes of the last character in the line and use them to create the truncation token string
-                NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
+                NSDictionary *tokenAttributes = [attributedString attributesAtIndex:(lastLineRange.location + lastLineRange.length - 1) effectiveRange:NULL];
                 NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease]; // \u2026 is the Unicode horizontal ellipsis character code
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
                 
@@ -461,7 +464,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                     // There are multiple lines, only do tail truncation
                     
                     // CoreText will only truncate if this line is too long, but it needs the truncation token even if it's not, so we need to append one
-                    NSMutableAttributedString *stringWithToken = [[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
+                    NSMutableAttributedString *stringWithToken = [[attributedString attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
                     if (lastLineRange.length > 0) {
                         // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
                         unichar lastCharacter = [[stringWithToken string] characterAtIndex:lastLineRange.length - 1];
@@ -677,12 +680,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         if (!self.highlightFramesetter) {
             NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
+            self.highlightAttributedText = mutableAttributedString;
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
         }
         
-        [self drawFramesetter:self.highlightFramesetter textRange:textRange inRect:textRect context:c];
+        [self drawFramesetter:self.highlightFramesetter attributedString:self.highlightAttributedText textRange:textRange inRect:textRect context:c];
     } else {
-        [self drawFramesetter:self.framesetter textRange:textRange inRect:textRect context:c];
+        [self drawFramesetter:self.framesetter attributedString:self.attributedText textRange:textRange inRect:textRect context:c];
     }  
     
     // If we adjusted the font size, set it back to its original size
