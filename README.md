@@ -33,7 +33,7 @@ label.lineBreakMode = UILineBreakModeWordWrap;
 label.numberOfLines = 0;
 
 NSString *text = @"Lorem ipsum dolar sit amet";
-[label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+[label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
   NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
   NSRange strikeRange = [[mutableAttributedString string] rangeOfString:@"sit amet" options:NSCaseInsensitiveSearch];
 
