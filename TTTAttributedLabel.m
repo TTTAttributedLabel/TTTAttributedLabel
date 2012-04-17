@@ -449,10 +449,19 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 NSAttributedString *tokenString = [[[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes] autorelease];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((CFAttributedStringRef)tokenString);
                 
-                // Append rest of the text to this line and that one truncate it 
-                lastLineRange.length = CFAttributedStringGetLength((CFAttributedStringRef)self.attributedText) - lastLineRange.location;
-                CFAttributedStringRef truncationString = CFAttributedStringCreateWithSubstring(kCFAllocatorDefault, (CFAttributedStringRef)self.attributedText, lastLineRange);
-                CTLineRef truncationLine = CTLineCreateWithAttributedString(truncationString);
+                // Append truncationToken to the string
+                // because if string isn't too long, CT wont add the truncationToken on it's own
+                // There is no change of a double truncationToken because CT only add the token if it removes characters (and the one we add will go first)
+                NSMutableAttributedString *truncationString = [[[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy] autorelease];
+                if (lastLineRange.length > 0) {
+                    // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
+                    unichar lastCharacter = [[truncationString string] characterAtIndex:lastLineRange.length - 1];
+                    if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
+                        [truncationString deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
+                    }
+                }
+                [truncationString appendAttributedString:tokenString];
+                CTLineRef truncationLine = CTLineCreateWithAttributedString((CFAttributedStringRef)truncationString);
 
                 // Truncate the line in case it is too long.
                 CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine, rect.size.width, truncationType, truncationToken);
@@ -464,7 +473,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 CTLineDraw(truncatedLine, c);
                 
                 CFRelease(truncatedLine);
-                CFRelease(truncationString);
                 CFRelease(truncationToken);
             } else {
                 CTLineDraw(line, c);
