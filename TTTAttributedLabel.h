@@ -193,6 +193,13 @@ extern NSString * const kTTTStrikeOutAttributeName;
  Adds a link to an `NSTextCheckingResult`.
  
  @param result An `NSTextCheckingResult` representing the link's location and type.
+ */
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+
+/**
+ Adds a link to an `NSTextCheckingResult`.
+ 
+ @param result An `NSTextCheckingResult` representing the link's location and type.
  @param attributes The attributes to be added to the text in the range of the specified link. If `nil`, no attributes are added.
  */
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes;
