@@ -745,6 +745,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
             }
             break;
+        default:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithCustomTextCheckingResult:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithCustomTextCheckingResult:result];
+            }
+            break;
     }
 }
 

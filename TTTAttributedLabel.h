@@ -301,4 +301,12 @@ extern NSString * const kTTTStrikeOutAttributeName;
  @param duration The duration, in seconds from the date for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
+
+/**
+ Tells the delegate that the user did select a link to a custom text checking result.
+ 
+ @param label The label whose link was selected.
+ @param result The custom text checking result.
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithCustomTextCheckingResult:(NSTextCheckingResult *)result;
 @end
