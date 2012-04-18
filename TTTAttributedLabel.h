@@ -303,10 +303,11 @@ extern NSString * const kTTTStrikeOutAttributeName;
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
 
 /**
- Tells the delegate that the user did select a link to a custom text checking result.
+ Tells the delegate that the user did select a link to a text checking result.
+ This method is called if the text checking result is custom or you do not implement a method that handles it.
  
  @param label The label whose link was selected.
  @param result The custom text checking result.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithCustomTextCheckingResult:(NSTextCheckingResult *)result;
+- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 @end
