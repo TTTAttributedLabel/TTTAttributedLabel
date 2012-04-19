@@ -600,7 +600,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     CGRect textRect = bounds;
     
-    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
+    // Adjust the text to be in the center vertically, if the text size is smaller than bounds
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, bounds.size, NULL);
     textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
