@@ -591,6 +591,40 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self setNeedsDisplay];
 }
 
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    if (!self.attributedText) {
+        return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    }
+    
+    // *Note: we aren't taking numberOfLines into consideration here
+    
+    CGRect textRect = bounds;
+    
+    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, bounds.size, NULL);
+    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
+    
+    if (textSize.height < textRect.size.height) {
+        CGFloat yOffset = 0.0f;
+        CGFloat heightChange = (textRect.size.height - textSize.height);
+        switch (self.verticalAlignment) {
+            case TTTAttributedLabelVerticalAlignmentTop:
+                heightChange = 0.0f;
+                break;
+            case TTTAttributedLabelVerticalAlignmentCenter:
+                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+                break;
+            case TTTAttributedLabelVerticalAlignmentBottom:
+                break;
+        }
+        
+        textRect.origin.y += yOffset;
+        textRect.size.height -= heightChange - yOffset;
+    }
+    
+    return textRect;
+}
+
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
@@ -616,34 +650,13 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
-    CGRect textRect = rect;
-    CGContextTranslateCTM(c, 0.0f, textRect.size.height);
+    CGContextTranslateCTM(c, 0.0f, rect.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
-    CFRange fitRange;
 
-    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
-    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
-    
-    if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = 0.0f;
-        CGFloat heightChange = (textRect.size.height - textSize.height);
-        switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
-                break;
-            case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
-                break;
-            case TTTAttributedLabelVerticalAlignmentBottom:
-                break;
-        }
-        
-        textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange + yOffset);
-    }
+    // First, get the text rect (which takes vertical centering into account)
+    CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
