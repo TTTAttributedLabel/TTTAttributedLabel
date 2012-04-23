@@ -606,20 +606,19 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
-        CGFloat heightChange = (textRect.size.height - textSize.height);
         switch (self.verticalAlignment) {
             case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
                 break;
             case TTTAttributedLabelVerticalAlignmentCenter:
                 yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
+                yOffset = textRect.size.height - textSize.height;
                 break;
         }
         
         textRect.origin.y += yOffset;
-        textRect.size.height -= heightChange - yOffset;
+        textRect.size.height = textSize.height;
     }
     
     return textRect;
@@ -657,6 +656,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
     // First, get the text rect (which takes vertical centering into account)
     CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
+
+    // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
+    CGContextTranslateCTM(c, 0.0f, rect.size.height - textRect.origin.y - textRect.size.height);
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
