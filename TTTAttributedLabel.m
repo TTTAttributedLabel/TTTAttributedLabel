@@ -337,6 +337,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return NSNotFound;
     }
     
+    // Offset tap coordinates by textRect origin to make them relative to the origin of frame
+    p = CGPointMake(p.x - textRect.origin.x, p.y - textRect.origin.y);
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
     p = CGPointMake(p.x, textRect.size.height - p.y);
 
@@ -349,44 +351,43 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
 
     CFArrayRef lines = CTFrameGetLines(frame);
-    NSUInteger numberOfLines = CFArrayGetCount(lines);
+    NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     if (numberOfLines == 0) {
         CFRelease(frame);
         CFRelease(path);
         return NSNotFound;
     }
+    
+    NSUInteger idx = NSNotFound;
 
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
 
     NSUInteger lineIndex;
-    for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
+    for (lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
-        if (lineOrigin.y < p.y) {
+        CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+        
+        // Get bounding information of line
+        CGFloat ascent, descent, leading, width;
+        width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+        CGFloat yMin = floor(lineOrigin.y - descent);
+        CGFloat yMax = ceil(lineOrigin.y + ascent);
+        
+        // Check if we've already passed the line
+        if (p.y > yMax) {
             break;
         }
-    }
-
-    if (lineIndex >= numberOfLines) {
-        CFRelease(frame);
-        CFRelease(path);
-        return NSNotFound;
-    }
-
-    CGPoint lineOrigin = lineOrigins[lineIndex];
-    CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-    // Convert CT coordinates to line-relative coordinates
-    CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-    CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
-
-    // We should check if we are outside the string range
-    CFIndex glyphCount = CTLineGetGlyphCount(line);
-    CFRange stringRange = CTLineGetStringRange(line);
-    CFIndex stringRelativeStart = stringRange.location;
-    if ((idx - stringRelativeStart) == glyphCount) {
-        CFRelease(frame);
-        CFRelease(path);
-        return NSNotFound;
+        // Check if the point is within this line vertically
+        if (p.y >= yMin) {
+            // Check if the point is within this line horizontally
+            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
+                // Convert CT coordinates to line-relative coordinates
+                CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
+                idx = CTLineGetStringIndexForPosition(line, relativePoint);
+                break;
+            }
+        }
     }
     
     CFRelease(frame);
@@ -591,6 +592,39 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [self setNeedsDisplay];
 }
 
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    if (!self.attributedText) {
+        return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    }
+    
+    // *Note: we aren't taking numberOfLines into consideration here
+    
+    CGRect textRect = bounds;
+    
+    // Adjust the text to be in the center vertically, if the text size is smaller than bounds
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, bounds.size, NULL);
+    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
+    
+    if (textSize.height < textRect.size.height) {
+        CGFloat yOffset = 0.0f;
+        switch (self.verticalAlignment) {
+            case TTTAttributedLabelVerticalAlignmentTop:
+                break;
+            case TTTAttributedLabelVerticalAlignmentCenter:
+                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+                break;
+            case TTTAttributedLabelVerticalAlignmentBottom:
+                yOffset = textRect.size.height - textSize.height;
+                break;
+        }
+        
+        textRect.origin.y += yOffset;
+        textRect.size.height = textSize.height;
+    }
+    
+    return textRect;
+}
+
 - (void)drawTextInRect:(CGRect)rect {
     if (!self.attributedText) {
         [super drawTextInRect:rect];
@@ -616,34 +650,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
-    CGRect textRect = rect;
-    CGContextTranslateCTM(c, 0.0f, textRect.size.height);
+    CGContextTranslateCTM(c, 0.0f, rect.size.height);
     CGContextScaleCTM(c, 1.0f, -1.0f);
     
     CFRange textRange = CFRangeMake(0, [self.attributedText length]);
-    CFRange fitRange;
 
-    // First, adjust the text to be in the center vertically, if the text size is smaller than the drawing rect
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, textRange, NULL, textRect.size, &fitRange);
-    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
-    
-    if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = 0.0f;
-        CGFloat heightChange = (textRect.size.height - textSize.height);
-        switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
-                break;
-            case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
-                break;
-            case TTTAttributedLabelVerticalAlignmentBottom:
-                break;
-        }
-        
-        textRect.origin = CGPointMake(textRect.origin.x, textRect.origin.y + yOffset);
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange + yOffset);
-    }
+    // First, get the text rect (which takes vertical centering into account)
+    CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
+
+    // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
+    CGContextTranslateCTM(c, 0.0f, rect.size.height - textRect.origin.y - textRect.size.height);
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
