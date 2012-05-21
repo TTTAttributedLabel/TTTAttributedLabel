@@ -63,7 +63,7 @@ extern NSString * const kTTTStrikeOutAttributeName;
     CTFramesetterRef _framesetter;
     BOOL _needsFramesetter;
     
-    id _delegate;
+    id<TTTAttributedLabelDelegate> _delegate;
     UIDataDetectorTypes _dataDetectorTypes;
     NSDataDetector *_dataDetector;
     NSArray *_links;
