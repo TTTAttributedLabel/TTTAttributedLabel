@@ -141,7 +141,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
-- (NSUInteger)characterIndexAtPoint:(CGPoint)p;
+- (CFIndex)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
@@ -327,7 +327,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return [self linkAtCharacterIndex:idx];
 }
 
-- (NSUInteger)characterIndexAtPoint:(CGPoint)p {
+- (CFIndex)characterIndexAtPoint:(CGPoint)p {
     if (!CGRectContainsPoint(self.bounds, p)) {
         return NSNotFound;
     }
@@ -359,8 +359,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
 
-    NSUInteger lineIndex;
-    for (lineIndex = 0; lineIndex < (numberOfLines - 1); lineIndex++) {
+	CFIndex lineIndex = 0;
+    for (; lineIndex < (numberOfLines - 1); lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         if (lineOrigin.y < p.y) {
             break;
@@ -408,7 +408,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
     
-    for (NSUInteger lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+    for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
@@ -486,7 +486,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
     
-    NSUInteger lineIndex = 0;
+    CFIndex lineIndex = 0;
     for (id line in lines) {        
         CGRect lineBounds = CTLineGetImageBounds((CTLineRef)line, c);
         lineBounds.origin.x = origins[lineIndex].x;
