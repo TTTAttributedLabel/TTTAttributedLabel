@@ -738,41 +738,39 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return;
     }
     
-    BOOL handled = NO;
     switch (result.resultType) {
         case NSTextCheckingTypeLink:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-                handled = YES;
+                return;
             }
             break;
         case NSTextCheckingTypeAddress:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-                handled = YES;
+                return;
             }
             break;
         case NSTextCheckingTypePhoneNumber:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-                handled = YES;
+                return;
             }
             break;
         case NSTextCheckingTypeDate:
             if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-                handled = YES;
+                return;
             } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-                handled = YES;
+                return;
             }
             break;
     }
     
-    if (!handled) {
-        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
-            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
-        }
+    // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
+    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+        [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
     }
 }
 

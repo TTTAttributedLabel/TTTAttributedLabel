@@ -304,7 +304,8 @@ extern NSString * const kTTTStrikeOutAttributeName;
 
 /**
  Tells the delegate that the user did select a link to a text checking result.
- This method is called if the text checking result is custom or you do not implement a method that handles it.
+ 
+ @discussion This method is called if no other delegate method was called, which can occur by either now implementing the method in `TTTAttributedLabelDelegate` corresponding to a particular link, or the link was added by passing an instance of a custom `NSTextCheckingResult` subclass into `-addLinkWithTextCheckingResult:`.
  
  @param label The label whose link was selected.
  @param result The custom text checking result.
