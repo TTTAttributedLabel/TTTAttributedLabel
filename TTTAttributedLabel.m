@@ -463,6 +463,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 
                 CTLineDraw(truncatedLine, c);
                 
+                CFRelease(truncationLine);
                 CFRelease(truncatedLine);
                 CFRelease(truncationString);
                 CFRelease(truncationToken);
