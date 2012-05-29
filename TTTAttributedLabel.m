@@ -740,29 +740,41 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         return;
     }
     
+    BOOL handled = NO;
     switch (result.resultType) {
         case NSTextCheckingTypeLink:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+                handled = YES;
             }
             break;
         case NSTextCheckingTypeAddress:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+                handled = YES;
             }
             break;
         case NSTextCheckingTypePhoneNumber:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+                handled = YES;
             }
             break;
         case NSTextCheckingTypeDate:
             if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+                handled = YES;
             } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
                 [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+                handled = YES;
             }
             break;
+    }
+    
+    if (!handled) {
+        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
+        }
     }
 }
 
