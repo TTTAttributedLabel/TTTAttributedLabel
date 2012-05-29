@@ -193,6 +193,13 @@ extern NSString * const kTTTStrikeOutAttributeName;
  Adds a link to an `NSTextCheckingResult`.
  
  @param result An `NSTextCheckingResult` representing the link's location and type.
+ */
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+
+/**
+ Adds a link to an `NSTextCheckingResult`.
+ 
+ @param result An `NSTextCheckingResult` representing the link's location and type.
  @param attributes The attributes to be added to the text in the range of the specified link. If `nil`, no attributes are added.
  */
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes;
@@ -294,4 +301,13 @@ extern NSString * const kTTTStrikeOutAttributeName;
  @param duration The duration, in seconds from the date for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
+
+/**
+ Tells the delegate that the user did select a link to a text checking result.
+ This method is called if the text checking result is custom or you do not implement a method that handles it.
+ 
+ @param label The label whose link was selected.
+ @param result The custom text checking result.
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 @end
