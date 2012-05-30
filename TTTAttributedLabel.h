@@ -53,9 +53,9 @@ extern NSString * const kTTTStrikeOutAttributeName;
  
  - `text` - This property now takes an `id` type argument, which can either be a kind of `NSString` or `NSAttributedString` (mutable or immutable in both cases)
  - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
- - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero
+ - `adjustsFontsizeToFitWidth` - Supported in iOS 5 and greater, this property is effective for any value of `numberOfLines` greater than zero. In iOS 4, setting `numberOfLines` to a value greater than 1 with `adjustsFontSizeToFitWidth` set to `YES` may cause `sizeToFit` to execute indefinitely.
  
- @warning Any properties changed on the label after setting the text will not be reflected until a subsequent call to `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`. This is to say, order of operations matters in this case. For example, if the label text color is originally black when the text is set, changing the text color to red will have no effect on the display of the label until the text is set once again. 
+ @warning Any properties changed on the label after setting the text will not be reflected until a subsequent call to `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`. This is to say, order of operations matters in this case. For example, if the label text color is originally black when the text is set, changing the text color to red will have no effect on the display of the label until the text is set once again.
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate> {
 @private
@@ -304,7 +304,8 @@ extern NSString * const kTTTStrikeOutAttributeName;
 
 /**
  Tells the delegate that the user did select a link to a text checking result.
- This method is called if the text checking result is custom or you do not implement a method that handles it.
+ 
+ @discussion This method is called if no other delegate method was called, which can occur by either now implementing the method in `TTTAttributedLabelDelegate` corresponding to a particular link, or the link was added by passing an instance of a custom `NSTextCheckingResult` subclass into `-addLinkWithTextCheckingResult:`.
  
  @param label The label whose link was selected.
  @param result The custom text checking result.
