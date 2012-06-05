@@ -417,7 +417,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             // Check if the range of text in the last line reaches the end of the full attributed string
             CFRange lastLineRange = CTLineGetStringRange(line);
             
-            if (lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
+            if (!(lastLineRange.length == 0 && lastLineRange.location == 0) && lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
