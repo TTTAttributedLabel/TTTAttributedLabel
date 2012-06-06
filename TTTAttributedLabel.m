@@ -330,6 +330,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:range];
     self.attributedText = mutableAttributedString;
 	
+    [mutableAttributedString release];
+    
     [self setNeedsDisplay];
 }
 	
@@ -342,6 +344,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.linkAttributes objectForKey:(NSString *)kCTForegroundColorAttributeName] range:range];
     self.attributedText = mutableAttributedString;
 	
+    [mutableAttributedString release];
+    
     [self setNeedsDisplay];
 	
 }
