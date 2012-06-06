@@ -351,7 +351,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
 
     CFArrayRef lines = CTFrameGetLines(frame);
-    NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
+    NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     if (numberOfLines == 0) {
         CFRelease(frame);
         CFRelease(path);
@@ -402,7 +402,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
     CFArrayRef lines = CTFrameGetLines(frame);
-    NSUInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
+    NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
     
     CGPoint lineOrigins[numberOfLines];
