@@ -22,6 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
+#import "BMTapGestureRecognizer.h"
 
 /**
  Vertical alignment for text in a label whose bounds are larger than its text bounds
@@ -77,7 +78,7 @@ extern NSString * const kTTTStrikeOutAttributeName;
     UIEdgeInsets _textInsets;
     TTTAttributedLabelVerticalAlignment _verticalAlignment;
     
-    UITapGestureRecognizer *_tapGestureRecognizer;
+    BMTapGestureRecognizer *_tapGestureRecognizer;
 }
 
 ///-----------------------------
@@ -311,4 +312,5 @@ extern NSString * const kTTTStrikeOutAttributeName;
  @param result The custom text checking result.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+
 @end
