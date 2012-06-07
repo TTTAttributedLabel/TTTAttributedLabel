@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+static NSString *const kCommentedLabelDidMove = @"commentLabelDidMove";
+
 @interface BMTapGestureRecognizer : UITapGestureRecognizer
 
 @end
