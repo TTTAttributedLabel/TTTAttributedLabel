@@ -614,9 +614,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
     }
-    
-    // *Note: we aren't taking numberOfLines into consideration here
-    
+        
     CGRect textRect = bounds;
     
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
@@ -652,6 +650,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     NSAttributedString *originalAttributedText = nil;
+    
     // Adjust the font size to fit width, if necessarry 
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
         CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
