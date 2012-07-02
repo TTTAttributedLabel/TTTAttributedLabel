@@ -30,7 +30,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-    RootViewController *viewController = [[[RootViewController alloc] init] autorelease];    
+    RootViewController *viewController = [[RootViewController alloc] init];    
     _navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];  
@@ -40,10 +40,5 @@
     return YES;
 }
 
-- (void)dealloc {
-    [_window release];
-    [_navigationController release];
-    [super dealloc];
-}
 
 @end
