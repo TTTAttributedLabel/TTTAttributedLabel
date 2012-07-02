@@ -165,19 +165,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
 
-- (UIColor*)textColor
-{
-	UIColor *clr = [super textColor];
-	
-	if(!clr)
-	{
-		clr = [UIColor blackColor];
-		self.textColor = clr;
-	}
-	
-	return clr;
-}
-
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (!self) {
@@ -611,6 +598,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     [self setNeedsDisplay];
+}
+
+// Fixes crash when loading from a UIStoryboard
+- (UIColor *)textColor {
+	UIColor *color = [super textColor];
+	if (!color) {
+		color = [UIColor blackColor];
+	}
+	
+	return color;
 }
 
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
