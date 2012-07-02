@@ -25,6 +25,7 @@
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
+NSString * const kTTTTemporaryAttributesAttributeName = @"TTTTemporaryAttributesAttribute";
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
@@ -134,7 +135,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, retain) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, retain) NSArray *links;
-@property (readwrite, nonatomic, retain) UITapGestureRecognizer *tapGestureRecognizer;
+@property (readwrite, nonatomic, retain) BMTapGestureRecognizer *tapGestureRecognizer;
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
@@ -144,7 +145,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (CFIndex)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
-- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
+- (void)handleTap:(BMTapGestureRecognizer *)gestureRecognizer;
+- (void)temporarilyHighlightSubstringWithRange:(NSRange)range;
+- (void)resetTemporarilyHighlightedSubstringWithRange:(NSRange)range;
 @end
 
 @implementation TTTAttributedLabel
@@ -199,9 +202,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     self.textInsets = UIEdgeInsetsZero;
     
     self.userInteractionEnabled = YES;
-    self.tapGestureRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)] autorelease];
+    self.tapGestureRecognizer = [[[BMTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)] autorelease];
     [self.tapGestureRecognizer setDelegate:self];
     [self addGestureRecognizer:self.tapGestureRecognizer];
+    
+    // add listener for tumblr controller to pop back UI with navigation bar
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(gestureDidMove)
+     name:kCommentedLabelDidMove
+     object:nil ] ;
 }
 
 - (void)dealloc {
@@ -213,6 +223,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [_links release];
     [_linkAttributes release];
     [_tapGestureRecognizer release];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
 }
 
@@ -310,6 +321,34 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 #pragma mark -
+- (void)temporarilyHighlightSubstringWithRange:(NSRange)range {
+
+    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    [mutableAttributedString addAttribute:(NSString *)kTTTTemporaryAttributesAttributeName value:(id)[mutableAttributedString attributesAtIndex:range.location effectiveRange:nil] range:range];
+    [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:range];
+    
+    [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:range];
+    self.attributedText = mutableAttributedString;
+	
+    [mutableAttributedString release];
+    
+    [self setNeedsDisplay];
+}
+	
+- (void)resetTemporarilyHighlightedSubstringWithRange:(NSRange)range {
+    
+    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    [mutableAttributedString addAttribute:(NSString *)kTTTTemporaryAttributesAttributeName value:(id)[mutableAttributedString attributesAtIndex:range.location effectiveRange:nil] range:range];
+    [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:range];
+    
+    [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.linkAttributes objectForKey:(NSString *)kCTForegroundColorAttributeName] range:range];
+    self.attributedText = mutableAttributedString;
+	
+    [mutableAttributedString release];
+    
+    [self setNeedsDisplay];
+	
+}
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
@@ -689,6 +728,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (self.highlightedTextColor && self.highlighted) {
         if (!self.highlightFramesetter) {
             NSMutableAttributedString *mutableAttributedString = [[self.attributedText mutableCopy] autorelease];
+            [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:NSMakeRange(0, mutableAttributedString.length)];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)mutableAttributedString);
         }
@@ -744,19 +784,37 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 #pragma mark - UIGestureRecognizer
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    return [self linkAtPoint:[touch locationInView:self]] != nil;
+    NSTextCheckingResult *result = [self linkAtPoint:[touch locationInView:self]];
+
+    if (!result) {
+        return NO;
+    }
+    [self temporarilyHighlightSubstringWithRange:result.range];
+    	
+    return YES;
 }
 
-- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
+- (void)gestureDidMove {
+    NSTextCheckingResult *result = [self linkAtPoint:[self.tapGestureRecognizer locationInView:self]];
+    
+    // change highlight color back to original
+    [self resetTemporarilyHighlightedSubstringWithRange:result.range];   
+}
+
+- (void)handleTap:(BMTapGestureRecognizer *)gestureRecognizer {
     if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
         return;
     }
     
     NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]];
+    
+    // change highlight color back to original
+    [self resetTemporarilyHighlightedSubstringWithRange:result.range];   
+    
     if (!result || !self.delegate) {
         return;
     }
-    
+
     switch (result.resultType) {
         case NSTextCheckingTypeLink:
             if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
@@ -793,6 +851,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
         [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
     }
+     
 }
 
 @end
