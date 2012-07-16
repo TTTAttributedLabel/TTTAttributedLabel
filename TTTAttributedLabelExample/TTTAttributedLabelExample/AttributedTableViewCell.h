@@ -24,13 +24,10 @@
 
 @class TTTAttributedLabel;
 
-@interface AttributedTableViewCell : UITableViewCell {
-    NSString *_summaryText;
-    TTTAttributedLabel *_summaryLabel;
-}
+@interface AttributedTableViewCell : UITableViewCell
 
-@property (nonatomic, copy) NSString *summaryText;
-@property (nonatomic, retain) TTTAttributedLabel *summaryLabel;
+@property (nonatomic, strong) NSString *summaryText;
+@property (nonatomic, strong) TTTAttributedLabel *summaryLabel;
 
 + (CGFloat)heightForCellWithText:(NSString *)text;
 

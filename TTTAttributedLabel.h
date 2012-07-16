@@ -59,28 +59,7 @@ extern NSString * const kTTTStrikeOutAttributeName;
  
  @warning Any properties changed on the label after setting the text will not be reflected until a subsequent call to `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`. This is to say, order of operations matters in this case. For example, if the label text color is originally black when the text is set, changing the text color to red will have no effect on the display of the label until the text is set once again.
  */
-@interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate> {
-@private
-    NSAttributedString *_attributedText;
-    CTFramesetterRef _framesetter;
-    BOOL _needsFramesetter;
-    
-    id _delegate;
-    UIDataDetectorTypes _dataDetectorTypes;
-    NSDataDetector *_dataDetector;
-    NSArray *_links;
-    NSDictionary *_linkAttributes;
-    
-    CGFloat _shadowRadius;
-    
-    CGFloat _leading;
-    CGFloat _lineHeightMultiple;
-    CGFloat _firstLineIndent;
-    UIEdgeInsets _textInsets;
-    TTTAttributedLabelVerticalAlignment _verticalAlignment;
-    
-    UITapGestureRecognizer *_tapGestureRecognizer;
-}
+@interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate>
 
 ///-----------------------------
 /// @name Accessing the Delegate
@@ -91,7 +70,7 @@ extern NSString * const kTTTStrikeOutAttributeName;
  
  @discussion A `TTTAttributedLabel` delegate responds to messages sent by tapping on links in the label. You can use the delegate to respond to links referencing a URL, address, phone number, date, or date with a specified time zone and duration.
  */
-@property (nonatomic, assign) id <TTTAttributedLabelDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id <TTTAttributedLabelDelegate> delegate;
 
 ///--------------------------------------------
 /// @name Detecting, Accessing, & Styling Links
@@ -107,14 +86,14 @@ extern NSString * const kTTTStrikeOutAttributeName;
 /**
  An array of `NSTextCheckingResult` objects for links detected or manually added to the label text.
  */
-@property (readonly, nonatomic, retain) NSArray *links;
+@property (readonly, nonatomic, strong) NSArray *links;
 
 /**
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
  
  @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
  */
-@property (nonatomic, retain) NSDictionary *linkAttributes;
+@property (nonatomic, strong) NSDictionary *linkAttributes;
 
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
@@ -313,4 +292,5 @@ extern NSString * const kTTTStrikeOutAttributeName;
  @param result The custom text checking result.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+
 @end
