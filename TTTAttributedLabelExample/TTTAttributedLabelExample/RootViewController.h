@@ -27,6 +27,6 @@
     NSArray *_espressos;
 }
 
-@property (nonatomic, retain) NSArray *espressos;
+@property (nonatomic) NSArray *espressos;
 
 @end
