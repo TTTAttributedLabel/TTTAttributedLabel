@@ -124,6 +124,17 @@ extern NSString * const kTTTStrikeOutAttributeName;
 @property (nonatomic, assign) CGFloat lineHeightMultiple;
 
 /**
+ The line height maximum. This value is 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat lineHeightMax;
+
+/**
+ The line height minimum. This value is 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat lineHeightMin;
+
+
+/**
  The distance, in points, from the margin to the text container. This value is `UIEdgeInsetsZero` by default.
  
  @discussion The `UIEdgeInset` members correspond to paragraph style properties rather than a particular geometry, and can change depending on the writing direction. 
