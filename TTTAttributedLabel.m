@@ -818,6 +818,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return [self linkAtPoint:[touch locationInView:self]] != nil;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    // Allow, for example, a `UITableView` with a descendant `TTTAttributedLabel` to scroll when touching a link
+    return YES;
+}
+
 - (void)handleLink:(TTTLinkGestureRecognizer *)gestureRecognizer {
     if ([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
         // Show the link as active
