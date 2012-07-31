@@ -21,6 +21,48 @@
 // THE SOFTWARE.
 
 #import "TTTAttributedLabel.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
+
+#pragma mark - TTTLinkGestureRecognizer
+
+/**
+ `TTTLinkGestureRecognizer` is a simple gesture recognizer for tapping on links in `TTTAttributedLabel`. Unlike `UITapGestureRecognizer`, `TTTLinkGestureRecognizer` enters the began state as soon as the touches begin, and cancels when the touches move or cancel. This allows `TTTAttributedLabel` to show/hide the active link appearance at the appropriate times. It also permits graceful interaction with a parent `UITableViewCell`.
+ */
+@interface TTTLinkGestureRecognizer : UIGestureRecognizer
+
+@end
+
+@implementation TTTLinkGestureRecognizer
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (self.state == UIGestureRecognizerStatePossible) {
+        self.state = UIGestureRecognizerStateBegan;
+    } else if (self.state == UIGestureRecognizerStateBegan) {
+        self.state = UIGestureRecognizerStateChanged;
+    }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateCancelled;
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateEnded;
+    }
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateCancelled;
+    }
+}
+
+@end
+
+#pragma mark - TTTAttributedLabel
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
@@ -130,11 +172,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
+@property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
-@property (readwrite, nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
+@property (readwrite, nonatomic, strong) TTTLinkGestureRecognizer *linkGestureRecognizer;
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
@@ -144,7 +187,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 - (CFIndex)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
-- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer;
+- (void)handleLink:(TTTLinkGestureRecognizer *)gestureRecognizer;
 @end
 
 @implementation TTTAttributedLabel {
@@ -154,6 +197,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
+@synthesize inactiveAttributedText = _inactiveAttributedText;
 @synthesize framesetter = _framesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
 @synthesize delegate = _delegate;
@@ -161,13 +205,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize dataDetector = _dataDetector;
 @synthesize links = _links;
 @synthesize linkAttributes = _linkAttributes;
+@synthesize activeLinkAttributes = _activeLinkAttributes;
 @synthesize shadowRadius = _shadowRadius;
 @synthesize leading = _leading;
 @synthesize lineHeightMultiple = _lineHeightMultiple;
 @synthesize firstLineIndent = _firstLineIndent;
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
-@synthesize tapGestureRecognizer = _tapGestureRecognizer;
+@synthesize linkGestureRecognizer = _linkGestureRecognizer;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -200,18 +245,22 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
+    NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
+    [mutableActiveLinkAttributes setValue:(id)[[UIColor redColor] CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
+    [mutableActiveLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+    self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
+    
     self.textInsets = UIEdgeInsetsZero;
     
     self.userInteractionEnabled = YES;
-    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [self.tapGestureRecognizer setDelegate:self];
-    [self addGestureRecognizer:self.tapGestureRecognizer];
+    self.linkGestureRecognizer = [[TTTLinkGestureRecognizer alloc] initWithTarget:self action:@selector(handleLink:)];
+    [self.linkGestureRecognizer setDelegate:self];
+    [self addGestureRecognizer:self.linkGestureRecognizer];
 }
 
 - (void)dealloc {
     if (_framesetter) CFRelease(_framesetter);
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
-    
 }
 
 #pragma mark -
@@ -245,6 +294,31 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     return _framesetter;
+}
+
+#pragma mark -
+
+- (void)setLinkActive:(BOOL)active withRange:(NSRange)range {
+    if (range.location != NSNotFound && range.length != 0) {
+        // Remove any currently active link
+        if (self.inactiveAttributedText) {
+            self.attributedText = self.inactiveAttributedText;
+            self.inactiveAttributedText = nil;
+            
+            [self setNeedsDisplay];
+        }
+        
+        // Show the active link if desired
+        if (active && [self.activeLinkAttributes count] > 0) {
+            self.inactiveAttributedText = self.attributedText;
+            
+            NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+            [mutableAttributedString addAttributes:self.activeLinkAttributes range:range];
+            self.attributedText = mutableAttributedString;
+            
+            [self setNeedsDisplay];
+        }
+    }
 }
 
 #pragma mark -
@@ -744,12 +818,30 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return [self linkAtPoint:[touch locationInView:self]] != nil;
 }
 
-- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
+- (void)handleLink:(TTTLinkGestureRecognizer *)gestureRecognizer {
+    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
+        // Show the link as active
+        NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]]; 
+        [self setLinkActive:YES withRange:result.range];
+        return;
+    }
+    
+    if ([gestureRecognizer state] == UIGestureRecognizerStateCancelled || [gestureRecognizer state] == UIGestureRecognizerStateFailed) {
+        // Stop showing the link as active
+        NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]]; 
+        [self setLinkActive:NO withRange:result.range];
+        return;
+    }
+        
     if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
         return;
     }
     
     NSTextCheckingResult *result = [self linkAtPoint:[gestureRecognizer locationInView:self]];
+    
+    // Stop showing the link as active
+    [self setLinkActive:NO withRange:result.range];
+    
     if (!result || !self.delegate) {
         return;
     }
