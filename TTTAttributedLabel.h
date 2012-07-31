@@ -95,6 +95,11 @@ extern NSString * const kTTTStrikeOutAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 
+/**
+ A dictionary containing the `NSAttributedString` attributes to be applied to links when they are in the active state. Supply `nil` or an empty dictionary to opt out of active link styling. The default active link style is red and underlined.
+ */
+@property (nonatomic, strong) NSDictionary *activeLinkAttributes;
+
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
 ///---------------------------------------

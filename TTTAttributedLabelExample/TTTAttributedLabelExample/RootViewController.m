@@ -23,6 +23,7 @@
 #import "RootViewController.h"
 
 #import "AttributedTableViewCell.h"
+#import "EspressoViewController.h"
 
 @implementation RootViewController
 @synthesize espressos = _espressos;
@@ -39,7 +40,6 @@
     return self;
 }
 
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -49,7 +49,7 @@
     [self.navigationController.navigationBar setTintColor:[UIColor darkGrayColor]];
 }
 
-#pragma mark - UITableViewDatasource
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.espressos count];
@@ -65,6 +65,7 @@
     AttributedTableViewCell *cell = (AttributedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[AttributedTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSString *description = [self.espressos objectAtIndex:indexPath.row];
@@ -78,7 +79,11 @@
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSString *description = [self.espressos objectAtIndex:indexPath.row];
+    
+    EspressoViewController *viewController = [[EspressoViewController alloc] init];
+    viewController.espresso = description;
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark - TTTAttributedLabelDelegate
@@ -89,7 +94,7 @@
 
 #pragma mark - UIActionSheetDelegate
 
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == actionSheet.cancelButtonIndex) {
         return;
     }
