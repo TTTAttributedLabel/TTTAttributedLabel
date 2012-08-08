@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D925D8B915C81E60002842A4 /* EspressoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D925D8B815C81E60002842A4 /* EspressoViewController.m */; };
+		D925D8B915C81E60002842A4 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D925D8B815C81E60002842A4 /* DetailViewController.m */; };
 		F877A36113782AF10022A8AB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36013782AF10022A8AB /* UIKit.framework */; };
 		F877A36313782AF10022A8AB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36213782AF10022A8AB /* Foundation.framework */; };
 		F877A36513782AF10022A8AB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F877A36413782AF10022A8AB /* CoreGraphics.framework */; };
@@ -21,8 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		D925D8B715C81E60002842A4 /* EspressoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EspressoViewController.h; sourceTree = "<group>"; };
-		D925D8B815C81E60002842A4 /* EspressoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EspressoViewController.m; sourceTree = "<group>"; };
+		D925D8B715C81E60002842A4 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		D925D8B815C81E60002842A4 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		F877A35C13782AF10022A8AB /* Espressos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Espressos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F877A36013782AF10022A8AB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F877A36213782AF10022A8AB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -124,8 +124,8 @@
 			children = (
 				F877A37513782AF10022A8AB /* RootViewController.h */,
 				F877A37613782AF10022A8AB /* RootViewController.m */,
-				D925D8B715C81E60002842A4 /* EspressoViewController.h */,
-				D925D8B815C81E60002842A4 /* EspressoViewController.m */,
+				D925D8B715C81E60002842A4 /* DetailViewController.h */,
+				D925D8B815C81E60002842A4 /* DetailViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -215,7 +215,7 @@
 				F877A37713782AF10022A8AB /* RootViewController.m in Sources */,
 				F877A39813782FF50022A8AB /* AttributedTableViewCell.m in Sources */,
 				F877A38213782B360022A8AB /* TTTAttributedLabel.m in Sources */,
-				D925D8B915C81E60002842A4 /* EspressoViewController.m in Sources */,
+				D925D8B915C81E60002842A4 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

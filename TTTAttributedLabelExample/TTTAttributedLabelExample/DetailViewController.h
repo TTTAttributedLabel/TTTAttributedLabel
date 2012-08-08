@@ -1,4 +1,4 @@
-// EspressoViewController.h
+// DetailViewController.h
 //
 // Copyright (c) 2011 Mattt Thompson (http://mattt.me)
 // 
@@ -22,8 +22,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EspressoViewController : UIViewController
+@interface DetailViewController : UIViewController
 
-@property (nonatomic, copy) NSString *espresso;
+- (id)initWithEspressoDescription:(NSString *)espresso;
 
 @end

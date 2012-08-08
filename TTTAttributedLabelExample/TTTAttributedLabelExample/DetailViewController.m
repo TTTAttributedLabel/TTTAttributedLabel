@@ -20,57 +20,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "EspressoViewController.h"
+#import "DetailViewController.h"
 #import "TTTAttributedLabel.h"
 
-static CGFloat const kSummaryTextFontSize = 17;
+static CGFloat const kEspressoDescriptionTextFontSize = 17.0f;
 
-static NSRegularExpression *__nameRegularExpression;
 static inline NSRegularExpression * NameRegularExpression() {
-    if (!__nameRegularExpression) {
-        __nameRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"^\\w+" options:NSRegularExpressionCaseInsensitive error:nil];
-    }
+    static NSRegularExpression *_nameRegularExpression = nil;
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _nameRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"^\\w+" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
     
-    return __nameRegularExpression;
+    return _nameRegularExpression;
 }
 
-static NSRegularExpression *__parenthesisRegularExpression;
 static inline NSRegularExpression * ParenthesisRegularExpression() {
-    if (!__parenthesisRegularExpression) {
-        __parenthesisRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"\\([^\\(\\)]+\\)" options:NSRegularExpressionCaseInsensitive error:nil];
-    }
+    static NSRegularExpression *_parenthesisRegularExpression = nil;
     
-    return __parenthesisRegularExpression;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _parenthesisRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"\\([^\\(\\)]+\\)" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
+    
+    return _parenthesisRegularExpression;
 }
 
-@interface EspressoViewController () <TTTAttributedLabelDelegate, UIActionSheetDelegate>
-
-@property (nonatomic, readonly, assign) TTTAttributedLabel *attributedLabel;
-
+@interface DetailViewController () <TTTAttributedLabelDelegate, UIActionSheetDelegate>
+@property (nonatomic, copy) NSString *espressoDescription;
+@property (nonatomic) TTTAttributedLabel *attributedLabel;
 @end
 
-@implementation EspressoViewController
+@implementation DetailViewController
+@synthesize espressoDescription = _espresso;
+@synthesize attributedLabel = _attributedLabel;
 
-@synthesize espresso = _espresso;
-
-- (id)init {
-    if ((self = [super init])) {
+- (id)initWithEspressoDescription:(NSString *)espresso {
+    self = [super initWithNibName:nil bundle:nil];
+    if (!self) {
+        return nil;
     }
+    
+    self.espressoDescription = espresso;
+    
     return self;
 }
 
 #pragma mark - UIViewController
 
-- (TTTAttributedLabel *)attributedLabel {
-    return (TTTAttributedLabel *)[[self.view subviews] objectAtIndex:0];
-}
-
 - (void)loadView {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 100.0f, 100.0f)];
     
-    TTTAttributedLabel *attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(10, 10, 80, 80)];
-    attributedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [view addSubview:attributedLabel];
+    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(view.bounds, 10.0f, 10.0f)];
+    self.attributedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [view addSubview:self.attributedLabel];
     
     self.view = view;
 }
@@ -81,23 +85,23 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.title = NSLocalizedString(@"Espresso", nil);
     
     self.attributedLabel.delegate = self;
-    self.attributedLabel.font = [UIFont systemFontOfSize:kSummaryTextFontSize];
+    self.attributedLabel.font = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     self.attributedLabel.textColor = [UIColor darkGrayColor];
     self.attributedLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.attributedLabel.numberOfLines = 0;
     self.attributedLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
     self.attributedLabel.highlightedTextColor = [UIColor whiteColor];
-    self.attributedLabel.shadowColor = [UIColor colorWithWhite:0.87 alpha:1.0];
+    self.attributedLabel.shadowColor = [UIColor colorWithWhite:0.87f alpha:1.0f];
     self.attributedLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
     self.attributedLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
     
-    [self.attributedLabel setText:self.espresso afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+    [self.attributedLabel setText:self.espressoDescription afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
         NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
         
         NSRegularExpression *regexp = NameRegularExpression();
         NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
-        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kSummaryTextFontSize]; 
+        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize]; 
         CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
         if (boldFont) {
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
@@ -109,7 +113,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         
         regexp = ParenthesisRegularExpression();
         [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {            
-            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kSummaryTextFontSize];
+            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
             CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
             if (italicFont) {
                 [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
@@ -125,20 +129,24 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     }];
     
     NSRegularExpression *regexp = NameRegularExpression();
-    NSRange linkRange = [regexp rangeOfFirstMatchInString:self.espresso options:0 range:NSMakeRange(0, [self.espresso length])];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://en.wikipedia.org/wiki/%@", [self.espresso substringWithRange:linkRange]]];
+    NSRange linkRange = [regexp rangeOfFirstMatchInString:self.espressoDescription options:0 range:NSMakeRange(0, [self.espressoDescription length])];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://en.wikipedia.org/wiki/%@", [self.espressoDescription substringWithRange:linkRange]]];
     [self.attributedLabel addLinkToURL:url withRange:linkRange];
 }
 
 #pragma mark - TTTAttributedLabelDelegate
 
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url
+{
     [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
 }
 
 #pragma mark - UIActionSheetDelegate
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet
+clickedButtonAtIndex:(NSInteger)buttonIndex
+{
     if (buttonIndex == actionSheet.cancelButtonIndex) {
         return;
     }

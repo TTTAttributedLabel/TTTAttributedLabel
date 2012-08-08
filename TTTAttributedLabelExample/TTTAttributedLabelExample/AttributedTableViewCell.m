@@ -24,7 +24,7 @@
 #import "AttributedTableViewCell.h"
 #import "TTTAttributedLabel.h"
 
-static CGFloat const kSummaryTextFontSize = 17;
+static CGFloat const kEspressoDescriptionTextFontSize = 17;
 static CGFloat const kAttributedTableViewCellVerticalMargin = 20.0f;
 
 static NSRegularExpression *__nameRegularExpression;
@@ -59,7 +59,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.layer.rasterizationScale = [[UIScreen mainScreen] scale];
     
     self.summaryLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
-    self.summaryLabel.font = [UIFont systemFontOfSize:kSummaryTextFontSize];
+    self.summaryLabel.font = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     self.summaryLabel.textColor = [UIColor darkGrayColor];
     self.summaryLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.summaryLabel.numberOfLines = 0;
@@ -86,7 +86,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         
         NSRegularExpression *regexp = NameRegularExpression();
         NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
-        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kSummaryTextFontSize]; 
+        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize]; 
         CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
         if (boldFont) {
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
@@ -98,7 +98,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         
         regexp = ParenthesisRegularExpression();
         [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {            
-            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kSummaryTextFontSize];
+            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
             CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
             if (italicFont) {
                 [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
@@ -121,7 +121,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 + (CGFloat)heightForCellWithText:(NSString *)text {
     CGFloat height = 10.0f;
-    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kSummaryTextFontSize] constrainedToSize:CGSizeMake(270.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
+    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kEspressoDescriptionTextFontSize] constrainedToSize:CGSizeMake(270.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
     height += kAttributedTableViewCellVerticalMargin;
     return height;
 }

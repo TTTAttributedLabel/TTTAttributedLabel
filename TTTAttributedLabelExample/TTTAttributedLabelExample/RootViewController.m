@@ -23,7 +23,7 @@
 #import "RootViewController.h"
 
 #import "AttributedTableViewCell.h"
-#import "EspressoViewController.h"
+#import "DetailViewController.h"
 
 @implementation RootViewController
 @synthesize espressos = _espressos;
@@ -80,9 +80,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *description = [self.espressos objectAtIndex:indexPath.row];
-    
-    EspressoViewController *viewController = [[EspressoViewController alloc] init];
-    viewController.espresso = description;
+    DetailViewController *viewController = [[DetailViewController alloc] initWithEspressoDescription:description];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
