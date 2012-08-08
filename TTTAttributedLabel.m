@@ -767,7 +767,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
 }
 
-#pragma mark - Touch Events
+#pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
