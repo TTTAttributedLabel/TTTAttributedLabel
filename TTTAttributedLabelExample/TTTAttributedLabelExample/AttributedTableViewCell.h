@@ -26,7 +26,7 @@
 
 @interface AttributedTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) NSString *summaryText;
+@property (nonatomic, copy) NSString *summaryText;
 @property (nonatomic, strong) TTTAttributedLabel *summaryLabel;
 
 + (CGFloat)heightForCellWithText:(NSString *)text;
