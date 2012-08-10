@@ -80,6 +80,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
     CGFloat lineSpacing = label.leading;
     CGFloat lineHeightMultiple = label.lineHeightMultiple;
+	CGFloat lineHeightMax = label.lineHeightMax;
+	CGFloat lineHeightMin = label.lineHeightMin;
     CGFloat topMargin = label.textInsets.top;
     CGFloat bottomMargin = label.textInsets.bottom;
     CGFloat leftMargin = label.textInsets.left;
@@ -94,11 +96,13 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
     }
 	
-    CTParagraphStyleSetting paragraphStyles[9] = {
+    CTParagraphStyleSetting paragraphStyles[] = {
 		{.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
 		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
         {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
         {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
+		{.spec = kCTParagraphStyleSpecifierMaximumLineHeight, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMax},
+		{.spec = kCTParagraphStyleSpecifierMinimumLineHeight, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMin},
         {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
         {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
         {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
@@ -106,7 +110,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin}
 	};
 
-    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 9);
+	int styleCount = sizeof(paragraphStyles)/sizeof(CTParagraphStyleSetting);
+    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, styleCount);
 	[mutableAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
 	CFRelease(paragraphStyle);
     
@@ -166,6 +171,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @synthesize shadowRadius = _shadowRadius;
 @synthesize leading = _leading;
 @synthesize lineHeightMultiple = _lineHeightMultiple;
+@synthesize lineHeightMax = _lineHeightMax;
+@synthesize lineHeightMin = _lineHeightMin;
 @synthesize firstLineIndent = _firstLineIndent;
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
@@ -648,22 +655,20 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
     if (textSize.height < textRect.size.height) {
-        CGFloat heightChange = (textRect.size.height - textSize.height);
         CGFloat yOffset = 0.0f;
         switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
-                break;
             case TTTAttributedLabelVerticalAlignmentCenter:
                 yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
                 yOffset = textRect.size.height - textSize.height;
                 break;
+			default:
+				break;
         }
         
         textRect.origin.y += yOffset;
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange + yOffset);
+        textRect.size.height = textSize.height;
     }
     
     return textRect;
