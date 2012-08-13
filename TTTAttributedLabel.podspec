@@ -8,6 +8,8 @@ Pod::Spec.new do |s|
   s.license = { :type => 'MIT', :file => 'LICENSE' }
   
   s.platform = :ios
+  s.requires_arc = true
+  s.compiler_flags = '-Wno-arc-bridge-casts-disallowed-in-nonarc'
   s.frameworks = 'CoreText'
   s.source_files = 'TTTAttributedLabel.{h,m}'
 end
