@@ -140,6 +140,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
+@property (readwrite, nonatomic) BOOL hasStrike;
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
@@ -277,6 +278,19 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }];
     
     return [NSArray arrayWithArray:mutableLinks];
+}
+
+- (BOOL)detectedStrikeInString:(NSAttributedString *)attrString {
+	__block BOOL detectedStrike = FALSE;
+	[attrString enumerateAttribute:kTTTStrikeOutAttributeName
+						   inRange:NSMakeRange(0, [attrString length])
+						   options:0
+						usingBlock:^(id value, NSRange range, BOOL *stop) {
+							if (value) {
+								detectedStrike = YES;
+							}
+						}];
+	return detectedStrike;
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
@@ -487,7 +501,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         }
     }
 
-    [self drawStrike:frame inRect:rect context:c];
+	if(self.hasStrike)
+		[self drawStrike:frame inRect:rect context:c];
     
     CFRelease(frame);
     CFRelease(path);
@@ -570,14 +585,14 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     self.attributedText = text;
-
+	self.hasStrike = [self detectedStrikeInString:text];
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
         for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
             [self addLinkWithTextCheckingResult:result];
         }
     }
-        
+	
     [super setText:[self.attributedText string]];
 }
 
