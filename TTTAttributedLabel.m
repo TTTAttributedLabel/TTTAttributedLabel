@@ -128,6 +128,25 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return mutableAttributedString;
 }
 
+static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(NSAttributedString *attributedString, UIColor *color) {
+    if (!color) {
+        return attributedString;
+    }
+    
+    CGColorRef colorRef = color.CGColor;
+    NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];    
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        CFBooleanRef usesColorFromContext = (__bridge CFBooleanRef)value;
+        if (usesColorFromContext && CFBooleanGetValue(usesColorFromContext)) {
+            CFRange updateRange = CFRangeMake(range.location, range.length);
+            CFAttributedStringSetAttribute((__bridge CFMutableAttributedStringRef)mutableAttributedString, updateRange, kCTForegroundColorAttributeName, colorRef);
+            CFAttributedStringRemoveAttribute((__bridge CFMutableAttributedStringRef)mutableAttributedString, updateRange, kCTForegroundColorFromContextAttributeName);
+        }
+    }];
+    
+    return mutableAttributedString;    
+}
+
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
@@ -242,7 +261,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             if (_framesetter) CFRelease(_framesetter);
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
             
-            self.framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.attributedText);
+            NSAttributedString *attributedTextWithContextColor = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+            self.framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTextWithContextColor);
             self.highlightFramesetter = nil;
             _needsFramesetter = NO;
         }
@@ -423,7 +443,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
     CGMutablePathRef path = CGPathCreateMutable();
-    
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
@@ -433,7 +452,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 	
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
-    
+        
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
@@ -508,11 +527,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CTLineDraw(line, c);
         }
     }
-
-    [self drawStrike:frame inRect:rect context:c];
     
+    [self drawStrike:frame inRect:rect context:c];
+        
     CFRelease(frame);
-    CFRelease(path);
+    CFRelease(path);    
 }
 
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
@@ -636,6 +655,17 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 	return color;
 }
 
+- (void)setTextColor:(UIColor *)textColor {
+    UIColor *oldTextColor = self.textColor;
+    [super setTextColor:textColor];
+    
+    // Redraw to allow any ColorFromContext attributes a chance to update
+    if (textColor != oldTextColor) {
+        [self setNeedsFramesetter];
+        [self setNeedsDisplay];
+    }
+}
+
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
@@ -674,7 +704,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         [super drawTextInRect:rect];
         return;
     }
-    
+        
     NSAttributedString *originalAttributedText = nil;
     
     // Adjust the font size to fit width, if necessarry 
