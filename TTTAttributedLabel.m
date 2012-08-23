@@ -211,11 +211,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     
     self.userInteractionEnabled = YES;
     self.multipleTouchEnabled = NO;
+
+    self.attributedText = nil;
 }
 
 - (void)dealloc {
     if (_framesetter) CFRelease(_framesetter);
     if (_highlightFramesetter) CFRelease(_highlightFramesetter);
+    
+    [_attributedText release];
+    [super dealloc];
 }
 
 #pragma mark -
@@ -263,7 +268,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             NSMutableAttributedString *mutableAttributedString = [self.inactiveAttributedText mutableCopy];
             [mutableAttributedString addAttributes:self.activeLinkAttributes range:result.range];
             self.attributedText = mutableAttributedString;
-            
+            [mutableAttributedString release];
+
             [self setNeedsDisplay];
         } else {
             if (self.inactiveAttributedText) {
@@ -307,7 +313,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
         [mutableAttributedString addAttributes:attributes range:result.range];
-        self.attributedText = mutableAttributedString;        
+        self.attributedText = mutableAttributedString;
+        [mutableAttributedString release];
     }
 }
 
@@ -488,6 +495,8 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 }
                 [truncationString appendAttributedString:tokenString];
                 CTLineRef truncationLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)truncationString);
+                [tokenString release];
+                [truncationString release];
 
                 // Truncate the line in case it is too long.
                 CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine, rect.size.width, truncationType, truncationToken);
@@ -613,10 +622,12 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     }
     
     if (block) {
-        mutableAttributedString = block(mutableAttributedString);
+        [self setText:block(mutableAttributedString)];
+    } else {
+        [self setText:mutableAttributedString];
     }
-    
-    [self setText:mutableAttributedString];
+
+    [mutableAttributedString release];
 }
 
 #pragma mark - UILabel
@@ -717,6 +728,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)mutableAttributedString);
+            [mutableAttributedString release];
         }
         
         [self drawFramesetter:self.highlightFramesetter textRange:textRange inRect:textRect context:c];
@@ -728,6 +740,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     if (originalAttributedText) {
         self.text = originalAttributedText;
     }
+    [originalAttributedText release];
 }
 
 #pragma mark - UIView
