@@ -37,6 +37,12 @@ typedef enum {
  */
 extern NSString * const kTTTStrikeOutAttributeName;
 
+/**
+ The rounded-rect background color of the text to which this attribute applies. 
+ The value associated with this attribute must be a CGColor object.
+ */
+extern NSString * const kTTTRoundedBackgroundColorAttributeName;
+
 @protocol TTTAttributedLabelDelegate;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
