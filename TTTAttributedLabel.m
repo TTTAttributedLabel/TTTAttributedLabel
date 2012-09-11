@@ -129,9 +129,29 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     return mutableAttributedString;
 }
 
+static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(NSAttributedString *attributedString, UIColor *color) {
+    if (!color) {
+        return attributedString;
+    }
+    
+    CGColorRef colorRef = color.CGColor;
+    NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];    
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        CFBooleanRef usesColorFromContext = (__bridge CFBooleanRef)value;
+        if (usesColorFromContext && CFBooleanGetValue(usesColorFromContext)) {
+            CFRange updateRange = CFRangeMake(range.location, range.length);
+            CFAttributedStringSetAttribute((__bridge CFMutableAttributedStringRef)mutableAttributedString, updateRange, kCTForegroundColorAttributeName, colorRef);
+            CFAttributedStringRemoveAttribute((__bridge CFMutableAttributedStringRef)mutableAttributedString, updateRange, kCTForegroundColorFromContextAttributeName);
+        }
+    }];
+    
+    return mutableAttributedString;    
+}
+
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
+@property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
@@ -156,6 +176,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 @dynamic text;
 @synthesize attributedText = _attributedText;
 @synthesize inactiveAttributedText = _inactiveAttributedText;
+@synthesize renderedAttributedText = _renderedAttributedText;
 @synthesize framesetter = _framesetter;
 @synthesize highlightFramesetter = _highlightFramesetter;
 @synthesize delegate = _delegate;
@@ -234,6 +255,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 }
 
 - (void)setNeedsFramesetter {
+    // Reset the rendered attributed text so it has a chance to regenerate
+    self.renderedAttributedText = nil;
+
     _needsFramesetter = YES;
 }
 
@@ -243,13 +267,21 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             if (_framesetter) CFRelease(_framesetter);
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
             
-            self.framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.attributedText);
+            self.framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.renderedAttributedText);
             self.highlightFramesetter = nil;
             _needsFramesetter = NO;
         }
     }
     
     return _framesetter;
+}
+
+- (NSAttributedString *)renderedAttributedText {
+    if (!_renderedAttributedText) {
+        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+    }
+    
+    return _renderedAttributedText;
 }
 
 #pragma mark -
@@ -424,7 +456,6 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 
 - (void)drawFramesetter:(CTFramesetterRef)framesetter textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
     CGMutablePathRef path = CGPathCreateMutable();
-    
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
@@ -434,7 +465,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 	
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
-    
+        
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
@@ -471,7 +502,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 }
                 
                 // Get the attributes and use them to create the truncation token string
-                NSDictionary *tokenAttributes = [self.attributedText attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
+                NSDictionary *tokenAttributes = [self.renderedAttributedText attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
                 // \u2026 is the Unicode horizontal ellipsis character code
                 NSAttributedString *tokenString = [[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)tokenString);
@@ -479,7 +510,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 // Append truncationToken to the string
                 // because if string isn't too long, CT wont add the truncationToken on it's own
                 // There is no change of a double truncationToken because CT only add the token if it removes characters (and the one we add will go first)
-                NSMutableAttributedString *truncationString = [[self.attributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
+                NSMutableAttributedString *truncationString = [[self.renderedAttributedText attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
                 if (lastLineRange.length > 0) {
                     // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
                     unichar lastCharacter = [[truncationString string] characterAtIndex:lastLineRange.length - 1];
@@ -509,11 +540,11 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             CTLineDraw(line, c);
         }
     }
-
-    [self drawStrike:frame inRect:rect context:c];
     
+    [self drawStrike:frame inRect:rect context:c];
+        
     CFRelease(frame);
-    CFRelease(path);
+    CFRelease(path);    
 }
 
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
@@ -637,6 +668,17 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 	return color;
 }
 
+- (void)setTextColor:(UIColor *)textColor {
+    UIColor *oldTextColor = self.textColor;
+    [super setTextColor:textColor];
+
+    // Redraw to allow any ColorFromContext attributes a chance to update
+    if (textColor != oldTextColor) {
+        [self setNeedsFramesetter];
+        [self setNeedsDisplay];
+    }
+}
+
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
@@ -675,7 +717,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         [super drawTextInRect:rect];
         return;
     }
-    
+        
     NSAttributedString *originalAttributedText = nil;
     
     // Adjust the font size to fit width, if necessarry 
@@ -715,7 +757,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
     if (self.highlightedTextColor && self.highlighted) {
         if (!self.highlightFramesetter) {
-            NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+            NSMutableAttributedString *mutableAttributedString = [self.renderedAttributedText mutableCopy];
             [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, mutableAttributedString.length)];
             self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)mutableAttributedString);
         }

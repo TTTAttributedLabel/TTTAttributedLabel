@@ -171,6 +171,15 @@ extern NSString * const kTTTStrikeOutAttributeName;
  */
 - (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
 
+///----------------------------------
+/// @name Accessing the Text Attributes
+///----------------------------------
+
+/**
+ A copy of the label's current attributedText. This returns `nil` if an attributed string has never been set on the label.
+ */
+@property (readonly, nonatomic, copy) NSAttributedString *attributedText;
+
 ///-------------------
 /// @name Adding Links
 ///-------------------
