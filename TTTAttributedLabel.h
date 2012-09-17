@@ -37,6 +37,26 @@ typedef enum {
  */
 extern NSString * const kTTTStrikeOutAttributeName;
 
+/**
+ The background fill color. Value must be a `CGColorRef`. Default value is `nil` (no fill).
+ */
+extern NSString * const kTTTBackgroundFillColorAttributeName;
+
+/**
+ The background stroke color. Value must be a `CGColorRef`. Default value is `nil` (no stroke).
+ */
+extern NSString * const kTTTBackgroundStrokeColorAttributeName;
+
+/**
+ The background stroke line width. Value must be an `NSNumber`. Default value is `1.0f`.
+ */
+extern NSString * const kTTTBackgroundLineWidthAttributeName;
+
+/**
+ The background corner radius. Value must be an `NSNumber`. Default value is `5.0f`.
+ */
+extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
+
 @protocol TTTAttributedLabelDelegate;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
