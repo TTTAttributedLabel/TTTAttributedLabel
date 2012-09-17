@@ -23,6 +23,9 @@
 #import "DetailViewController.h"
 #import "TTTAttributedLabel.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 static CGFloat const kEspressoDescriptionTextFontSize = 17.0f;
 
 static inline NSRegularExpression * NameRegularExpression() {
@@ -155,3 +158,5 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 @end
+
+#pragma clang diagnostic pop

@@ -24,6 +24,9 @@
 #import "AttributedTableViewCell.h"
 #import "TTTAttributedLabel.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 static CGFloat const kEspressoDescriptionTextFontSize = 17;
 static CGFloat const kAttributedTableViewCellVerticalMargin = 20.0f;
 
@@ -137,3 +140,5 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 }
 
 @end
+
+#pragma clang diagnostic pop
