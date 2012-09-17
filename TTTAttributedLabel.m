@@ -328,12 +328,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         return [NSArray array];
     }
     
-    NSMutableArray *mutableLinks = [NSMutableArray array];
-    [self.dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        [mutableLinks addObject:result];
-    }];
-    
-    return [NSArray arrayWithArray:mutableLinks];
+    return [self.dataDetector matchesInString:string options:0 range:range];
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
@@ -422,7 +417,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     NSUInteger idx = NSNotFound;
 
     CGPoint lineOrigins[numberOfLines];
-    CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
 
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
