@@ -326,12 +326,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         return [NSArray array];
     }
     
-    NSMutableArray *mutableLinks = [NSMutableArray array];
-    [self.dataDetector enumerateMatchesInString:string options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        [mutableLinks addObject:result];
-    }];
-    
-    return [NSArray arrayWithArray:mutableLinks];
+    return [self.dataDetector matchesInString:string options:0 range:range];
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
