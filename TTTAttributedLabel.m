@@ -149,7 +149,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 }
 
 @interface TTTAttributedLabel ()
-@property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
@@ -243,7 +242,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark -
 
 - (void)setAttributedText:(NSAttributedString *)text {
-    if ([text isEqualToAttributedString:self.attributedText]) {
+    if ([text isEqualToAttributedString:_attributedText]) {
         return;
     }
     
