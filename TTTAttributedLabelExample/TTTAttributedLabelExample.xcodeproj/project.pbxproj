@@ -174,7 +174,7 @@
 		F877A35313782AF10022A8AB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Gowalla;
 			};
 			buildConfigurationList = F877A35613782AF10022A8AB /* Build configuration list for PBXProject "TTTAttributedLabelExample" */;
