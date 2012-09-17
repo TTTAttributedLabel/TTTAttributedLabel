@@ -24,6 +24,9 @@
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
@@ -899,3 +902,5 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 }
 
 @end
+
+#pragma clang diagnostic pop
