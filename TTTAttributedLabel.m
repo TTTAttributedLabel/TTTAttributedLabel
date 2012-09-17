@@ -25,6 +25,7 @@
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
+NSString * const kTTTRoundedBackgroundColorAttributeName = @"TTTRoundedBackgroundColor";
 
 static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
@@ -225,8 +226,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableActiveLinkAttributes setValue:(id)[[UIColor redColor] CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
-    [mutableActiveLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+//    [mutableActiveLinkAttributes setValue:(id)[[UIColor redColor] CGColor] forKey:(NSString*)kCTForegroundColorAttributeName];
+//    [mutableActiveLinkAttributes setValue:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+    [mutableActiveLinkAttributes setValue:(id)[[UIColor colorWithWhite:0.5f alpha:0.5f] CGColor] forKey:(NSString *)kTTTRoundedBackgroundColorAttributeName];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     
     self.textInsets = UIEdgeInsetsZero;
@@ -454,6 +456,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
     
+    [self drawRoundedBackground:frame inRect:rect context:c];
+    
     CFArrayRef lines = CTFrameGetLines(frame);
     NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
@@ -540,6 +544,68 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         
     CFRelease(frame);
     CFRelease(path);    
+}
+
+- (void)drawRoundedBackground:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
+    NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
+    CGPoint origins[[lines count]];
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
+    
+    CFIndex lineIndex = 0;
+    for (id line in lines) {
+        CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
+        lineBounds.origin.x = origins[lineIndex].x;
+        lineBounds.origin.y = origins[lineIndex].y;
+        
+        for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
+            NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
+            CGColorRef backgroundColor = (__bridge CGColorRef)[attributes objectForKey:kTTTRoundedBackgroundColorAttributeName];
+            
+            if (backgroundColor) {
+                CGRect runBounds = CGRectZero;
+                CGFloat ascent = 0.0f;
+                CGFloat descent = 0.0f;
+                
+                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &ascent, &descent, NULL);
+                runBounds.size.height = ascent + descent;
+                
+                CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
+                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y;
+                runBounds.origin.y -= descent;
+                
+                // Don't draw higlightedLinkBackground too far to the right
+                if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds)) {
+                    runBounds.size.width = CGRectGetWidth(lineBounds);
+                }
+                
+                CGContextSetFillColorWithColor(c, backgroundColor);
+                
+                CGRect roundedRect = CGRectInset(runBounds, -2, 0);
+                
+                CGFloat radius = 5.0f;
+                CGContextMoveToPoint(c, roundedRect.origin.x, roundedRect.origin.y + radius);
+                CGContextAddLineToPoint(c, roundedRect.origin.x, roundedRect.origin.y + roundedRect.size.height - radius);
+                CGContextAddArc(c, roundedRect.origin.x + radius, roundedRect.origin.y + roundedRect.size.height - radius,
+                                radius, M_PI, M_PI / 2.0f, 1.0f);
+                CGContextAddLineToPoint(c, roundedRect.origin.x + roundedRect.size.width - radius,
+                                        roundedRect.origin.y + roundedRect.size.height);
+                CGContextAddArc(c, roundedRect.origin.x + roundedRect.size.width - radius,
+                                roundedRect.origin.y + roundedRect.size.height - radius, radius, M_PI / 2, 0.0f, 1.0f);
+                CGContextAddLineToPoint(c, roundedRect.origin.x + roundedRect.size.width, roundedRect.origin.y + radius);
+                CGContextAddArc(c, roundedRect.origin.x + roundedRect.size.width - radius, roundedRect.origin.y + radius,
+                                radius, 0.0f, -M_PI / 2.0f, 1.0f);
+                CGContextAddLineToPoint(c, roundedRect.origin.x + radius, roundedRect.origin.y);
+                CGContextAddArc(c, roundedRect.origin.x + radius, roundedRect.origin.y + radius, radius,
+                                -M_PI / 2, M_PI, 1);
+                CGContextFillPath(c);
+                
+                CGContextStrokePath(c);
+            }
+        }
+        
+        lineIndex++;
+    }
 }
 
 - (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
