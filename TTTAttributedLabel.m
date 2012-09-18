@@ -71,10 +71,20 @@ static inline NSTextCheckingType NSTextCheckingTypeFromUIDataDetectorType(UIData
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
     
-    CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)label.font.fontName, label.font.pointSize, NULL);
-    [mutableAttributes setObject:(__bridge id)font forKey:(NSString *)kCTFontAttributeName];
-    CFRelease(font);
+	static NSMutableDictionary *fontCache = nil;
+	if (fontCache == nil)
+		fontCache = [NSMutableDictionary dictionary];
+
+	NSString *fontName = [NSString stringWithFormat:@"%@:%f", label.font.fontName, label.font.pointSize];
+	CTFontRef font = (__bridge CTFontRef)([fontCache objectForKey:fontName]);
+	if (font == 0)
+	{
+		font = CTFontCreateWithName((__bridge CFStringRef)label.font.fontName, label.font.pointSize, NULL);
+		[fontCache setObject:(__bridge id)(font) forKey:fontName];
+		CFRelease(font);
+	}
     
+    [mutableAttributes setObject:(__bridge id)font forKey:(NSString *)kCTFontAttributeName];
     [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
@@ -288,6 +298,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
 						usingBlock:^(id value, NSRange range, BOOL *stop) {
 							if (value) {
 								detectedStrike = YES;
+								*stop = YES;
 							}
 						}];
 	return detectedStrike;
