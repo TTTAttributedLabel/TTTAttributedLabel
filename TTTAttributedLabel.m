@@ -904,51 +904,48 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if (self.activeLink) {
-        UITouch *touch = [touches anyObject];
-        if (self.activeLink == [self linkAtPoint:[touch locationInView:self]]) {
-            [self setLinkActive:NO withTextCheckingResult:self.activeLink];
-            
-            if (!self.delegate) {
-                return;
-            }
-            
-            NSTextCheckingResult *result = self.activeLink;
-            switch (result.resultType) {
-                case NSTextCheckingTypeLink:
-                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-                        [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-                        return;
-                    }
-                    break;
-                case NSTextCheckingTypeAddress:
-                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-                        [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-                        return;
-                    }
-                    break;
-                case NSTextCheckingTypePhoneNumber:
-                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-                        [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-                        return;
-                    }
-                    break;
-                case NSTextCheckingTypeDate:
-                    if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-                        [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-                        return;
-                    } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-                        [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-                        return;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            
-            // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
-            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
-                [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
-            }
+        [self setLinkActive:NO withTextCheckingResult:self.activeLink];
+        
+        if (!self.delegate) {
+            return;
+        }
+        
+        NSTextCheckingResult *result = self.activeLink;
+        switch (result.resultType) {
+            case NSTextCheckingTypeLink:
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+                    return;
+                }
+                break;
+            case NSTextCheckingTypeAddress:
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+                    return;
+                }
+                break;
+            case NSTextCheckingTypePhoneNumber:
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+                    return;
+                }
+                break;
+            case NSTextCheckingTypeDate:
+                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+                    return;
+                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+        
+        // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
+        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
         }
     } else {
         [super touchesEnded:touches withEvent:event];
