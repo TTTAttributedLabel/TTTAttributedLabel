@@ -16,8 +16,8 @@
 		F8C05AA81657170A00B0ACDD /* AttributedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C05AA71657170A00B0ACDD /* AttributedTableViewCell.m */; };
 		F8C05AAD1657171400B0ACDD /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C05AAB1657171400B0ACDD /* DetailViewController.m */; };
 		F8C05AAE1657171400B0ACDD /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C05AAC1657171400B0ACDD /* RootViewController.m */; };
-		F8C05AB41657173C00B0ACDD /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C05AB31657173100B0ACDD /* TTTAttributedLabel.m */; };
 		F8C05AB61657174F00B0ACDD /* espressos.txt in Resources */ = {isa = PBXBuildFile; fileRef = F8C05AB51657174F00B0ACDD /* espressos.txt */; };
+		F8C05AC5165718E300B0ACDD /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C05AC4165718E300B0ACDD /* TTTAttributedLabel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,9 +37,9 @@
 		F8C05AAA1657171400B0ACDD /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = SOURCE_ROOT; };
 		F8C05AAB1657171400B0ACDD /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = SOURCE_ROOT; };
 		F8C05AAC1657171400B0ACDD /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = SOURCE_ROOT; };
-		F8C05AB21657173100B0ACDD /* TTTAttributedLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../TTTAttributedLabel.h; sourceTree = "<group>"; };
-		F8C05AB31657173100B0ACDD /* TTTAttributedLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TTTAttributedLabel.m; path = ../TTTAttributedLabel.m; sourceTree = "<group>"; };
 		F8C05AB51657174F00B0ACDD /* espressos.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = espressos.txt; sourceTree = SOURCE_ROOT; };
+		F8C05AC3165718E300B0ACDD /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTAttributedLabel.h; sourceTree = "<group>"; };
+		F8C05AC4165718E300B0ACDD /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,18 +133,19 @@
 		F8C05ABC1657180F00B0ACDD /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				F8C05ABD1657181500B0ACDD /* TTTAttributedLabel */,
+				F8C05AC2165718E300B0ACDD /* TTTAttributedLabel */,
 			);
 			name = Vendor;
 			sourceTree = "<group>";
 		};
-		F8C05ABD1657181500B0ACDD /* TTTAttributedLabel */ = {
+		F8C05AC2165718E300B0ACDD /* TTTAttributedLabel */ = {
 			isa = PBXGroup;
 			children = (
-				F8C05AB21657173100B0ACDD /* TTTAttributedLabel.h */,
-				F8C05AB31657173100B0ACDD /* TTTAttributedLabel.m */,
+				F8C05AC3165718E300B0ACDD /* TTTAttributedLabel.h */,
+				F8C05AC4165718E300B0ACDD /* TTTAttributedLabel.m */,
 			);
 			name = TTTAttributedLabel;
+			path = ../TTTAttributedLabel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,12 +210,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8C05AB41657173C00B0ACDD /* TTTAttributedLabel.m in Sources */,
 				F8C05AA4165716EF00B0ACDD /* AppDelegate.m in Sources */,
 				F8C05AA5165716EF00B0ACDD /* main.m in Sources */,
 				F8C05AA81657170A00B0ACDD /* AttributedTableViewCell.m in Sources */,
 				F8C05AAD1657171400B0ACDD /* DetailViewController.m in Sources */,
 				F8C05AAE1657171400B0ACDD /* RootViewController.m in Sources */,
+				F8C05AC5165718E300B0ACDD /* TTTAttributedLabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
