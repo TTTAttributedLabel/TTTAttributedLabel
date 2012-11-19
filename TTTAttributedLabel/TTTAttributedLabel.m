@@ -86,7 +86,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     
     CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
     CGFloat lineSpacing = label.leading;
-    CGFloat lineSpacingAdjustment = label.font.lineHeight - label.font.ascender + label.font.descender;
+    CGFloat lineSpacingAdjustment = ceilf(label.font.lineHeight - label.font.ascender + label.font.descender);
     CGFloat lineHeightMultiple = label.lineHeightMultiple;
     CGFloat topMargin = label.textInsets.top;
     CGFloat bottomMargin = label.textInsets.bottom;
