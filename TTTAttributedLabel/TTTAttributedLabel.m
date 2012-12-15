@@ -568,6 +568,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
     
+    // Compensate for y-offset of text rect from vertical positioning
+    CGFloat yOffset = 0.0f;
+    if (self.verticalAlignment != TTTAttributedLabelVerticalAlignmentTop) {
+        yOffset -= [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines].origin.y;
+    }
+    
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
@@ -591,7 +597,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
-                runBounds.origin.y = origins[lineIndex].y + rect.origin.y;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset;
                 runBounds.origin.y -= descent;
                 
                 // Don't draw higlightedLinkBackground too far to the right
@@ -769,14 +775,14 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         CGFloat heightChange = (textRect.size.height - textSize.height);
         CGFloat yOffset = 0.0f;
         switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentTop:
-                heightChange = 0.0f;
-                break;
             case TTTAttributedLabelVerticalAlignmentCenter:
                 yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
                 yOffset = textRect.size.height - textSize.height;
+                break;
+            case TTTAttributedLabelVerticalAlignmentTop:
+            default:
                 break;
         }
         
