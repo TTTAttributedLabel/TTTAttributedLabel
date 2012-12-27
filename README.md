@@ -9,8 +9,6 @@
 
 ## Documentation
 
-Online documentation is available at http://mattt.github.com/TTTAttributedLabel/.
-
 To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
 
 ## Demo
