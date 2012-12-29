@@ -189,7 +189,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  
  @discussion This string is `nil` by default.
  */
-- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
+- (void)setText:(id)text
+afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
 
 ///----------------------------------
 /// @name Accessing the Text Attributes
@@ -217,7 +218,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param result An `NSTextCheckingResult` representing the link's location and type.
  @param attributes The attributes to be added to the text in the range of the specified link. If `nil`, no attributes are added.
  */
-- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes;
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result
+                           attributes:(NSDictionary *)attributes;
 
 /**
  Adds a link to a URL for a specified range in the label text.
@@ -225,7 +227,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param url The url to be linked to
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
-- (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range;
+- (void)addLinkToURL:(NSURL *)url
+           withRange:(NSRange)range;
 
 /**
  Adds a link to an address for a specified range in the label text.
@@ -235,7 +238,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  
  @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components." 
  */
-- (void)addLinkToAddress:(NSDictionary *)addressComponents withRange:(NSRange)range;
+- (void)addLinkToAddress:(NSDictionary *)addressComponents
+               withRange:(NSRange)range;
 
 /**
  Adds a link to a phone number for a specified range in the label text.
@@ -243,7 +247,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param phoneNumber The phone number to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
-- (void)addLinkToPhoneNumber:(NSString *)phoneNumber withRange:(NSRange)range;
+- (void)addLinkToPhoneNumber:(NSString *)phoneNumber
+                   withRange:(NSRange)range;
 
 /**
  Adds a link to a date for a specified range in the label text.
@@ -251,7 +256,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param date The date to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
-- (void)addLinkToDate:(NSDate *)date withRange:(NSRange)range;
+- (void)addLinkToDate:(NSDate *)date
+            withRange:(NSRange)range;
 
 /**
  Adds a link to a date with a particular time zone and duration for a specified range in the label text.
@@ -261,7 +267,10 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param duration The duration, in seconds from the specified date.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
-- (void)addLinkToDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration withRange:(NSRange)range;
+- (void)addLinkToDate:(NSDate *)date
+             timeZone:(NSTimeZone *)timeZone
+             duration:(NSTimeInterval)duration
+            withRange:(NSRange)range;
 
 @end
 
@@ -281,7 +290,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param label The label whose link was selected.
  @param url The URL for the selected link.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url;
 
 /**
  Tells the delegate that the user did select a link to an address.
@@ -289,7 +299,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param label The label whose link was selected.
  @param addressComponents The components of the address for the selected link.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithAddress:(NSDictionary *)addressComponents;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didSelectLinkWithAddress:(NSDictionary *)addressComponents;
 
 /**
  Tells the delegate that the user did select a link to a phone number.
@@ -297,7 +308,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param label The label whose link was selected.
  @param phoneNumber The phone number for the selected link.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
 
 /**
  Tells the delegate that the user did select a link to a date.
@@ -305,7 +317,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param label The label whose link was selected.
  @param date The datefor the selected link.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+  didSelectLinkWithDate:(NSDate *)date;
 
 /**
  Tells the delegate that the user did select a link to a date with a time zone and duration.
@@ -315,7 +328,10 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param timeZone The time zone of the date for the selected link.
  @param duration The duration, in seconds from the date for the selected link.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+  didSelectLinkWithDate:(NSDate *)date
+               timeZone:(NSTimeZone *)timeZone
+               duration:(NSTimeInterval)duration;
 
 /**
  Tells the delegate that the user did select a link to a text checking result.
@@ -325,6 +341,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param label The label whose link was selected.
  @param result The custom text checking result.
  */
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 
 @end

@@ -305,7 +305,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 #pragma mark -
 
-- (void)setLinkActive:(BOOL)active withTextCheckingResult:(NSTextCheckingResult *)result {
+- (void)setLinkActive:(BOOL)active
+withTextCheckingResult:(NSTextCheckingResult *)result
+{
     if (result && [self.activeLinkAttributes count] > 0) {
         if (active) {
             if (!self.inactiveAttributedText) {
@@ -340,7 +342,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error {
+- (NSArray *)detectedLinksInString:(NSString *)string
+                             range:(NSRange)range
+                             error:(NSError **)error
+{
     if (!string || !self.dataDetector) {
         return [NSArray array];
     }
@@ -348,7 +353,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     return [self.dataDetector matchesInString:string options:0 range:range];
 }
 
-- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result attributes:(NSDictionary *)attributes {
+- (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result
+                           attributes:(NSDictionary *)attributes
+{
     self.links = [self.links arrayByAddingObject:result];
     
     if (attributes) {
@@ -362,23 +369,35 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [self addLinkWithTextCheckingResult:result attributes:self.linkAttributes];
 }
 
-- (void)addLinkToURL:(NSURL *)url withRange:(NSRange)range {
+- (void)addLinkToURL:(NSURL *)url
+           withRange:(NSRange)range
+{
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult linkCheckingResultWithRange:range URL:url]];
 }
 
-- (void)addLinkToAddress:(NSDictionary *)addressComponents withRange:(NSRange)range {
+- (void)addLinkToAddress:(NSDictionary *)addressComponents
+               withRange:(NSRange)range
+{
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult addressCheckingResultWithRange:range components:addressComponents]];
 }
 
-- (void)addLinkToPhoneNumber:(NSString *)phoneNumber withRange:(NSRange)range {
+- (void)addLinkToPhoneNumber:(NSString *)phoneNumber
+                   withRange:(NSRange)range
+{
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult phoneNumberCheckingResultWithRange:range phoneNumber:phoneNumber]];
 }
 
-- (void)addLinkToDate:(NSDate *)date withRange:(NSRange)range {
+- (void)addLinkToDate:(NSDate *)date
+            withRange:(NSRange)range
+{
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult dateCheckingResultWithRange:range date:date]];
 }
 
-- (void)addLinkToDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone duration:(NSTimeInterval)duration withRange:(NSRange)range {
+- (void)addLinkToDate:(NSDate *)date
+             timeZone:(NSTimeZone *)timeZone
+             duration:(NSTimeInterval)duration
+            withRange:(NSRange)range
+{
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult dateCheckingResultWithRange:range date:date timeZone:timeZone duration:duration]];
 }
 
@@ -468,7 +487,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     return idx;
 }
 
-- (void)drawFramesetter:(CTFramesetterRef)framesetter attributedString:(NSAttributedString *)attributedString textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c {
+- (void)drawFramesetter:(CTFramesetterRef)framesetter
+       attributedString:(NSAttributedString *)attributedString
+              textRange:(CFRange)textRange
+                 inRect:(CGRect)rect
+                context:(CGContextRef)c
+{
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);    
@@ -563,7 +587,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CFRelease(path);    
 }
 
-- (void)drawBackground:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
+- (void)drawBackground:(CTFrameRef)frame
+                inRect:(CGRect)rect
+               context:(CGContextRef)c
+{
     NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
@@ -629,7 +656,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c {
+- (void)drawStrike:(CTFrameRef)frame
+            inRect:(CGRect)rect
+           context:(CGContextRef)c
+{
     NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
@@ -719,7 +749,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [super setText:[self.attributedText string]];
 }
 
-- (void)setText:(id)text afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block {    
+- (void)setText:(id)text
+afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block
+{
     NSMutableAttributedString *mutableAttributedString = nil;
     if ([text isKindOfClass:[NSString class]]) {
         mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:NSAttributedStringAttributesFromLabel(self)];
@@ -763,7 +795,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+- (CGRect)textRectForBounds:(CGRect)bounds
+     limitedToNumberOfLines:(NSInteger)numberOfLines
+{
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
     }
@@ -897,7 +931,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 #pragma mark - UIResponder
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesBegan:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
     UITouch *touch = [touches anyObject];
     
     self.activeLink = [self linkAtPoint:[touch locationInView:self]];
@@ -909,7 +945,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {    
+- (void)touchesMoved:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
     if (self.activeLink) {
         UITouch *touch = [touches anyObject];
         
@@ -923,7 +961,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
     if (self.activeLink) {
         [self setLinkActive:NO withTextCheckingResult:self.activeLink];
         
@@ -973,7 +1013,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesCancelled:(NSSet *)touches
+               withEvent:(UIEvent *)event
+{
     if (self.activeLink) {
         [self setLinkActive:NO withTextCheckingResult:self.activeLink];
     } else {
