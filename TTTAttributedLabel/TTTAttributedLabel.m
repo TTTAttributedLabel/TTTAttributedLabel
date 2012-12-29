@@ -576,9 +576,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {
-        CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
-        lineBounds.origin.x = origins[lineIndex].x;
-        lineBounds.origin.y = origins[lineIndex].y;
+		CGFloat ascent = 0, descent = 0, leading = 0 ;
+		CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+		CGRect lineBounds = CGRectMake(origins[lineIndex].x, origins[lineIndex].y, width, ascent+descent+leading) ;
         
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
@@ -634,9 +634,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {        
-        CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
-        lineBounds.origin.x = origins[lineIndex].x;
-        lineBounds.origin.y = origins[lineIndex].y;
+		CGFloat ascent = 0, descent = 0, leading = 0 ;
+		CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+		CGRect lineBounds = CGRectMake(origins[lineIndex].x, origins[lineIndex].y, width, ascent+descent+leading) ;
         
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
