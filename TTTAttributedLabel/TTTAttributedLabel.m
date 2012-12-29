@@ -441,8 +441,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
         
         // Get bounding information of line
-        CGFloat ascent, descent, leading, width;
-        width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
+        CGFloat width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
         CGFloat yMin = floor(lineOrigin.y - descent);
         CGFloat yMax = ceil(lineOrigin.y + ascent);
         
@@ -576,7 +576,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {
-        CGFloat ascent, descent, leading;
+        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
         CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
@@ -636,7 +636,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {        
-        CGFloat ascent, descent, leading;
+        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
         CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
