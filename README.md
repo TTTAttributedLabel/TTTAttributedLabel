@@ -1,15 +1,11 @@
 # TTTAttributedLabel
 ## A drop-in replacement for UILabel that supports NSAttributedStrings
 
-![Screenshot of TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/raw/master/TTTAttributedLabelExample/screenshot.png "TTTAttributedLabel Screenshot")
-
 [NSAttributedString](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html) is pretty rad. When it was ported into iOS 4 from Mac OS, iPhone developers everywhere rejoiced. Unfortunately, as of iOS 4 none of the standard controls in UIKit support it. Bummer.
 
 `TTTAttributedLabel` was created to be a drop-in replacement for `UILabel`, that provided a simple API to styling text with `NSAttributedString` while remaining performant. As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, or event.
 
 ## Documentation
-
-Online documentation is available at http://mattt.github.com/TTTAttributedLabel/.
 
 To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
 
