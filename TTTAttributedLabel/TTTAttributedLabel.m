@@ -576,7 +576,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {
-        CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
+        CGFloat ascent, descent, leading;
+        CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+        CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
         lineBounds.origin.y = origins[lineIndex].y;
         
@@ -634,7 +636,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFIndex lineIndex = 0;
     for (id line in lines) {        
-        CGRect lineBounds = CTLineGetImageBounds((__bridge CTLineRef)line, c);
+        CGFloat ascent, descent, leading;
+        CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+        CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
         lineBounds.origin.y = origins[lineIndex].y;
         
