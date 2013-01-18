@@ -168,6 +168,13 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
+/**
+ The custom truncation token that appears at the end of the line. The value is nil by default and we'll use the Unicode horizontal ellipsis character code.
+ 
+ It only works when `lineBreakMode` value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
+ */
+@property (nonatomic, strong) NSAttributedString *truncationTokenString;
+
 ///----------------------------------
 /// @name Setting the Text Attributes
 ///----------------------------------

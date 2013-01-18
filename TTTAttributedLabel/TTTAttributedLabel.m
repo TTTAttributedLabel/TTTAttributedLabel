@@ -544,7 +544,7 @@ withTextCheckingResult:(NSTextCheckingResult *)result
                 // Get the attributes and use them to create the truncation token string
                 NSDictionary *tokenAttributes = [attributedString attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
                 // \u2026 is the Unicode horizontal ellipsis character code
-                NSAttributedString *tokenString = [[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes];
+                NSAttributedString *tokenString = self.truncationTokenString ? : [[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)tokenString);
                 
                 // Append truncationToken to the string
