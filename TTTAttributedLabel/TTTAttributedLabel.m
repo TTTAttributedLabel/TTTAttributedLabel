@@ -197,6 +197,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize firstLineIndent = _firstLineIndent;
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
+@synthesize truncationTokenString = _truncationTokenString;
 @synthesize activeLink = _activeLink;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -543,9 +544,13 @@ withTextCheckingResult:(NSTextCheckingResult *)result
                 
                 // Get the attributes and use them to create the truncation token string
                 NSDictionary *tokenAttributes = [attributedString attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
-                // \u2026 is the Unicode horizontal ellipsis character code
-                NSAttributedString *tokenString = self.truncationTokenString ? : [[NSAttributedString alloc] initWithString:@"\u2026" attributes:tokenAttributes];
-                CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)tokenString);
+                NSString *truncationTokenString = self.truncationTokenString;
+                if (!truncationTokenString) {
+                    truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
+                }
+
+                NSAttributedString *attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:tokenAttributes];
+                CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTokenString);
                 
                 // Append truncationToken to the string
                 // because if string isn't too long, CT wont add the truncationToken on it's own
@@ -558,7 +563,7 @@ withTextCheckingResult:(NSTextCheckingResult *)result
                         [truncationString deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
                     }
                 }
-                [truncationString appendAttributedString:tokenString];
+                [truncationString appendAttributedString:attributedTokenString];
                 CTLineRef truncationLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)truncationString);
 
                 // Truncate the line in case it is too long.
