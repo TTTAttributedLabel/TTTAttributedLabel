@@ -958,6 +958,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         
         if (self.activeLink != [self linkAtPoint:[touch locationInView:self]]) {
             [self setLinkActive:NO withTextCheckingResult:self.activeLink];
+            self.activeLink = nil;
         } else {
             [self setLinkActive:YES withTextCheckingResult:self.activeLink];
         }
@@ -971,11 +972,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 {
     if (self.activeLink) {
         [self setLinkActive:NO withTextCheckingResult:self.activeLink];
-        
+
         if (!self.delegate) {
             return;
         }
-        
+
         NSTextCheckingResult *result = self.activeLink;
         switch (result.resultType) {
             case NSTextCheckingTypeLink:
