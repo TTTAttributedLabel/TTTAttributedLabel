@@ -716,6 +716,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
     
     self.attributedText = text;
+    self.activeLink = nil;
 
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
