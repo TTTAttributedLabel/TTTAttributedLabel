@@ -306,33 +306,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 #pragma mark -
 
-- (void)setLinkActive:(BOOL)active
-withTextCheckingResult:(NSTextCheckingResult *)result
-{
-    if (result && [self.activeLinkAttributes count] > 0) {
-        if (active) {
-            if (!self.inactiveAttributedText) {
-                self.inactiveAttributedText = self.attributedText;
-            }
-            
-            NSMutableAttributedString *mutableAttributedString = [self.inactiveAttributedText mutableCopy];
-            [mutableAttributedString addAttributes:self.activeLinkAttributes range:result.range];
-            self.attributedText = mutableAttributedString;
-            
-            [self setNeedsDisplay];
-        } else {
-            if (self.inactiveAttributedText) {
-                self.attributedText = self.inactiveAttributedText;
-                self.inactiveAttributedText = nil;
-                
-                [self setNeedsDisplay];
-            }
-        }
-    }
-}
-
-#pragma mark -
-
 - (void)setDataDetectorTypes:(UIDataDetectorTypes)dataDetectorTypes {
     [self willChangeValueForKey:@"dataDetectorTypes"];
     _dataDetectorTypes = dataDetectorTypes;
@@ -772,6 +745,27 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [self setText:mutableAttributedString];
 }
 
+- (void)setActiveLink:(NSTextCheckingResult *)activeLink {
+    _activeLink = activeLink;
+
+    if (_activeLink && [self.activeLinkAttributes count] > 0) {
+        if (!self.inactiveAttributedText) {
+            self.inactiveAttributedText = [self.attributedText copy];
+        }
+
+        NSMutableAttributedString *mutableAttributedString = [self.inactiveAttributedText mutableCopy];
+        [mutableAttributedString addAttributes:self.activeLinkAttributes range:_activeLink.range];
+        self.attributedText = mutableAttributedString;
+
+        [self setNeedsDisplay];
+    } else if (self.inactiveAttributedText) {
+        self.attributedText = self.inactiveAttributedText;
+        self.inactiveAttributedText = nil;
+
+        [self setNeedsDisplay];
+    }
+}
+
 #pragma mark - UILabel
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -943,9 +937,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     self.activeLink = [self linkAtPoint:[touch locationInView:self]];
         
-    if (self.activeLink) {
-        [self setLinkActive:YES withTextCheckingResult:self.activeLink];
-    } else {
+    if (!self.activeLink) {
         [super touchesBegan:touches withEvent:event];
     }
 }
@@ -957,10 +949,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         UITouch *touch = [touches anyObject];
         
         if (self.activeLink != [self linkAtPoint:[touch locationInView:self]]) {
-            [self setLinkActive:NO withTextCheckingResult:self.activeLink];
             self.activeLink = nil;
-        } else {
-            [self setLinkActive:YES withTextCheckingResult:self.activeLink];
         }
     } else {
         [super touchesMoved:touches withEvent:event];
@@ -971,13 +960,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
            withEvent:(UIEvent *)event
 {
     if (self.activeLink) {
-        [self setLinkActive:NO withTextCheckingResult:self.activeLink];
-
-        if (!self.delegate) {
-            return;
-        }
-
         NSTextCheckingResult *result = self.activeLink;
+        self.activeLink = nil;
+
         switch (result.resultType) {
             case NSTextCheckingTypeLink:
                 if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
@@ -1023,7 +1008,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                withEvent:(UIEvent *)event
 {
     if (self.activeLink) {
-        [self setLinkActive:NO withTextCheckingResult:self.activeLink];
+        self.activeLink = nil;
     } else {
         [super touchesCancelled:touches withEvent:event];
     }
