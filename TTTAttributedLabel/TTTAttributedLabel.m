@@ -274,9 +274,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         return;
     }
     
-    [self willChangeValueForKey:@"attributedText"];
     _attributedText = [text copy];
-    [self didChangeValueForKey:@"attributedText"];
     
     [self setNeedsFramesetter];
 }
