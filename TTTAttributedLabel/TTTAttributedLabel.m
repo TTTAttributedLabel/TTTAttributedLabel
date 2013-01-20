@@ -166,12 +166,19 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (void)commonInit;
 - (void)setNeedsFramesetter;
-- (NSArray *)detectedLinksInString:(NSString *)string range:(NSRange)range error:(NSError **)error;
+- (void)addLinksWithTextCheckingResults:(NSArray *)results
+                             attributes:(NSDictionary *)attributes;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (CFIndex)characterIndexAtPoint:(CGPoint)p;
-- (void)drawFramesetter:(CTFramesetterRef)framesetter attributedString:(NSAttributedString *)attributedString textRange:(CFRange)textRange inRect:(CGRect)rect context:(CGContextRef)c;
-- (void)drawStrike:(CTFrameRef)frame inRect:(CGRect)rect context:(CGContextRef)c;
+- (void)drawFramesetter:(CTFramesetterRef)framesetter
+       attributedString:(NSAttributedString *)attributedString
+              textRange:(CFRange)textRange
+                 inRect:(CGRect)rect
+                context:(CGContextRef)c;
+- (void)drawStrike:(CTFrameRef)frame
+            inRect:(CGRect)rect
+           context:(CGContextRef)c;
 @end
 
 @implementation TTTAttributedLabel {
@@ -316,26 +323,24 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (NSArray *)detectedLinksInString:(NSString *)string
-                             range:(NSRange)range
-                             error:(NSError **)error
-{
-    if (!string || !self.dataDetector) {
-        return [NSArray array];
-    }
-    
-    return [self.dataDetector matchesInString:string options:0 range:range];
-}
-
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result
                            attributes:(NSDictionary *)attributes
 {
-    self.links = [self.links arrayByAddingObject:result];
-    
+    [self addLinksWithTextCheckingResults:[NSArray arrayWithObject:result] attributes:attributes];
+}
+
+- (void)addLinksWithTextCheckingResults:(NSArray *)results
+                             attributes:(NSDictionary *)attributes
+{
+    self.links = [self.links arrayByAddingObjectsFromArray:results];
+
     if (attributes) {
-        NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
-        [mutableAttributedString addAttributes:attributes range:result.range];
-        self.attributedText = mutableAttributedString;        
+        NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+        for (NSTextCheckingResult *result in results) {
+            [mutableAttributedString addAttributes:attributes range:result.range];
+        }
+        self.attributedText = mutableAttributedString;
+        [self setNeedsDisplay];
     }
 }
 
@@ -719,9 +724,14 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     self.links = [NSArray array];
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
-        for (NSTextCheckingResult *result in [self detectedLinksInString:[self.attributedText string] range:NSMakeRange(0, [text length]) error:nil]) {
-            [self addLinkWithTextCheckingResult:result];
-        }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSArray *results = [self.dataDetector matchesInString:[self.attributedText string] options:0 range:NSMakeRange(0, [self.attributedText length])];
+            if ([results count] > 0 && [[self.attributedText string] isEqualToString:[text string]]) {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self addLinksWithTextCheckingResults:results attributes:self.linkAttributes];
+                });
+            }
+        });
     }
         
     [super setText:[self.attributedText string]];
