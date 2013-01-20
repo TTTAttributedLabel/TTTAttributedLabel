@@ -23,7 +23,7 @@ Now that the framework has been linked, all you need to do is drop `TTTAttribute
 ## Example Usage
 
 ``` objective-c
-TTTAttributedLabel *label = [[[TTTAttributedLabel alloc] initWithFrame:CGRectZero] autorelease];
+TTTAttributedLabel *label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
 label.font = [UIFont systemFontOfSize:14];
 label.textColor = [UIColor darkGrayColor];
 label.lineBreakMode = UILineBreakModeWordWrap;
@@ -36,14 +36,14 @@ NSString *text = @"Lorem ipsum dolar sit amet";
 
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
-	CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
-	if (font) {
-	  [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
-	  [mutableAttributedString addAttribute:@"TTTStrikeOutAttribute" value:[NSNumber numberWithBool:YES] range:strikeRange];
-	  CFRelease(font);
-	}
+  CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+  if (font) {
+    [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+    [mutableAttributedString addAttribute:@"TTTStrikeOutAttribute" value:[NSNumber numberWithBool:YES] range:strikeRange];
+    CFRelease(font);
+  }
 
-	return mutableAttributedString;
+  return mutableAttributedString;
 }];
 ```
 
