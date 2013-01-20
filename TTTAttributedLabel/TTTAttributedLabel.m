@@ -314,12 +314,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark -
 
 - (void)setDataDetectorTypes:(UIDataDetectorTypes)dataDetectorTypes {
-    [self willChangeValueForKey:@"dataDetectorTypes"];
     _dataDetectorTypes = dataDetectorTypes;
-    [self didChangeValueForKey:@"dataDetectorTypes"];
     
     if (self.dataDetectorTypes != UIDataDetectorTypeNone) {
         self.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeFromUIDataDetectorType(self.dataDetectorTypes) error:nil];
+    } else {
+        self.dataDetector = nil;
     }
 }
 
