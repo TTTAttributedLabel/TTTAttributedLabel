@@ -811,20 +811,20 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
         
     CGRect textRect = bounds;
+    textRect.size.height = fmaxf(self.font.pointSize * 2.0f, bounds.size.height); // For vertical cropping
     
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, bounds.size, NULL);
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, textRect.size, NULL);
     textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
     if (textSize.height < textRect.size.height) {
-        CGFloat heightChange = (textRect.size.height - textSize.height);
         CGFloat yOffset = 0.0f;
         switch (self.verticalAlignment) {
             case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((textRect.size.height - textSize.height) / 2.0f);
+                yOffset = floorf((bounds.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
-                yOffset = textRect.size.height - textSize.height;
+                yOffset = bounds.size.height - textSize.height;
                 break;
             case TTTAttributedLabelVerticalAlignmentTop:
             default:
@@ -832,7 +832,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
         
         textRect.origin.y += yOffset;
-        textRect.size = CGSizeMake(textRect.size.width, textRect.size.height - heightChange + yOffset);
     }
     
     return textRect;
