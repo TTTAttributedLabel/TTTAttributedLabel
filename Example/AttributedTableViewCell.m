@@ -81,6 +81,9 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.summaryLabel.highlightedTextColor = [UIColor whiteColor];
     self.summaryLabel.shadowColor = [UIColor colorWithWhite:0.87 alpha:1.0];
     self.summaryLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
+    self.summaryLabel.highlightedShadowColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
+    self.summaryLabel.highlightedShadowOffset = CGSizeMake(0.0f, -1.0f);
+    self.summaryLabel.highlightedShadowRadius = 1;
     self.summaryLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
 
     [self.contentView addSubview:self.summaryLabel];

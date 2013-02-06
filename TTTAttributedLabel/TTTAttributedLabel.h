@@ -129,6 +129,19 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, assign) CGFloat shadowRadius;
 
+/** 
+ The shadow blur radius for the label when the label's `highlighted` property is `YES`. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0.
+ */
+@property (nonatomic, assign) CGFloat highlightedShadowRadius;
+/** 
+ The shadow offset for the label when the label's `highlighted` property is `YES`. A size of {0, 0} indicates no offset, with positive values extending down and to the right. The default size is {0, 0}.
+ */
+@property (nonatomic, assign) CGSize highlightedShadowOffset;
+/** 
+ The shadow color for the label when the label's `highlighted` property is `YES`. The default value is `nil` (no shadow color).
+ */
+@property (nonatomic, strong) UIColor *highlightedShadowColor;
+
 ///--------------------------------------------
 /// @name Acccessing Paragraph Style Attributes
 ///--------------------------------------------
