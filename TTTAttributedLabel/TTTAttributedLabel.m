@@ -537,6 +537,23 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                     // If the line is not as wide as the truncationToken, truncatedLine is NULL
                     truncatedLine = CFRetain(truncationToken);
                 }
+
+                // Adjust pen offset for flush depending on text alignment
+                CGFloat flushFactor = 0.0f;
+                switch (self.textAlignment) {
+                    case UITextAlignmentCenter:
+                        flushFactor = 0.5f;
+                        break;
+                    case UITextAlignmentRight:
+                        flushFactor = 1.0f;
+                        break;
+                    case UITextAlignmentLeft:
+                    default:
+                        break;
+                }
+
+                CGFloat penOffset = CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y);
                 
                 CTLineDraw(truncatedLine, c);
                 
