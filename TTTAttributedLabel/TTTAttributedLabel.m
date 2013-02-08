@@ -239,7 +239,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     self.links = [NSArray array];
     
-    CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeCharacterWrap);
+    CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
     CTParagraphStyleSetting paragraphStyles[1] = {
 		{.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
 	};
