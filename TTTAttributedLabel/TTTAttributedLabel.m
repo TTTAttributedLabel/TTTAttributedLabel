@@ -218,17 +218,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return nil;
-    }
-    
-    [self commonInit];
-    
-    return self;
-}
-
 - (void)commonInit {
     self.userInteractionEnabled = YES;
     self.multipleTouchEnabled = NO;
@@ -1026,6 +1015,99 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     } else {
         [super touchesCancelled:touches withEvent:event];
     }
+}
+
+#pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+
+    [coder encodeInteger:self.dataDetectorTypes forKey:@"dataDetectorTypes"];
+    [coder encodeObject:self.links forKey:@"links"];
+    [coder encodeObject:self.linkAttributes forKey:@"linkAttributes"];
+    [coder encodeObject:self.activeLinkAttributes forKey:@"activeLinkAttributes"];
+    [coder encodeFloat:self.shadowRadius forKey:@"shadowRadius"];
+    [coder encodeFloat:self.highlightedShadowRadius forKey:@"highlightedShadowRadius"];
+    [coder encodeCGSize:self.highlightedShadowOffset forKey:@"highlightedShadowOffset"];
+    [coder encodeObject:self.highlightedShadowColor forKey:@"highlightedShadowColor"];
+    [coder encodeFloat:self.firstLineIndent forKey:@"firstLineIndent"];
+    [coder encodeFloat:self.leading forKey:@"leading"];
+    [coder encodeFloat:self.lineHeightMultiple forKey:@"lineHeightMultiple"];
+    [coder encodeUIEdgeInsets:self.textInsets forKey:@"textInsets"];
+    [coder encodeInteger:self.verticalAlignment forKey:@"verticalAlignment"];
+    [coder encodeObject:self.truncationTokenString forKey:@"truncationTokenString"];
+    [coder encodeObject:self.attributedText forKey:@"attributedText"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return nil;
+    }
+
+    [self commonInit];
+
+    if ([coder containsValueForKey:@"dataDetectorTypes"]) {
+        self.dataDetectorTypes = [coder decodeIntegerForKey:@"dataDetectorTypes"];
+    }
+
+    if ([coder containsValueForKey:@"links"]) {
+        self.links = [coder decodeObjectForKey:@"links"];
+    }
+
+    if ([coder containsValueForKey:@"linkAttributes"]) {
+        self.linkAttributes = [coder decodeObjectForKey:@"linkAttributes"];
+    }
+
+    if ([coder containsValueForKey:@"activeLinkAttributes"]) {
+        self.activeLinkAttributes = [coder decodeObjectForKey:@"activeLinkAttributes"];
+    }
+
+    if ([coder containsValueForKey:@"shadowRadius"]) {
+        self.shadowRadius = [coder decodeFloatForKey:@"shadowRadius"];
+    }
+
+    if ([coder containsValueForKey:@"highlightedShadowRadius"]) {
+        self.highlightedShadowRadius = [coder decodeFloatForKey:@"highlightedShadowRadius"];
+    }
+
+    if ([coder containsValueForKey:@"highlightedShadowOffset"]) {
+        self.highlightedShadowOffset = [coder decodeCGSizeForKey:@"highlightedShadowOffset"];
+    }
+
+    if ([coder containsValueForKey:@"highlightedShadowColor"]) {
+        self.highlightedShadowColor = [coder decodeObjectForKey:@"highlightedShadowColor"];
+    }
+
+    if ([coder containsValueForKey:@"firstLineIndent"]) {
+        self.firstLineIndent = [coder decodeFloatForKey:@"firstLineIndent"];
+    }
+
+    if ([coder containsValueForKey:@"leading"]) {
+        self.leading = [coder decodeFloatForKey:@"leading"];
+    }
+
+    if ([coder containsValueForKey:@"lineHeightMultiple"]) {
+        self.lineHeightMultiple = [coder decodeFloatForKey:@"lineHeightMultiple"];
+    }
+
+    if ([coder containsValueForKey:@"textInsets"]) {
+        self.textInsets = [coder decodeUIEdgeInsetsForKey:@"textInsets"];
+    }
+
+    if ([coder containsValueForKey:@"verticalAlignment"]) {
+        self.verticalAlignment = [coder decodeIntegerForKey:@"verticalAlignment"];
+    }
+
+    if ([coder containsValueForKey:@"truncationTokenString"]) {
+        self.truncationTokenString = [coder decodeObjectForKey:@"truncationTokenString"];
+    }
+
+    if ([coder containsValueForKey:@"attributedText"]) {
+        self.attributedText = [coder decodeObjectForKey:@"attributedText"];
+    }
+
+    return self;
 }
 
 @end
