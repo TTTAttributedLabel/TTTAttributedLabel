@@ -382,8 +382,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
     for (NSTextCheckingResult *result in self.links) {
-        NSRange range = result.range;
-        if ((CFIndex)range.location <= idx && idx <= (CFIndex)(range.location + range.length - 1)) {
+        if (NSLocationInRange((NSUInteger)idx, result.range)) {
             return result;
         }
     }
@@ -393,6 +392,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)p {
     CFIndex idx = [self characterIndexAtPoint:p];
+    
     return [self linkAtCharacterIndex:idx];
 }
 
