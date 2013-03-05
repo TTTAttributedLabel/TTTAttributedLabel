@@ -1,5 +1,8 @@
 # TTTAttributedLabel
 
+**This is an Bugfix on the original [TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel) class by [mattt](https://github.com/mattt/).**
+(Awaiting [Pull Request](https://github.com/mattt/TTTAttributedLabel/pull/176))
+
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
 [NSAttributedString](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html) is pretty rad. When it was ported into iOS 4 from Mac OS, iPhone developers everywhere rejoiced. Unfortunately, as of iOS 4 none of the standard controls in UIKit support it. Bummer.
