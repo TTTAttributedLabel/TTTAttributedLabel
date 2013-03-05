@@ -106,7 +106,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  An array of `NSTextCheckingResult` objects for links detected or manually added to the label text.
  */
-@property (readonly, nonatomic, strong) NSArray *links;
+@property (readonly, nonatomic, strong) NSSet *links;
 
 /**
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
