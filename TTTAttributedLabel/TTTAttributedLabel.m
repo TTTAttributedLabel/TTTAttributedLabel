@@ -394,7 +394,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark -
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
-    for (NSTextCheckingResult *result in self.links) {
+    NSEnumerator *enumerator = [self.links reverseObjectEnumerator];
+    NSTextCheckingResult *result = nil;
+    while ((result = [enumerator nextObject])) {
         if (NSLocationInRange((NSUInteger)idx, result.range)) {
             return result;
         }
