@@ -176,7 +176,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
-@property (readwrite, nonatomic, strong) NSArray *links;
+@property (readwrite, nonatomic, strong) NSSet *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
 
 - (void)commonInit;
@@ -241,8 +241,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     self.textInsets = UIEdgeInsetsZero;
     
-    self.links = [NSArray array];
-
+    self.links = [NSSet set];
+    
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[UIColor blueColor] forKey:(NSString*)kCTForegroundColorAttributeName];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
@@ -343,7 +343,11 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 - (void)addLinksWithTextCheckingResults:(NSArray *)results
                              attributes:(NSDictionary *)attributes
 {
-    self.links = [self.links arrayByAddingObjectsFromArray:results];
+    for (NSTextCheckingResult *result in results) {
+        self.links = [self.links filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"range != %@ AND resultType != %d", NSStringFromRange(result.range), result.resultType]];
+    }
+    
+    self.links = [self.links setByAddingObjectsFromArray:results];
 
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
@@ -753,7 +757,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.attributedText = text;
     self.activeLink = nil;
 
-    self.links = [NSArray array];
+    self.links = [NSSet set];
     if (self.attributedText && self.dataDetectorTypes != UIDataDetectorTypeNone) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSArray *results = [self.dataDetector matchesInString:[text string] options:0 range:NSMakeRange(0, [text length])];
