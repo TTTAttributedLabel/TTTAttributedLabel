@@ -157,7 +157,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, assign) CGFloat leading;
 
 /**
- The line height multiple. This value is 0.0 by default.
+ The line height multiple. This value is 1.0 by default.
  */
 @property (nonatomic, assign) CGFloat lineHeightMultiple;
 
