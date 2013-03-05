@@ -343,8 +343,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 - (void)addLinksWithTextCheckingResults:(NSArray *)results
                              attributes:(NSDictionary *)attributes
 {
-    NSTextCheckingResult *result = [results lastObject];
-    self.links = [self.links filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"range != %@ AND resultType != %d", NSStringFromRange(result.range), result.resultType]];
+    for (NSTextCheckingResult *result in results) {
+        self.links = [self.links filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"range != %@ AND resultType != %d", NSStringFromRange(result.range), result.resultType]];
+    }
+    
     self.links = [self.links setByAddingObjectsFromArray:results];
 
     if (attributes) {
