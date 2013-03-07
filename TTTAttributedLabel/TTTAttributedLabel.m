@@ -157,8 +157,9 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
                 pointSize = CTFontGetSize(ctFont);
             }
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
-            font = [UIFont fontWithName:fontName size:floorf(pointSize * scale)];
-            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:font range:range];
+            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, floorf(pointSize * scale), NULL);
+            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
+            CFRelease(fontRef);
         }
     }];
     
