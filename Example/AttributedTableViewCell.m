@@ -30,22 +30,24 @@
 static CGFloat const kEspressoDescriptionTextFontSize = 17;
 static CGFloat const kAttributedTableViewCellVerticalMargin = 20.0f;
 
-static NSRegularExpression *__nameRegularExpression;
 static inline NSRegularExpression * NameRegularExpression() {
-    if (!__nameRegularExpression) {
-        __nameRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"^\\w+" options:NSRegularExpressionCaseInsensitive error:nil];
-    }
+    static NSRegularExpression *_nameRegularExpression = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _nameRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"^\\w+" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
     
-    return __nameRegularExpression;
+    return _nameRegularExpression;
 }
 
-static NSRegularExpression *__parenthesisRegularExpression;
 static inline NSRegularExpression * ParenthesisRegularExpression() {
-    if (!__parenthesisRegularExpression) {
-        __parenthesisRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"\\([^\\(\\)]+\\)" options:NSRegularExpressionCaseInsensitive error:nil];
-    }
+    static NSRegularExpression *_parenthesisRegularExpression = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _parenthesisRegularExpression = [[NSRegularExpression alloc] initWithPattern:@"\\([^\\(\\)]+\\)" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
     
-    return __parenthesisRegularExpression;
+    return _parenthesisRegularExpression;
 }
 
 @implementation AttributedTableViewCell
@@ -55,7 +57,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (!self) {
-        return nil; 
+        return nil;
     }
     
     self.layer.shouldRasterize = YES;
