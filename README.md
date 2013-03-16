@@ -39,7 +39,7 @@ NSString *text = @"Lorem ipsum dolar sit amet";
   CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
   if (font) {
     [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
-    [mutableAttributedString addAttribute:@"TTTStrikeOutAttribute" value:[NSNumber numberWithBool:YES] range:strikeRange];
+    [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:[NSNumber numberWithBool:YES] range:strikeRange];
     CFRelease(font);
   }
 
