@@ -221,6 +221,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize truncationTokenString = _truncationTokenString;
 @synthesize activeLink = _activeLink;
+@synthesize highlightedShadowRadius = _highlightedShadowRadius;
+@synthesize highlightedShadowOffset = _highlightedShadowOffset;
+@synthesize highlightedShadowColor = _highlightedShadowColor;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
