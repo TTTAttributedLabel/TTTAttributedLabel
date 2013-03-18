@@ -145,8 +145,21 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont *font = (UIFont *)value;
         if (font) {
-            font = [UIFont fontWithName:font.fontName size:floorf(font.pointSize * scale)];
-            [mutableAttributedString setAttributes:[NSDictionary dictionaryWithObject:font forKey:(NSString *)kCTFontAttributeName] range:range];
+            NSString *fontName;
+            CGFloat   pointSize;
+            if ([font isKindOfClass:[UIFont class]]) {
+                fontName = font.fontName;
+                pointSize = font.pointSize;
+            }
+            else {
+                CTFontRef ctFont = (__bridge CTFontRef)font;
+                fontName = (NSString *)CFBridgingRelease(CTFontCopyName(ctFont, kCTFontPostScriptNameKey));
+                pointSize = CTFontGetSize(ctFont);
+            }
+            [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
+            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, floorf(pointSize * scale), NULL);
+            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
+            CFRelease(fontRef);
         }
     }];
     
@@ -886,7 +899,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     // Adjust the font size to fit width, if necessarry 
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
-        CGFloat textWidth = [self sizeThatFits:CGSizeZero].width;
+        // Use infinite width to find the max width, which will be compared to availableWidth if needed.
+        CGSize maxSize = (self.numberOfLines > 1) ? CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) : CGSizeZero;
+        
+        CGFloat textWidth = [self sizeThatFits:maxSize].width;
         CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
         if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
             textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
