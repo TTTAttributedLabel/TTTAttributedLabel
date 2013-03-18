@@ -634,16 +634,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
             if (strokeColor || fillColor) {
                 CGRect runBounds = CGRectZero;
-                CGFloat ascent = 0.0f;
-                CGFloat descent = 0.0f;
+                CGFloat localAscent = 0.0f;
+                CGFloat localDescent = 0.0f;
                 
-                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &ascent, &descent, NULL);
-                runBounds.size.height = ascent + descent;
+                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &localAscent, &localDescent, NULL);
+                runBounds.size.height = localAscent + localDescent;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
                 runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset;
-                runBounds.origin.y -= descent;
+                runBounds.origin.y -= localDescent;
                 
                 // Don't draw higlightedLinkBackground too far to the right
                 if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds)) {
@@ -695,16 +695,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
             
             if (strikeOut) {
                 CGRect runBounds = CGRectZero;
-                CGFloat ascent = 0.0f;
-                CGFloat descent = 0.0f;
+                CGFloat localAscent = 0.0f;
+                CGFloat localDescent = 0.0f;
                 
-                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &ascent, &descent, NULL);
-                runBounds.size.height = ascent + descent;
+                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &localAscent, &localDescent, NULL);
+                runBounds.size.height = localAscent + localDescent;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
                 runBounds.origin.y = origins[lineIndex].y + rect.origin.y;
-                runBounds.origin.y -= descent;
+                runBounds.origin.y -= localDescent;
                 
                 // Don't draw strikeout too far to the right
                 if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds)) {
@@ -713,10 +713,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 
 				switch (superscriptStyle) {
 					case 1:
-						runBounds.origin.y -= ascent * 0.47f;
+						runBounds.origin.y -= localAscent * 0.47f;
 						break;
 					case -1:
-						runBounds.origin.y += ascent * 0.25f;
+						runBounds.origin.y += localAscent * 0.25f;
 						break;
 					default:
 						break;
