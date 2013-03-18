@@ -214,6 +214,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize linkAttributes = _linkAttributes;
 @synthesize activeLinkAttributes = _activeLinkAttributes;
 @synthesize shadowRadius = _shadowRadius;
+@synthesize highlightedShadowRadius = _highlightedShadowRadius;
+@synthesize highlightedShadowOffset = _highlightedShadowOffset;
+@synthesize highlightedShadowColor = _highlightedShadowColor;
 @synthesize leading = _leading;
 @synthesize lineHeightMultiple = _lineHeightMultiple;
 @synthesize firstLineIndent = _firstLineIndent;
@@ -221,9 +224,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize truncationTokenString = _truncationTokenString;
 @synthesize activeLink = _activeLink;
-@synthesize highlightedShadowRadius = _highlightedShadowRadius;
-@synthesize highlightedShadowOffset = _highlightedShadowOffset;
-@synthesize highlightedShadowColor = _highlightedShadowColor;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
