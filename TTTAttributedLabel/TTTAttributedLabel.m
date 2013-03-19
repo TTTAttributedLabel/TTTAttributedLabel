@@ -146,16 +146,16 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
         UIFont *font = (UIFont *)value;
         if (font) {
             NSString *fontName;
-            CGFloat   pointSize;
+            CGFloat pointSize;
+            
             if ([font isKindOfClass:[UIFont class]]) {
                 fontName = font.fontName;
                 pointSize = font.pointSize;
+            } else {
+                fontName = (NSString *)CFBridgingRelease(CTFontCopyName((__bridge CTFontRef)font, kCTFontPostScriptNameKey));
+                pointSize = CTFontGetSize((__bridge CTFontRef)font);
             }
-            else {
-                CTFontRef ctFont = (__bridge CTFontRef)font;
-                fontName = (NSString *)CFBridgingRelease(CTFontCopyName(ctFont, kCTFontPostScriptNameKey));
-                pointSize = CTFontGetSize(ctFont);
-            }
+            
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
             CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, floorf(pointSize * scale), NULL);
             [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
