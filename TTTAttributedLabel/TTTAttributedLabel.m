@@ -84,7 +84,6 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
-        paragraphStyle.lineBreakMode = label.lineBreakMode;
         paragraphStyle.lineSpacing = label.leading;
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
         paragraphStyle.firstLineHeadIndent = label.firstLineIndent;
@@ -92,6 +91,13 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
         paragraphStyle.headIndent = label.textInsets.left;
         paragraphStyle.tailIndent = label.textInsets.right;
+
+        if (label.numberOfLines == 1) {
+            paragraphStyle.lineBreakMode = label.lineBreakMode;
+        } else {
+            paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        }
+
         [mutableAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
     } else {
         CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)label.font.fontName, label.font.pointSize, NULL);
