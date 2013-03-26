@@ -98,6 +98,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.attributedLabel.shadowColor = [UIColor colorWithWhite:0.87f alpha:1.0f];
     self.attributedLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
     self.attributedLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
+    self.attributedLabel.dataDetectorTypes = UIDataDetectorTypeLink;
     
     [self.attributedLabel setText:self.espressoDescription afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
         NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
@@ -143,6 +144,12 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
    didSelectLinkWithURL:(NSURL *)url
 {
     [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
+}
+
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectHashtagOrMentionWithURL:(NSURL *)url
+{
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Hashtag or mention selected:", nil) message:[url absoluteString] delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil, nil] show];
 }
 
 #pragma mark - UIActionSheetDelegate

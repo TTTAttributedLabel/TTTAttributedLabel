@@ -318,6 +318,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
    didSelectLinkWithURL:(NSURL *)url;
 
 /**
+ Tells the delegate that the user did select a link to a hashtag(#) or mention (@).
+ 
+ @param label The label whose link was selected.
+ @param url The URL for the selected hashtag(#) or mention (@).
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectHashtagOrMentionWithURL:(NSURL *)url;
+
+/**
  Tells the delegate that the user did select a link to an address.
  
  @param label The label whose link was selected.
