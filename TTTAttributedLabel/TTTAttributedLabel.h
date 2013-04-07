@@ -161,6 +161,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) UIColor *highlightedShadowColor;
 
+/**
+ The amount to kern the next character. Default is standard kerning. If this attribute is set to 0.0, no kerning is done at all.
+ */
+@property (nonatomic, assign) CGFloat kern;
+
 ///--------------------------------------------
 /// @name Acccessing Paragraph Style Attributes
 ///--------------------------------------------
