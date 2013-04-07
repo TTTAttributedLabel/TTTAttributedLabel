@@ -250,6 +250,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize truncationTokenString = _truncationTokenString;
 @synthesize activeLink = _activeLink;
+@synthesize linkGestureRecognizer = _linkGestureRecognizer;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -302,6 +303,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     
+    self.linkGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(linkGestureRecognized:)];
+    self.linkGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:self.linkGestureRecognizer];
 }
 
 - (void)dealloc {
@@ -1006,89 +1010,54 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
 }
 
-#pragma mark - UIResponder
+#pragma mark - Gesture recognizer
 
-- (void)touchesBegan:(NSSet *)touches
-           withEvent:(UIEvent *)event
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    UITouch *touch = [touches anyObject];
-    
     self.activeLink = [self linkAtPoint:[touch locationInView:self]];
-        
-    if (!self.activeLink) {
-        [super touchesBegan:touches withEvent:event];
-    }
+    return self.activeLink != nil;
 }
 
-- (void)touchesMoved:(NSSet *)touches
-           withEvent:(UIEvent *)event
+- (void)linkGestureRecognized:(UITapGestureRecognizer *)gestureRecognizer
 {
-    if (self.activeLink) {
-        UITouch *touch = [touches anyObject];
-        
-        if (self.activeLink != [self linkAtPoint:[touch locationInView:self]]) {
-            self.activeLink = nil;
-        }
-    } else {
-        [super touchesMoved:touches withEvent:event];
+    NSTextCheckingResult *result = self.activeLink;
+    self.activeLink = nil;
+    
+    switch (result.resultType) {
+        case NSTextCheckingTypeLink:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+                return;
+            }
+            break;
+        case NSTextCheckingTypeAddress:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+                return;
+            }
+            break;
+        case NSTextCheckingTypePhoneNumber:
+            if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+                return;
+            }
+            break;
+        case NSTextCheckingTypeDate:
+            if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+                return;
+            } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+                [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+                return;
+            }
+            break;
+        default:
+            break;
     }
-}
-
-- (void)touchesEnded:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
-    if (self.activeLink) {
-        NSTextCheckingResult *result = self.activeLink;
-        self.activeLink = nil;
-
-        switch (result.resultType) {
-            case NSTextCheckingTypeLink:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypeAddress:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypePhoneNumber:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypeDate:
-                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-                    return;
-                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-                    return;
-                }
-                break;
-            default:
-                break;
-        }
-        
-        // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
-        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
-            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
-        }
-    } else {
-        [super touchesEnded:touches withEvent:event];
-    }
-}
-
-- (void)touchesCancelled:(NSSet *)touches
-               withEvent:(UIEvent *)event
-{
-    if (self.activeLink) {
-        self.activeLink = nil;
-    } else {
-        [super touchesCancelled:touches withEvent:event];
+    
+    // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
+    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+        [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
     }
 }
 
