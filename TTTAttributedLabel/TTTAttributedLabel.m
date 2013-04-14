@@ -933,7 +933,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
 
     // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
-    CGContextTranslateCTM(c, 0.0f, rect.size.height - textRect.origin.y - textRect.size.height);
+    CGContextTranslateCTM(c, rect.origin.x, rect.size.height - textRect.origin.y - textRect.size.height);
 
     // Second, trace the shadow before the actual text, if we have one
     if (self.shadowColor && !self.highlighted) {
