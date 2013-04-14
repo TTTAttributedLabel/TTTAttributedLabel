@@ -743,9 +743,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 
                 // Use text color, or default to black
                 id color = [attributes objectForKey:(id)kCTForegroundColorAttributeName];
-
                 if (color) {
-                    CGContextSetStrokeColorWithColor(c, (__bridge CGColorRef)color);
+                    if ([color isKindOfClass:[UIColor class]]) {
+                        CGContextSetStrokeColorWithColor(c, [color CGColor]);
+                    } else {
+                        CGContextSetStrokeColorWithColor(c, (__bridge CGColorRef)color);
+                    }
                 } else {
                     CGContextSetGrayStrokeColor(c, 0.0f, 1.0);
                 }
