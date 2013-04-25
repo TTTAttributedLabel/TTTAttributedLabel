@@ -721,8 +721,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 runBounds.size.height = runAscent + runDescent;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
-                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset;
-                runBounds.origin.y = origins[lineIndex].y + rect.origin.y;
+                runBounds.origin.x = origins[lineIndex].x + xOffset;
+                runBounds.origin.y = origins[lineIndex].y;
                 runBounds.origin.y -= runDescent;
                 
                 // Don't draw strikeout too far to the right
