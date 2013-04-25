@@ -924,47 +924,47 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(c);
-    CGContextSetTextMatrix(c, CGAffineTransformIdentity);
+    CGContextSaveGState(c); {
+        CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
-    // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
-    CGContextTranslateCTM(c, 0.0f, rect.size.height);
-    CGContextScaleCTM(c, 1.0f, -1.0f);
-    
-    CFRange textRange = CFRangeMake(0, [self.attributedText length]);
-
-    // First, get the text rect (which takes vertical centering into account)
-    CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
-
-    // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
-    CGContextTranslateCTM(c, rect.origin.x, rect.size.height - textRect.origin.y - textRect.size.height);
-
-    // Second, trace the shadow before the actual text, if we have one
-    if (self.shadowColor && !self.highlighted) {
-        CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
-    } else if (self.highlightedShadowColor) {
-        CGContextSetShadowWithColor(c, self.highlightedShadowOffset, self.highlightedShadowRadius, [self.highlightedShadowColor CGColor]);
-    }
-    
-    // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
-    if (self.highlightedTextColor && self.highlighted) {
-        NSMutableAttributedString *highlightAttributedString = [self.renderedAttributedText mutableCopy];
-        [highlightAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, highlightAttributedString.length)];
+        // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
+        CGContextTranslateCTM(c, 0.0f, rect.size.height);
+        CGContextScaleCTM(c, 1.0f, -1.0f);
         
-        if (!self.highlightFramesetter) {
-            self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)highlightAttributedString);
+        CFRange textRange = CFRangeMake(0, [self.attributedText length]);
+
+        // First, get the text rect (which takes vertical centering into account)
+        CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
+
+        // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
+        CGContextTranslateCTM(c, rect.origin.x, rect.size.height - textRect.origin.y - textRect.size.height);
+
+        // Second, trace the shadow before the actual text, if we have one
+        if (self.shadowColor && !self.highlighted) {
+            CGContextSetShadowWithColor(c, self.shadowOffset, self.shadowRadius, [self.shadowColor CGColor]);
+        } else if (self.highlightedShadowColor) {
+            CGContextSetShadowWithColor(c, self.highlightedShadowOffset, self.highlightedShadowRadius, [self.highlightedShadowColor CGColor]);
         }
         
-        [self drawFramesetter:self.highlightFramesetter attributedString:highlightAttributedString textRange:textRange inRect:textRect context:c];
-    } else {
-        [self drawFramesetter:self.framesetter attributedString:self.renderedAttributedText textRange:textRange inRect:textRect context:c];
-    }  
-    
-    // If we adjusted the font size, set it back to its original size
-    if (originalAttributedText) {
-        self.text = originalAttributedText;
-    }
-    CGContextRestoreGState(c);
+        // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
+        if (self.highlightedTextColor && self.highlighted) {
+            NSMutableAttributedString *highlightAttributedString = [self.renderedAttributedText mutableCopy];
+            [highlightAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, highlightAttributedString.length)];
+            
+            if (!self.highlightFramesetter) {
+                self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)highlightAttributedString);
+            }
+            
+            [self drawFramesetter:self.highlightFramesetter attributedString:highlightAttributedString textRange:textRange inRect:textRect context:c];
+        } else {
+            [self drawFramesetter:self.framesetter attributedString:self.renderedAttributedText textRange:textRange inRect:textRect context:c];
+        }  
+        
+        // If we adjusted the font size, set it back to its original size
+        if (originalAttributedText) {
+            self.text = originalAttributedText;
+        }
+    } CGContextRestoreGState(c);
 }
 
 #pragma mark - UIView
