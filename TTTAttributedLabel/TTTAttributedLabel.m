@@ -924,6 +924,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
     
     CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(c);
     CGContextSetTextMatrix(c, CGAffineTransformIdentity);
 
     // Inverts the CTM to match iOS coordinates (otherwise text draws upside-down; Mac OS's system is different)
@@ -963,6 +964,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (originalAttributedText) {
         self.text = originalAttributedText;
     }
+    CGContextRestoreGState(c);
 }
 
 #pragma mark - UIView
