@@ -919,7 +919,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         
         if (textWidth > availableWidth && textWidth > 0.0f) {
             originalAttributedText = [self.attributedText copy];
-            self.text = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
+            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
         }
     }
     
@@ -962,7 +962,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         
         // If we adjusted the font size, set it back to its original size
         if (originalAttributedText) {
-            self.text = originalAttributedText;
+            self.attributedText = originalAttributedText;
         }
     } CGContextRestoreGState(c);
 }
