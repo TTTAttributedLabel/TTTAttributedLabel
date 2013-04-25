@@ -311,7 +311,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  @discussion The gesture recognizer to handle taps on links. It will only receive touches when a link is touched so it can be used along with other gesture recognizers. E.g. [otherGestureRecognizer requireGestureRecognizerToFail:tttAttributedLabel.linkGestureRecognizer].
  
  */
-@property (nonatomic, strong) UITapGestureRecognizer *linkGestureRecognizer;
+@property (nonatomic, strong) UILongPressGestureRecognizer *linkGestureRecognizer;
 
 @end
 
