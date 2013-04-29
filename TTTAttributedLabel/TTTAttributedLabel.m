@@ -711,7 +711,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
             BOOL strikeOut = [[attributes objectForKey:kTTTStrikeOutAttributeName] boolValue];
             NSInteger superscriptStyle = [[attributes objectForKey:(id)kCTSuperscriptAttributeName] integerValue];
-            
+
+            // check for iOS 6 strikethrough attribute
+            if (!strikeOut && &NSStrikethroughStyleAttributeName != NULL) {
+                strikeOut = [[attributes objectForKey:NSStrikethroughStyleAttributeName] boolValue];
+            }
+
             if (strikeOut) {
                 CGRect runBounds = CGRectZero;
                 CGFloat runAscent = 0.0f;
