@@ -1002,6 +1002,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
 }
 
+- (CGSize)intrinsicContentSize
+{
+    return [self sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+}
+
 #pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet *)touches
