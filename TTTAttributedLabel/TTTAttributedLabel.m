@@ -90,7 +90,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
         paragraphStyle.headIndent = label.textInsets.left;
-        paragraphStyle.tailIndent = label.textInsets.right;
+        paragraphStyle.tailIndent = -label.textInsets.right;
 
         if (label.numberOfLines == 1) {
             paragraphStyle.lineBreakMode = label.lineBreakMode;
@@ -113,7 +113,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CGFloat topMargin = label.textInsets.top;
         CGFloat bottomMargin = label.textInsets.bottom;
         CGFloat leftMargin = label.textInsets.left;
-        CGFloat rightMargin = label.textInsets.right;
+        CGFloat rightMargin = -label.textInsets.right;
         CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
 
         CTLineBreakMode lineBreakMode;
