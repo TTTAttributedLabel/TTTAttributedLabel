@@ -113,7 +113,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CGFloat topMargin = label.textInsets.top;
         CGFloat bottomMargin = label.textInsets.bottom;
         CGFloat leftMargin = label.textInsets.left;
-        CGFloat rightMargin = label.textInsets.right;
+        CGFloat rightMargin = -label.textInsets.right;
         CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
 
         CTLineBreakMode lineBreakMode;
