@@ -312,6 +312,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     _attributedText = [text copy];
     
     [self setNeedsFramesetter];
+    [self setNeedsDisplay];
 }
 
 - (void)setNeedsFramesetter {
