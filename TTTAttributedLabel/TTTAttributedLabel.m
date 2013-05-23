@@ -1005,7 +1005,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 - (CGSize)intrinsicContentSize {
-    return [self sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    // There's an implicit width from the original UILabel implementation
+    return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
 #pragma mark - UIResponder
