@@ -90,7 +90,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
         paragraphStyle.headIndent = label.textInsets.left;
-        paragraphStyle.tailIndent = label.textInsets.right;
+        paragraphStyle.tailIndent = -label.textInsets.right;
 
         if (label.numberOfLines == 1) {
             paragraphStyle.lineBreakMode = label.lineBreakMode;
@@ -113,7 +113,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CGFloat topMargin = label.textInsets.top;
         CGFloat bottomMargin = label.textInsets.bottom;
         CGFloat leftMargin = label.textInsets.left;
-        CGFloat rightMargin = label.textInsets.right;
+        CGFloat rightMargin = -label.textInsets.right;
         CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
 
         CTLineBreakMode lineBreakMode;
@@ -266,20 +266,24 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.links = [NSArray array];
 
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableLinkAttributes setObject:[UIColor blueColor] forKey:(NSString*)kCTForegroundColorAttributeName];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
     NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableActiveLinkAttributes setObject:[UIColor redColor] forKey:(NSString*)kCTForegroundColorAttributeName];
     [mutableActiveLinkAttributes setObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCTUnderlineStyleAttributeName];
 
     if ([NSMutableParagraphStyle class]) {
+        [mutableLinkAttributes setObject:[UIColor blueColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+        [mutableActiveLinkAttributes setObject:[UIColor redColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
         
         [mutableLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
         [mutableActiveLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
     } else {
+        [mutableLinkAttributes setObject:(__bridge id)[[UIColor blueColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+        [mutableActiveLinkAttributes setObject:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+
         CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
         CTParagraphStyleSetting paragraphStyles[1] = {
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
@@ -312,6 +316,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     _attributedText = [text copy];
     
     [self setNeedsFramesetter];
+    [self setNeedsDisplay];
 }
 
 - (void)setNeedsFramesetter {
@@ -954,7 +959,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         // Finally, draw the text or highlighted text itself (on top of the shadow, if there is one)
         if (self.highlightedTextColor && self.highlighted) {
             NSMutableAttributedString *highlightAttributedString = [self.renderedAttributedText mutableCopy];
-            [highlightAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, highlightAttributedString.length)];
+            [highlightAttributedString addAttribute:(__bridge NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, highlightAttributedString.length)];
             
             if (!self.highlightFramesetter) {
                 self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)highlightAttributedString);
@@ -1007,6 +1012,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, rangeToSize, NULL, constraints, NULL);
     
     return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
+}
+
+- (CGSize)intrinsicContentSize {
+    // There's an implicit width from the original UILabel implementation
+    return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
 #pragma mark - UIResponder

@@ -65,6 +65,10 @@ NSRange range = [label.text rangeOfString:@"me"];
 [label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
 ```
 
+## Requirements
+
+`TTTAttributedLabel` is compatible with iOS 4.3+ as a deployment target, but must be compiled using the iOS 6 SDK. If you get compiler errors for undefined constants, try upgrading to the latest version of Xcode, and updating your project to the recommended build settings.
+
 ## Credits
 
 Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
