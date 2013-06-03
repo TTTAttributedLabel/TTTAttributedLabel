@@ -17,14 +17,14 @@ It also includes advanced paragraph style properties:
 - `textInsets`
 - `firstLineIndent`
 - `leading`
-- `lineHeightMultiple`)
+- `lineHeightMultiple`
 - `shadowRadius`
 - `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
 - `truncationTokenString`
 
 ## Installation
 
-CocoaPods is the recommended way to install TTTAttributedLabel. Simply add the following line to your `Podfile`:
+[CocoaPods](http://cocoapods.org) is the recommended method of installing TTTAttributedLabel. Simply add the following line to your `Podfile`:
 
 #### Podfile
 
