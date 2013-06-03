@@ -51,12 +51,12 @@ First, we create and configure the label, the same way you would instantiate `UI
 
 The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; in the latter case, the attributed string is directly set, without inheriting the base style of the label.
 
-### Links and UIDataDetectors
+### Links and NSDataDetectorTypes
 
-In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for URLs, addresses, phone numbers, and dates, or allow you to embed your own.
+In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for dates, addresses, links, phone numbers, transit information, or allow you to embed your own.
 
 ``` objective-c
-label.dataDetectorTypes = UIDataDetectorTypeAll; // Automatically detect links when the label text is subsequently changed
+label.dataDetectorTypes = NSTextCheckingTypeLink; // Automatically detect links when the label text is subsequently changed
 label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
 
 label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
