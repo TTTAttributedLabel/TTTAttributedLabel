@@ -101,11 +101,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 ///--------------------------------------------
 
 /**
- A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text. This is `UIDataDetectorTypeNone` by default.
+ A bitmask of `NSTextCheckingType` which are used to automatically detect links in the label text.
  
  @warning You must specify `dataDetectorTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
  */
-@property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
+@property (nonatomic, assign) NSTextCheckingTypes dataDetectorTypes;
 
 /**
  An array of `NSTextCheckingResult` objects for links detected or manually added to the label text.
@@ -296,6 +296,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
              duration:(NSTimeInterval)duration
             withRange:(NSRange)range;
 
+/**
+ Adds a link to transit information for a specified range in the label text.
+
+ @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
+ @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ */
+- (void)addLinkToTransitInformation:(NSDictionary *)components
+                          withRange:(NSRange)range;
+
 @end
 
 /**
@@ -356,6 +365,15 @@ didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
   didSelectLinkWithDate:(NSDate *)date
                timeZone:(NSTimeZone *)timeZone
                duration:(NSTimeInterval)duration;
+
+/**
+ Tells the delegate that the user did select a link to transit information
+
+ @param label The label whose link was selected.
+ @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didSelectLinkWithTransitInformation:(NSDictionary *)components;
 
 /**
  Tells the delegate that the user did select a link to a text checking result.
