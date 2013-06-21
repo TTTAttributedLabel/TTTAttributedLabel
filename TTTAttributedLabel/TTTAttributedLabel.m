@@ -220,7 +220,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize firstLineIndent = _firstLineIndent;
 @synthesize textInsets = _textInsets;
 @synthesize verticalAlignment = _verticalAlignment;
-@synthesize truncationTokenString = _truncationTokenString;
+@synthesize truncationTokenAttributedString = _truncationTokenAttributedString;
 @synthesize activeLink = _activeLink;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -544,13 +544,11 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 }
                 
                 // Get the attributes and use them to create the truncation token string
-                NSDictionary *tokenAttributes = [attributedString attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
-                NSString *truncationTokenString = self.truncationTokenString;
-                if (!truncationTokenString) {
-                    truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
+                NSAttributedString *attributedTokenString = self.truncationTokenAttributedString;
+                if (!attributedTokenString) {
+                    attributedTokenString = [[NSAttributedString alloc] initWithString:@"\u2026"]; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
                 }
 
-                NSAttributedString *attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:tokenAttributes];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTokenString);
                 
                 // Append truncationToken to the string
@@ -1108,7 +1106,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeFloat:self.lineHeightMultiple forKey:@"lineHeightMultiple"];
     [coder encodeUIEdgeInsets:self.textInsets forKey:@"textInsets"];
     [coder encodeInteger:self.verticalAlignment forKey:@"verticalAlignment"];
-    [coder encodeObject:self.truncationTokenString forKey:@"truncationTokenString"];
+    [coder encodeObject:self.truncationTokenAttributedString forKey:@"truncationTokenAttributedString"];
     [coder encodeObject:self.attributedText forKey:@"attributedText"];
 }
 
@@ -1175,7 +1173,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     if ([coder containsValueForKey:@"truncationTokenString"]) {
-        self.truncationTokenString = [coder decodeObjectForKey:@"truncationTokenString"];
+        self.truncationTokenAttributedString = [coder decodeObjectForKey:@"truncationTokenAttributedString"];
     }
 
     if ([coder containsValueForKey:@"attributedText"]) {
