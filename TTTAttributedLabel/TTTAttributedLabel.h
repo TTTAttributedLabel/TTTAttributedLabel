@@ -190,7 +190,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 
  @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
  */
-@property (nonatomic, strong) NSString *truncationTokenString;
+@property (nonatomic, strong) NSAttributedString *truncationTokenAttributedString;
 
 ///----------------------------------
 /// @name Setting the Text Attributes
