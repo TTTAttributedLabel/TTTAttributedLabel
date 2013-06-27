@@ -269,7 +269,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 1);
         
         [mutableLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-        [mutableLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+        [mutableActiveLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
         
         CFRelease(paragraphStyle);
     }
