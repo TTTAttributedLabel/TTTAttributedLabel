@@ -29,8 +29,7 @@
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
-NSString * const kTTTBackgroundFillPaddingHorizontalAttributeName = @"TTTBackgroundFillPaddingHorizontal";
-NSString * const kTTTBackgroundFillPaddingVerticalAttributeName = @"TTTBackgroundFillPaddingVertical";
+NSString * const kTTTBackgroundFillPaddingAttributeName = @"TTTBackgroundFillPadding";
 NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeColor";
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
@@ -638,8 +637,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
             CGColorRef strokeColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundStrokeColorAttributeName];
             CGColorRef fillColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundFillColorAttributeName];
-            CGFloat fillPaddingHorizontal = [[attributes objectForKey:kTTTBackgroundFillPaddingHorizontalAttributeName] floatValue];
-            CGFloat fillPaddingVertical = [[attributes objectForKey:kTTTBackgroundFillPaddingVerticalAttributeName] floatValue];
+            UIEdgeInsets fillPadding = [[attributes objectForKey:kTTTBackgroundFillPaddingAttributeName] UIEdgeInsetsValue];
             CGFloat cornerRadius = [[attributes objectForKey:kTTTBackgroundCornerRadiusAttributeName] floatValue];
             CGFloat lineWidth = [[attributes objectForKey:kTTTBackgroundLineWidthAttributeName] floatValue];
 
@@ -648,12 +646,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGFloat runAscent = 0.0f;
                 CGFloat runDescent = 0.0f;
                 
-                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL) + fillPaddingHorizontal * 2;
-                runBounds.size.height = runAscent + runDescent + fillPaddingVertical * 2;
+                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL) + fillPadding.left + fillPadding.right;
+                runBounds.size.height = runAscent + runDescent + fillPadding.top + fillPadding.bottom;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
-                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPaddingHorizontal;
-                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPaddingVertical;
+                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom;
                 runBounds.origin.y -= runDescent;
                 
                 // Don't draw higlightedLinkBackground too far to the right
