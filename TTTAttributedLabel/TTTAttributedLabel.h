@@ -43,6 +43,11 @@ extern NSString * const kTTTStrikeOutAttributeName;
 extern NSString * const kTTTBackgroundFillColorAttributeName;
 
 /**
+ The padding for the background fill. Value must be a `UIEdgeInsets`. Default value is `UIEdgeInsetsZero` (no padding).
+ */
+extern NSString * const kTTTBackgroundFillPaddingAttributeName;
+
+/**
  The background stroke color. Value must be a `CGColorRef`. Default value is `nil` (no stroke).
  */
 extern NSString * const kTTTBackgroundStrokeColorAttributeName;
