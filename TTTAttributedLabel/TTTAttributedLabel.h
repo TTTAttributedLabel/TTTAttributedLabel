@@ -85,6 +85,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate>
 
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGestureRecognizer;
+
 ///-----------------------------
 /// @name Accessing the Delegate
 ///-----------------------------
