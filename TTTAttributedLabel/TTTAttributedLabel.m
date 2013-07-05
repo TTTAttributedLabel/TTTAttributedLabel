@@ -241,6 +241,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.multipleTouchEnabled = NO;
 
     self.textInsets = UIEdgeInsetsZero;
+    _lastTouchLocation = CGPointMake(-1.f, -1.f);
 
     self.links = [NSArray array];
 
@@ -277,7 +278,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
-
 }
 
 - (void)dealloc {
@@ -1008,12 +1008,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #pragma mark - UIResponder
 
-- (void)touchesBegan:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
 
-    self.activeLink = [self linkAtPoint:[touch locationInView:self]];
+    _lastTouchLocation = [touch locationInView:self];
+    self.activeLink = [self linkAtPoint:self.lastTouchLocation];
     [self.longPressTimer invalidate];
 
     if (!self.activeLink) {
@@ -1023,13 +1022,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
-- (void)touchesMoved:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     if (self.activeLink) {
         UITouch *touch = [touches anyObject];
 
-        if (self.activeLink != [self linkAtPoint:[touch locationInView:self]]) {
+        _lastTouchLocation = [touch locationInView:self];
+        if (self.activeLink != [self linkAtPoint:self.lastTouchLocation]) {
             self.activeLink = nil;
 
             [self.longPressTimer invalidate];
@@ -1043,15 +1041,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
-- (void)touchesEnded:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     [self.longPressTimer invalidate];
     self.longPressTimer = nil;
 
     if (self.activeLink) {
         NSTextCheckingResult *result = self.activeLink;
         self.activeLink = nil;
+        _lastTouchLocation = CGPointMake(-1.f, -1.f);
 
         switch (result.resultType) {
             case NSTextCheckingTypeLink:
@@ -1099,14 +1096,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
-- (void)touchesCancelled:(NSSet *)touches
-               withEvent:(UIEvent *)event
-{
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     [self.longPressTimer invalidate];
     self.longPressTimer = nil;
     
     if (self.activeLink) {
         self.activeLink = nil;
+        _lastTouchLocation = CGPointMake(-1.f, -1.f);
     } else {
         [super touchesCancelled:touches withEvent:event];
     }

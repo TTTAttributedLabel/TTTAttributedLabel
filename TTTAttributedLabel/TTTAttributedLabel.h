@@ -121,6 +121,10 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  The active link is only set, while the user touches the label.
  */
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
+/**
+ The touch location is only set, while the user touches the label.
+ */
+@property (nonatomic, readonly) CGPoint lastTouchLocation;
 
 /**
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
