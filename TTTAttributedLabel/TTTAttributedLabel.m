@@ -161,7 +161,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         BOOL usesColorFromContext = (BOOL)value;
         if (usesColorFromContext) {
-            [mutableAttributedString setAttributes:[NSDictionary dictionaryWithObject:color forKey:(NSString *)kCTForegroundColorAttributeName] range:range];
+            [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:color range:range];
             [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorFromContextAttributeName range:range];
         }
     }];
@@ -321,7 +321,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (NSAttributedString *)renderedAttributedText {
     if (!_renderedAttributedText) {
-        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+        
+        // Apply the label attributes first, so that any attributes on the string override.
+        NSAttributedString *attributedText = self.attributedText;
+        NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:attributedText.string];
+        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, mutableAttributedString.length)];
+        [attributedText enumerateAttributesInRange:NSMakeRange(0, [attributedText length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
+            [mutableAttributedString addAttributes:attributes range:range];
+        }];
+        
+        _renderedAttributedText = NSAttributedStringBySettingColorFromContext(mutableAttributedString, self.textColor);
     }
     
     return _renderedAttributedText;
@@ -761,8 +770,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
-        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-        return;
+        text = [[NSAttributedString alloc] initWithString:text];
     }
     
     self.attributedText = text;
