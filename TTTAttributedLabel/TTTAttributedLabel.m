@@ -161,7 +161,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         BOOL usesColorFromContext = (BOOL)value;
         if (usesColorFromContext) {
-            [mutableAttributedString setAttributes:[NSDictionary dictionaryWithObject:color forKey:(NSString *)kCTForegroundColorAttributeName] range:range];
+            [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:color range:range];
             [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorFromContextAttributeName range:range];
         }
     }];
@@ -321,7 +321,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (NSAttributedString *)renderedAttributedText {
     if (!_renderedAttributedText) {
-        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+        
+        // Apply the label attributes first, so that any attributes on the string override.
+        NSAttributedString *attributedText = self.attributedText;
+        NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:attributedText.string];
+        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, mutableAttributedString.length)];
+        [attributedText enumerateAttributesInRange:NSMakeRange(0, [attributedText length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
+            [mutableAttributedString addAttributes:attributes range:range];
+        }];
+        
+        _renderedAttributedText = NSAttributedStringBySettingColorFromContext(mutableAttributedString, self.textColor);
     }
     
     return _renderedAttributedText;
@@ -761,8 +770,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
-        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-        return;
+        text = [[NSAttributedString alloc] initWithString:text];
     }
     
     self.attributedText = text;
@@ -858,31 +866,23 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
     }
-        
+    
     CGRect textRect = bounds;
 
     // Calculate height with a minimum of double the font pointSize, to ensure that CTFramesetterSuggestFrameSizeWithConstraints doesn't return CGSizeZero, as it would if textRect height is insufficient.
     textRect.size.height = fmaxf(self.font.pointSize * 2.0f, bounds.size.height);
-
-    // Adjust the text to be in the center vertically, if the text size is smaller than bounds
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, textRect.size, NULL);
-    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
-    if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = 0.0f;
-        switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((bounds.size.height - textSize.height) / 2.0f);
-                break;
-            case TTTAttributedLabelVerticalAlignmentBottom:
-                yOffset = bounds.size.height - textSize.height;
-                break;
-            case TTTAttributedLabelVerticalAlignmentTop:
-            default:
-                break;
+    // Measure the size with CoreText.
+    textRect.size = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, textRect.size, NULL);
+    textRect.size = CGSizeMake(ceilf(CGRectGetWidth(textRect)), ceilf(CGRectGetHeight(textRect)));  // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
+    
+    // Take vertical alignment into account.
+    if (CGRectGetHeight(bounds) != CGFLOAT_MAX && CGRectGetHeight(textRect) < CGRectGetHeight(bounds)) {
+        if (self.verticalAlignment == TTTAttributedLabelVerticalAlignmentCenter) {
+            textRect.origin.y = floorf(CGRectGetMidY(bounds) - CGRectGetHeight(textRect) / 2.0f);
+        } else if (self.verticalAlignment == TTTAttributedLabelVerticalAlignmentBottom) {
+            textRect.origin.y = CGRectGetMaxY(bounds) - CGRectGetHeight(textRect);
         }
-        
-        textRect.origin.y += yOffset;
     }
     
     return textRect;
