@@ -309,8 +309,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         @synchronized(self) {
             if (_framesetter) CFRelease(_framesetter);
             if (_highlightFramesetter) CFRelease(_highlightFramesetter);
-            
-            self.framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.renderedAttributedText);
+
+            // Assign to ivar instead of property as workaround for Clang Static Analyzer false positive. Filed as <rdar://14559694>
+            _framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.renderedAttributedText);
+
             self.highlightFramesetter = nil;
             _needsFramesetter = NO;
         }
@@ -943,7 +945,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             [highlightAttributedString addAttribute:(__bridge NSString *)kCTForegroundColorAttributeName value:(id)[self.highlightedTextColor CGColor] range:NSMakeRange(0, highlightAttributedString.length)];
             
             if (!self.highlightFramesetter) {
-                self.highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)highlightAttributedString);
+                // Assign to ivar instead of property as workaround for Clang Static Analyzer false positive. Filed as <rdar://14559694>
+                _highlightFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)highlightAttributedString);
             }
             
             [self drawFramesetter:self.highlightFramesetter attributedString:highlightAttributedString textRange:textRange inRect:textRect context:c];
