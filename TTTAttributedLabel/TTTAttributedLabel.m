@@ -1095,7 +1095,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
 
-    [coder encodeInteger:self.dataDetectorTypes forKey:@"dataDetectorTypes"];
+    [coder encodeInteger:(NSInteger)self.dataDetectorTypes forKey:@"dataDetectorTypes"];
     [coder encodeObject:self.links forKey:@"links"];
     if ([NSMutableParagraphStyle class]) {
         [coder encodeObject:self.linkAttributes forKey:@"linkAttributes"];
