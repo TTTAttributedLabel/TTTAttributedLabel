@@ -793,6 +793,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [super setText:[self.attributedText string]];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)setText:(id)text
 afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block
 {
@@ -810,6 +812,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     [self setText:mutableAttributedString];
 }
+#pragma clang diagnostic pop
 
 - (void)setActiveLink:(NSTextCheckingResult *)activeLink {
     _activeLink = activeLink;
