@@ -23,7 +23,7 @@
 #import "TTTAttributedLabel.h"
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
-#define kTTTLongPressDuration                       0.8
+#define kTTTLongPressDuration                       0.6
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -177,6 +177,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @property (readwrite, nonatomic, assign) CTFramesetterRef highlightFramesetter;
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
+@property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
 @property (readwrite, nonatomic, strong) NSTimer *longPressTimer;
 
 - (void)commonInit;
@@ -184,7 +185,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 - (void)addLinksWithTextCheckingResults:(NSArray *)results
                              attributes:(NSDictionary *)attributes;
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
-- (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
 - (CFIndex)characterIndexAtPoint:(CGPoint)p;
 - (void)drawFramesetter:(CTFramesetterRef)framesetter
        attributedString:(NSAttributedString *)attributedString
