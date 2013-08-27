@@ -34,7 +34,7 @@ NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeC
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
-static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
+static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(NSTextAlignment alignment) {
 	switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
 		case UITextAlignmentCenter: return kCTCenterTextAlignment;
@@ -43,8 +43,9 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
 	}
 }
 
-static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
+static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(NSLineBreakMode lineBreakMode) {
 	switch (lineBreakMode) {
+            // TODO: FIX THIS SHIT to be NSLineBreakMode
 		case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
 		case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
 		case UILineBreakModeClip: return kCTLineBreakByClipping;
@@ -98,7 +99,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTLineBreakMode lineBreakMode;
         if (label.numberOfLines != 1) {
-            lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+            lineBreakMode = CTLineBreakModeFromUILineBreakMode(NSLineBreakByWordWrapping);
         } else {
             lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
         }
@@ -161,7 +162,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         BOOL usesColorFromContext = (BOOL)value;
         if (usesColorFromContext) {
-            [mutableAttributedString setAttributes:[NSDictionary dictionaryWithObject:color forKey:(NSString *)kCTForegroundColorAttributeName] range:range];
+            [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:color range:range];
             [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorFromContextAttributeName range:range];
         }
     }];
@@ -262,7 +263,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         [mutableLinkAttributes setObject:(__bridge id)[[UIColor blueColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableActiveLinkAttributes setObject:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
 
-        CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+        CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(NSLineBreakByWordWrapping);
         CTParagraphStyleSetting paragraphStyles[1] = {
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
         };
@@ -321,7 +322,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (NSAttributedString *)renderedAttributedText {
     if (!_renderedAttributedText) {
-        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+        
+        // Apply the label attributes first, so that any attributes on the string override.
+        NSAttributedString *attributedText = self.attributedText;
+        NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:attributedText.string];
+        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, mutableAttributedString.length)];
+        [attributedText enumerateAttributesInRange:NSMakeRange(0, [attributedText length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
+            [mutableAttributedString addAttributes:attributes range:range];
+        }];
+        
+        _renderedAttributedText = NSAttributedStringBySettingColorFromContext(mutableAttributedString, self.textColor);
     }
     
     return _renderedAttributedText;
@@ -522,11 +532,11 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
-                UILineBreakMode lineBreakMode = self.lineBreakMode;
+                NSLineBreakMode lineBreakMode = self.lineBreakMode;
                 
                 // Multiple lines, only use UILineBreakModeTailTruncation
                 if (numberOfLines != 1) {
-                    lineBreakMode = UILineBreakModeTailTruncation;
+                    lineBreakMode = NSLineBreakByTruncatingTail;
                 }
                 
                 switch (lineBreakMode) {
@@ -761,8 +771,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 - (void)setText:(id)text {
     if ([text isKindOfClass:[NSString class]]) {
-        [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
-        return;
+        text = [[NSAttributedString alloc] initWithString:text];
     }
     
     self.attributedText = text;
@@ -785,6 +794,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [super setText:[self.attributedText string]];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)setText:(id)text
 afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block
 {
@@ -802,6 +813,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     [self setText:mutableAttributedString];
 }
+#pragma clang diagnostic pop
 
 - (void)setActiveLink:(NSTextCheckingResult *)activeLink {
     _activeLink = activeLink;
@@ -858,7 +870,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
     }
-        
+    
     CGRect textRect = bounds;
 
     // Calculate height with a minimum of double the font pointSize, to ensure that CTFramesetterSuggestFrameSizeWithConstraints doesn't return CGSizeZero, as it would if textRect height is insufficient.
@@ -868,21 +880,16 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter, CFRangeMake(0, [self.attributedText length]), NULL, textRect.size, NULL);
     textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
-    if (textSize.height < textRect.size.height) {
-        CGFloat yOffset = 0.0f;
-        switch (self.verticalAlignment) {
-            case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((bounds.size.height - textSize.height) / 2.0f);
-                break;
-            case TTTAttributedLabelVerticalAlignmentBottom:
-                yOffset = bounds.size.height - textSize.height;
-                break;
-            case TTTAttributedLabelVerticalAlignmentTop:
-            default:
-                break;
+    // To match -[UITextField textRectForBounds:], this should adjust the height but not the width to fit the text.
+    textRect.size.height = textSize.height;
+    
+    // Take vertical alignment into account.
+    if (CGRectGetHeight(bounds) != CGFLOAT_MAX && CGRectGetHeight(textRect) < CGRectGetHeight(bounds)) {
+        if (self.verticalAlignment == TTTAttributedLabelVerticalAlignmentCenter) {
+            textRect.origin.y = floorf(CGRectGetMidY(bounds) - CGRectGetHeight(textRect) / 2.0f);
+        } else if (self.verticalAlignment == TTTAttributedLabelVerticalAlignmentBottom) {
+            textRect.origin.y = CGRectGetMaxY(bounds) - CGRectGetHeight(textRect);
         }
-        
-        textRect.origin.y += yOffset;
     }
     
     return textRect;

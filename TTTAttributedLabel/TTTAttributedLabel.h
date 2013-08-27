@@ -217,9 +217,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  @param block A block object that returns an `NSMutableAttributedString` object and takes a single argument, which is an `NSMutableAttributedString` object with the text from the first parameter, and the text attributes inherited from the label text styles. For example, if you specified the `font` of the label to be `[UIFont boldSystemFontOfSize:14]` and `textColor` to be `[UIColor redColor]`, the `NSAttributedString` argument of the block would be contain the `NSAttributedString` attribute equivalents of those properties. In this block, you can set further attributes on particular ranges.
  
  @discussion This string is `nil` by default.
+ 
+ This method is deprecated. The default behavior is now to inherit the attributes from the label. To override the label attributes, specify the attributes to override in the attributed text.
  */
 - (void)setText:(id)text
-afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
+afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block __attribute__((deprecated));
 
 ///----------------------------------
 /// @name Accessing the Text Attributes
