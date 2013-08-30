@@ -23,7 +23,7 @@
 #import "TTTAttributedLabel.h"
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
-#define kTTTLongPressDuration                       0.6
+#define kTTTLongPressDuration                       0.5
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
@@ -246,8 +246,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.multipleTouchEnabled = NO;
 
     self.textInsets = UIEdgeInsetsZero;
-    _lastTouchLocation = CGPointMake(-1.f, -1.f);
-
     self.links = [NSArray array];
 
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
@@ -1018,108 +1016,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
-//#pragma mark - UIResponder
-//
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//    UITouch *touch = [touches anyObject];
-//
-//    _lastTouchLocation = [touch locationInView:self];
-//    self.activeLink = [self linkAtPoint:self.lastTouchLocation];
-//    [self.longPressTimer invalidate];
-//
-//    if (!self.activeLink) {
-//        [super touchesBegan:touches withEvent:event];
-//    } else {
-//        self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:kTTTLongPressDuration target:self selector:@selector(longPressTimerDidFire:) userInfo:nil repeats:NO];
-//    }
-//}
-//
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//    if (self.activeLink) {
-//        UITouch *touch = [touches anyObject];
-//
-//        _lastTouchLocation = [touch locationInView:self];
-//        if (self.activeLink != [self linkAtPoint:self.lastTouchLocation]) {
-//            self.activeLink = nil;
-//
-//            [self.longPressTimer invalidate];
-//            self.longPressTimer = nil;
-//        }
-//    } else {
-//        [self.longPressTimer invalidate];
-//        self.longPressTimer = nil;
-//
-//        [super touchesMoved:touches withEvent:event];
-//    }
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    [self.longPressTimer invalidate];
-//    self.longPressTimer = nil;
-//
-//    if (self.activeLink) {
-//        NSTextCheckingResult *result = self.activeLink;
-//        self.activeLink = nil;
-//        _lastTouchLocation = CGPointMake(-1.f, -1.f);
-//
-//        switch (result.resultType) {
-//            case NSTextCheckingTypeLink:
-//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-//                    return;
-//                }
-//                break;
-//            case NSTextCheckingTypeAddress:
-//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-//                    return;
-//                }
-//                break;
-//            case NSTextCheckingTypePhoneNumber:
-//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-//                    return;
-//                }
-//                break;
-//            case NSTextCheckingTypeDate:
-//                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-//                    return;
-//                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-//                    return;
-//                }
-//                break;
-//            case NSTextCheckingTypeTransitInformation:
-//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTransitInformation:)]) {
-//                    [self.delegate attributedLabel:self didSelectLinkWithTransitInformation:result.components];
-//                    return;
-//                }
-//            default:
-//                break;
-//        }
-//
-//        // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
-//        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
-//            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
-//        }
-//    } else {
-//        [super touchesEnded:touches withEvent:event];
-//    }
-//}
-//
-//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-//    [self.longPressTimer invalidate];
-//    self.longPressTimer = nil;
-//    
-//    if (self.activeLink) {
-//        self.activeLink = nil;
-//        _lastTouchLocation = CGPointMake(-1.f, -1.f);
-//    } else {
-//        [super touchesCancelled:touches withEvent:event];
-//    }
-//}
-
 #pragma mark - Gesture recognizer
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -1134,19 +1030,27 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)linkGestureRecognized:(UITapGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         self.activeLink = [self linkAtPoint:[gestureRecognizer locationInView:self]];
+        [self.longPressTimer invalidate];
+        if (self.activeLink) {
+            self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:kTTTLongPressDuration target:self selector:@selector(longPressTimerDidFire:) userInfo:nil repeats:NO];
+        }
     }
 
     else if (gestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        if ([self linkAtPoint:[gestureRecognizer locationInView:self]] == nil) {
+        if ([self linkAtPoint:[gestureRecognizer locationInView:self]] != self.activeLink) {
             self.activeLink = nil;
+            [self.longPressTimer invalidate];
+            self.longPressTimer = nil;
         }
     }
 
     else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [self.longPressTimer invalidate];
+        self.longPressTimer = nil;
+
         if (self.activeLink) {
             NSTextCheckingResult *result = self.activeLink;
             self.activeLink = nil;
-            _lastTouchLocation = CGPointMake(-1.f, -1.f);
 
             switch (result.resultType) {
                 case NSTextCheckingTypeLink:
@@ -1184,6 +1088,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             } // result.resultType
         }
     } // UIGestureRecognizerStateEnded
+
+    else if (gestureRecognizer.state == UIGestureRecognizerStateCancelled) {
+        [self.longPressTimer invalidate];
+        self.longPressTimer = nil;
+        self.activeLink = nil;
+    }
+
 }
 
 #pragma mark - NSCoding
@@ -1291,10 +1202,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - Private
 
 - (void)longPressTimerDidFire:(NSTimer *)timer {
-    self.longPressTimer = nil;
+    NSTextCheckingResult *result = self.activeLink;
 
-    if (self.activeLink != nil) {
-        NSTextCheckingResult *result = self.activeLink;
+    self.longPressTimer = nil;
+    // cancel current gesture recognizer
+    self.linkGestureRecognizer.enabled = NO;
+    self.linkGestureRecognizer.enabled = YES;
+
+    if (result != nil) {
         self.activeLink = nil;
 
         switch (result.resultType) {
