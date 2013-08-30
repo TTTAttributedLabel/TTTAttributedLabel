@@ -62,6 +62,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     if ([NSMutableParagraphStyle class]) {
         [mutableAttributes setObject:label.font forKey:(NSString *)kCTFontAttributeName];
         [mutableAttributes setObject:label.textColor forKey:(NSString *)kCTForegroundColorAttributeName];
+        if (label.kerning != nil) {
+            [mutableAttributes setObject:label.kerning forKey:(NSString *)kCTKernAttributeName];
+        }
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
@@ -86,6 +89,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CFRelease(font);
 
         [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+        if (label.kerning != nil) {
+            [mutableAttributes setObject:label.kerning forKey:(NSString *)kCTKernAttributeName];
+        }
 
         CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
@@ -217,6 +223,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize highlightedShadowRadius = _highlightedShadowRadius;
 @synthesize highlightedShadowOffset = _highlightedShadowOffset;
 @synthesize highlightedShadowColor = _highlightedShadowColor;
+@synthesize kerning = _kerning;
 @synthesize leading = _leading;
 @synthesize lineHeightMultiple = _lineHeightMultiple;
 @synthesize firstLineIndent = _firstLineIndent;
@@ -1124,6 +1131,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeFloat:self.highlightedShadowRadius forKey:@"highlightedShadowRadius"];
     [coder encodeCGSize:self.highlightedShadowOffset forKey:@"highlightedShadowOffset"];
     [coder encodeObject:self.highlightedShadowColor forKey:@"highlightedShadowColor"];
+    [coder encodeObject:self.kerning forKey:@"kerning"];
     [coder encodeFloat:self.firstLineIndent forKey:@"firstLineIndent"];
     [coder encodeFloat:self.leading forKey:@"leading"];
     [coder encodeFloat:self.lineHeightMultiple forKey:@"lineHeightMultiple"];
@@ -1173,6 +1181,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:@"highlightedShadowColor"]) {
         self.highlightedShadowColor = [coder decodeObjectForKey:@"highlightedShadowColor"];
+    }
+
+    if ([coder containsValueForKey:@"kerning"]) {
+        self.kerning = [coder decodeObjectForKey:@"kerning"];
     }
 
     if ([coder containsValueForKey:@"firstLineIndent"]) {

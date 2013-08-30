@@ -157,6 +157,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  The shadow color for the label when the label's `highlighted` property is `YES`. The default value is `nil` (no shadow color).
  */
 @property (nonatomic, strong) UIColor *highlightedShadowColor;
+/**
+ The amount to kern the next character. Default is standard kerning. If this attribute is set to 0.0, no kerning is done at all.
+ */
+@property (nonatomic, strong) NSNumber *kerning;
+
 
 ///--------------------------------------------
 /// @name Acccessing Paragraph Style Attributes
