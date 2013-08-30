@@ -25,9 +25,6 @@
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 #define kTTTLongPressDuration                       0.6
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
 NSString * const kTTTBackgroundFillPaddingAttributeName = @"TTTBackgroundFillPadding";
@@ -35,23 +32,23 @@ NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeC
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
-static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
+static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(NSTextAlignment alignment) {
 	switch (alignment) {
-		case UITextAlignmentLeft: return kCTLeftTextAlignment;
-		case UITextAlignmentCenter: return kCTCenterTextAlignment;
-		case UITextAlignmentRight: return kCTRightTextAlignment;
+		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
+		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
+		case NSTextAlignmentRight: return kCTRightTextAlignment;
 		default: return kCTNaturalTextAlignment;
 	}
 }
 
-static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
+static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(NSLineBreakMode lineBreakMode) {
 	switch (lineBreakMode) {
-		case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
-		case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
-		case UILineBreakModeClip: return kCTLineBreakByClipping;
-		case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-		case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
-		case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
+		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
+		case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
+		case NSLineBreakByClipping: return kCTLineBreakByClipping;
+		case NSLineBreakByTruncatingHead: return kCTLineBreakByTruncatingHead;
+		case NSLineBreakByTruncatingTail: return kCTLineBreakByTruncatingTail;
+		case NSLineBreakByTruncatingMiddle: return kCTLineBreakByTruncatingMiddle;
 		default: return 0;
 	}
 }
@@ -105,7 +102,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTLineBreakMode lineBreakMode;
         if (label.numberOfLines != 1) {
-            lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+            lineBreakMode = CTLineBreakModeFromUILineBreakMode(NSLineBreakByWordWrapping);
         } else {
             lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
         }
@@ -176,7 +173,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     return mutableAttributedString;
 }
 
-@interface TTTAttributedLabel ()
+@interface TTTAttributedLabel () <UIGestureRecognizerDelegate>
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
 @property (readwrite, nonatomic, assign) CTFramesetterRef framesetter;
@@ -231,6 +228,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @synthesize verticalAlignment = _verticalAlignment;
 @synthesize truncationTokenString = _truncationTokenString;
 @synthesize activeLink = _activeLink;
+@synthesize linkGestureRecognizer = _linkGestureRecognizer;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -271,7 +269,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         [mutableLinkAttributes setObject:(__bridge id)[[UIColor blueColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableActiveLinkAttributes setObject:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
 
-        CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+        CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(NSLineBreakByWordWrapping);
         CTParagraphStyleSetting paragraphStyles[1] = {
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
         };
@@ -285,6 +283,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
+
+    self.linkGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(linkGestureRecognized:)];
+    self.linkGestureRecognizer.minimumPressDuration = 0;
+    self.linkGestureRecognizer.delaysTouchesBegan = YES;
+    self.linkGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:self.linkGestureRecognizer];
 }
 
 - (void)dealloc {
@@ -513,7 +517,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     CFArrayRef lines = CTFrameGetLines(frame);
     NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
-    BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
+    BOOL truncateLastLine = (self.lineBreakMode == NSLineBreakByTruncatingHead || self.lineBreakMode == NSLineBreakByTruncatingMiddle || self.lineBreakMode == NSLineBreakByTruncatingTail);
 
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
@@ -531,22 +535,22 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
-                UILineBreakMode lineBreakMode = self.lineBreakMode;
+                NSLineBreakMode lineBreakMode = self.lineBreakMode;
 
                 // Multiple lines, only use UILineBreakModeTailTruncation
                 if (numberOfLines != 1) {
-                    lineBreakMode = UILineBreakModeTailTruncation;
+                    lineBreakMode = NSLineBreakByTruncatingTail;
                 }
 
                 switch (lineBreakMode) {
-                    case UILineBreakModeHeadTruncation:
+                    case NSLineBreakByTruncatingHead:
                         truncationType = kCTLineTruncationStart;
                         break;
-                    case UILineBreakModeMiddleTruncation:
+                    case NSLineBreakByTruncatingMiddle:
                         truncationType = kCTLineTruncationMiddle;
                         truncationAttributePosition += (lastLineRange.length / 2);
                         break;
-                    case UILineBreakModeTailTruncation:
+                    case NSLineBreakByTruncatingTail:
                     default:
                         truncationType = kCTLineTruncationEnd;
                         truncationAttributePosition += (lastLineRange.length - 1);
@@ -587,13 +591,13 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Adjust pen offset for flush depending on text alignment
                 CGFloat flushFactor = 0.0f;
                 switch (self.textAlignment) {
-                    case UITextAlignmentCenter:
+                    case NSTextAlignmentCenter:
                         flushFactor = 0.5f;
                         break;
-                    case UITextAlignmentRight:
+                    case NSTextAlignmentRight:
                         flushFactor = 1.0f;
                         break;
-                    case UITextAlignmentLeft:
+                    case NSTextAlignmentLeft:
                     default:
                         break;
                 }
@@ -918,13 +922,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
         CGFloat textWidth = [self sizeThatFits:maxSize].width;
         CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
-        if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+        if (self.numberOfLines > 1 && self.lineBreakMode == NSLineBreakByWordWrapping) {
             textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
         }
 
         if (textWidth > availableWidth && textWidth > 0.0f) {
             originalAttributedText = [self.attributedText copy];
-            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
+            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.font.pointSize * self.minimumScaleFactor);
         }
     }
 
@@ -1014,106 +1018,172 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
-#pragma mark - UIResponder
+//#pragma mark - UIResponder
+//
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UITouch *touch = [touches anyObject];
+//
+//    _lastTouchLocation = [touch locationInView:self];
+//    self.activeLink = [self linkAtPoint:self.lastTouchLocation];
+//    [self.longPressTimer invalidate];
+//
+//    if (!self.activeLink) {
+//        [super touchesBegan:touches withEvent:event];
+//    } else {
+//        self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:kTTTLongPressDuration target:self selector:@selector(longPressTimerDidFire:) userInfo:nil repeats:NO];
+//    }
+//}
+//
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+//    if (self.activeLink) {
+//        UITouch *touch = [touches anyObject];
+//
+//        _lastTouchLocation = [touch locationInView:self];
+//        if (self.activeLink != [self linkAtPoint:self.lastTouchLocation]) {
+//            self.activeLink = nil;
+//
+//            [self.longPressTimer invalidate];
+//            self.longPressTimer = nil;
+//        }
+//    } else {
+//        [self.longPressTimer invalidate];
+//        self.longPressTimer = nil;
+//
+//        [super touchesMoved:touches withEvent:event];
+//    }
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//    [self.longPressTimer invalidate];
+//    self.longPressTimer = nil;
+//
+//    if (self.activeLink) {
+//        NSTextCheckingResult *result = self.activeLink;
+//        self.activeLink = nil;
+//        _lastTouchLocation = CGPointMake(-1.f, -1.f);
+//
+//        switch (result.resultType) {
+//            case NSTextCheckingTypeLink:
+//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+//                    return;
+//                }
+//                break;
+//            case NSTextCheckingTypeAddress:
+//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+//                    return;
+//                }
+//                break;
+//            case NSTextCheckingTypePhoneNumber:
+//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+//                    return;
+//                }
+//                break;
+//            case NSTextCheckingTypeDate:
+//                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+//                    return;
+//                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+//                    return;
+//                }
+//                break;
+//            case NSTextCheckingTypeTransitInformation:
+//                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTransitInformation:)]) {
+//                    [self.delegate attributedLabel:self didSelectLinkWithTransitInformation:result.components];
+//                    return;
+//                }
+//            default:
+//                break;
+//        }
+//
+//        // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
+//        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+//            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
+//        }
+//    } else {
+//        [super touchesEnded:touches withEvent:event];
+//    }
+//}
+//
+//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+//    [self.longPressTimer invalidate];
+//    self.longPressTimer = nil;
+//    
+//    if (self.activeLink) {
+//        self.activeLink = nil;
+//        _lastTouchLocation = CGPointMake(-1.f, -1.f);
+//    } else {
+//        [super touchesCancelled:touches withEvent:event];
+//    }
+//}
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
+#pragma mark - Gesture recognizer
 
-    _lastTouchLocation = [touch locationInView:self];
-    self.activeLink = [self linkAtPoint:self.lastTouchLocation];
-    [self.longPressTimer invalidate];
-
-    if (!self.activeLink) {
-        [super touchesBegan:touches withEvent:event];
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    BOOL linkTouched = [self linkAtPoint:[touch locationInView:self]] != nil;
+    if (gestureRecognizer == self.linkGestureRecognizer) {
+        return linkTouched;
     } else {
-        self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:kTTTLongPressDuration target:self selector:@selector(longPressTimerDidFire:) userInfo:nil repeats:NO];
+        return !linkTouched;
     }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    if (self.activeLink) {
-        UITouch *touch = [touches anyObject];
+- (void)linkGestureRecognized:(UITapGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.activeLink = [self linkAtPoint:[gestureRecognizer locationInView:self]];
+    }
 
-        _lastTouchLocation = [touch locationInView:self];
-        if (self.activeLink != [self linkAtPoint:self.lastTouchLocation]) {
+    else if (gestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        if ([self linkAtPoint:[gestureRecognizer locationInView:self]] == nil) {
             self.activeLink = nil;
-
-            [self.longPressTimer invalidate];
-            self.longPressTimer = nil;
         }
-    } else {
-        [self.longPressTimer invalidate];
-        self.longPressTimer = nil;
-
-        [super touchesMoved:touches withEvent:event];
     }
-}
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.longPressTimer invalidate];
-    self.longPressTimer = nil;
+    else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        if (self.activeLink) {
+            NSTextCheckingResult *result = self.activeLink;
+            self.activeLink = nil;
+            _lastTouchLocation = CGPointMake(-1.f, -1.f);
 
-    if (self.activeLink) {
-        NSTextCheckingResult *result = self.activeLink;
-        self.activeLink = nil;
-        _lastTouchLocation = CGPointMake(-1.f, -1.f);
-
-        switch (result.resultType) {
-            case NSTextCheckingTypeLink:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypeAddress:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypePhoneNumber:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypeDate:
-                if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
-                    return;
-                } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
-                    return;
-                }
-                break;
-            case NSTextCheckingTypeTransitInformation:
-                if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTransitInformation:)]) {
-                    [self.delegate attributedLabel:self didSelectLinkWithTransitInformation:result.components];
-                    return;
-                }
-            default:
-                break;
+            switch (result.resultType) {
+                case NSTextCheckingTypeLink:
+                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithURL:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithURL:result.URL];
+                    }
+                    break;
+                case NSTextCheckingTypeAddress:
+                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithAddress:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithAddress:result.addressComponents];
+                    }
+                    break;
+                case NSTextCheckingTypePhoneNumber:
+                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithPhoneNumber:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithPhoneNumber:result.phoneNumber];
+                    }
+                    break;
+                case NSTextCheckingTypeDate:
+                    if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:timeZone:duration:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithDate:result.date timeZone:result.timeZone duration:result.duration];
+                    } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithDate:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithDate:result.date];
+                    }
+                    break;
+                case NSTextCheckingTypeTransitInformation:
+                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTransitInformation:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithTransitInformation:result.components];
+                    }
+                default:
+                    // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
+                    if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
+                        [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
+                    }
+                    break;
+            } // result.resultType
         }
-
-        // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
-        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
-            [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
-        }
-    } else {
-        [super touchesEnded:touches withEvent:event];
-    }
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.longPressTimer invalidate];
-    self.longPressTimer = nil;
-    
-    if (self.activeLink) {
-        self.activeLink = nil;
-        _lastTouchLocation = CGPointMake(-1.f, -1.f);
-    } else {
-        [super touchesCancelled:touches withEvent:event];
-    }
+    } // UIGestureRecognizerStateEnded
 }
 
 #pragma mark - NSCoding
@@ -1272,5 +1342,3 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 @end
-
-#pragma clang diagnostic pop
