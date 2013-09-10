@@ -86,7 +86,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
 
-        CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
+        CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment((UITextAlignment)label.textAlignment);
         CGFloat lineSpacing = label.leading;
         CGFloat lineSpacingAdjustment = ceilf(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
@@ -100,7 +100,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         if (label.numberOfLines != 1) {
             lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
         } else {
-            lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
+            lineBreakMode = CTLineBreakModeFromUILineBreakMode((UILineBreakMode)label.lineBreakMode);
         }
 
         CTParagraphStyleSetting paragraphStyles[10] = {
@@ -522,7 +522,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
-                UILineBreakMode lineBreakMode = self.lineBreakMode;
+                UILineBreakMode lineBreakMode = (UILineBreakMode)self.lineBreakMode;
                 
                 // Multiple lines, only use UILineBreakModeTailTruncation
                 if (numberOfLines != 1) {
