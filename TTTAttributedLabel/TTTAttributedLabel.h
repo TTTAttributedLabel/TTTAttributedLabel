@@ -118,6 +118,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (readonly, nonatomic, strong) NSArray *links;
 
 /**
+ The touch location is only set, while the user touches the label.
+ */
+@property (nonatomic, readonly) CGPoint lastTouchLocation;
+
+/**
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
 
  @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
@@ -316,18 +321,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  */
 - (void)addLinkToTransitInformation:(NSDictionary *)components
                           withRange:(NSRange)range;
-
-///-------------------------
-/// @name Gesture recognizer
-///-------------------------
-
-/**
- The gesture recognizer to handle links.
-
- @discussion The gesture recognizer to handle taps on links. It will only receive touches when a link is touched so it can be used along with other gesture recognizers. E.g. [otherGestureRecognizer requireGestureRecognizerToFail:tttAttributedLabel.linkGestureRecognizer].
-
- */
-@property (nonatomic, strong) UILongPressGestureRecognizer *linkGestureRecognizer;
 
 @end
 
