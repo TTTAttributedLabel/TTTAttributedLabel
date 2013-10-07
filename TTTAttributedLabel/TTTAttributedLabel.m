@@ -34,25 +34,79 @@ NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeC
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
-static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
-	switch (alignment) {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+typedef NSTextAlignment TTTTextAlignment;
+#else                                         // iOS 5.X or earlier
+typedef UITextAlignment TTTTextAlignment;
+#endif
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+typedef NSLineBreakMode TTTLineBreakMode;
+#else                                         // iOS 5.X or earlier
+typedef UILineBreakMode TTTLineBreakMode;
+#endif
+
+static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+  switch (alignment) {
+		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
+		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
+		case NSTextAlignmentRight: return kCTRightTextAlignment;
+		default: return kCTNaturalTextAlignment;
+	}
+#else                                         // iOS 5.X or earlier
+  switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
 		case UITextAlignmentCenter: return kCTCenterTextAlignment;
 		case UITextAlignmentRight: return kCTRightTextAlignment;
 		default: return kCTNaturalTextAlignment;
 	}
+#endif
+}
+
+static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
+ 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+	switch (lineBreakMode) {
+		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
+		case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
+		case NSLineBreakByClipping: return kCTLineBreakByClipping;
+		case NSLineBreakByTruncatingHead: return kCTLineBreakByTruncatingHead;
+		case NSLineBreakByTruncatingTail: return kCTLineBreakByTruncatingTail;
+		case NSLineBreakByTruncatingMiddle: return kCTLineBreakByTruncatingMiddle;
+		default: return 0;
+	}
+#else                                         // iOS 5.X or earlier
+  return CTLineBreakModeFromUILineBreakMode(lineBreakMode);
+#endif
 }
 
 static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
+  switch (lineBreakMode) {
+    case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
+    case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
+    case UILineBreakModeClip: return kCTLineBreakByClipping;
+    case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
+    case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
+    case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
+    default: return 0;
+  }
+}
+
+static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
 	switch (lineBreakMode) {
-		case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
-		case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
-		case UILineBreakModeClip: return kCTLineBreakByClipping;
-		case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-		case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
-		case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
+		case NSLineBreakByWordWrapping: return UILineBreakModeWordWrap;
+		case NSLineBreakByCharWrapping: return UILineBreakModeCharacterWrap;
+		case NSLineBreakByClipping: return UILineBreakModeClip;
+		case NSLineBreakByTruncatingHead: return UILineBreakModeHeadTruncation;
+		case NSLineBreakByTruncatingTail: return UILineBreakModeMiddleTruncation;
+		case NSLineBreakByTruncatingMiddle: return UILineBreakModeTailTruncation;
 		default: return 0;
 	}
+#else                                         // iOS 5.X or earlier
+  return lineBreakMode;
+#endif
 }
 
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
@@ -86,7 +140,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         [mutableAttributes setObject:(id)[label.textColor CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
 
-        CTTextAlignment alignment = CTTextAlignmentFromUITextAlignment(label.textAlignment);
+        CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
         CGFloat lineSpacingAdjustment = ceilf(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
@@ -100,7 +154,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         if (label.numberOfLines != 1) {
             lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
         } else {
-            lineBreakMode = CTLineBreakModeFromUILineBreakMode(label.lineBreakMode);
+            lineBreakMode = CTLineBreakModeFromTTTLineBreakMode(label.lineBreakMode);
         }
 
         CTParagraphStyleSetting paragraphStyles[10] = {
@@ -522,7 +576,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
-                UILineBreakMode lineBreakMode = self.lineBreakMode;
+                UILineBreakMode lineBreakMode = UILineBreakModeFromTTTLineBreakMode(self.lineBreakMode);
                 
                 // Multiple lines, only use UILineBreakModeTailTruncation
                 if (numberOfLines != 1) {
