@@ -77,7 +77,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  For the most part, `TTTAttributedLabel` behaves just like `UILabel`. The following are notable exceptions, in which `TTTAttributedLabel` properties may act differently:
  
  - `text` - This property now takes an `id` type argument, which can either be a kind of `NSString` or `NSAttributedString` (mutable or immutable in both cases)
- - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
+ - `lineBreakMode` - This property displays only the first line when the value is `NSLineBreakByTruncatingHead`, `NSLineBreakByTruncatingTail`, or `NSLineBreakByTruncatingMiddle`
  - `adjustsFontsizeToFitWidth` - Supported in iOS 5 and greater, this property is effective for any value of `numberOfLines` greater than zero. In iOS 4, setting `numberOfLines` to a value greater than 1 with `adjustsFontSizeToFitWidth` set to `YES` may cause `sizeToFit` to execute indefinitely.
  
  Any properties affecting text or paragraph styling, such as `firstLineIndent` will only apply when text is set with an `NSString`. If the text is set with an `NSAttributedString`, these properties will not apply.
@@ -193,7 +193,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The truncation token that appears at the end of the truncated line. `nil` by default.
 
- @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
+ @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `NSLineBreakByTruncatingHead`, `NSLineBreakByTruncatingTail`, or `NSLineBreakByTruncatingMiddle`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
  */
 @property (nonatomic, strong) NSString *truncationTokenString;
 
