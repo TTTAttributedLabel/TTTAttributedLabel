@@ -799,6 +799,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
                 
                 CGContextStrokePath(c);
+                CFRelease(font);
             }
         }
         
