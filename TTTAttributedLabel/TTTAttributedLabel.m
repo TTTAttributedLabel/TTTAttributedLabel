@@ -22,10 +22,9 @@
 
 #import "TTTAttributedLabel.h"
 
-#define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
+#import <Availability.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
@@ -34,27 +33,23 @@ NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeC
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 typedef NSTextAlignment TTTTextAlignment;
-#else                                         // iOS 5.X or earlier
-typedef UITextAlignment TTTTextAlignment;
-#endif
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
 typedef NSLineBreakMode TTTLineBreakMode;
-#else                                         // iOS 5.X or earlier
+#else
+typedef UITextAlignment TTTTextAlignment;
 typedef UILineBreakMode TTTLineBreakMode;
 #endif
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
   switch (alignment) {
 		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
 		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
 		case NSTextAlignmentRight: return kCTRightTextAlignment;
 		default: return kCTNaturalTextAlignment;
 	}
-#else                                         // iOS 5.X or earlier
+#else
   switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
 		case UITextAlignmentCenter: return kCTCenterTextAlignment;
@@ -66,7 +61,7 @@ static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignme
 
 static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
  
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
 		case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
@@ -76,7 +71,7 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 		case NSLineBreakByTruncatingMiddle: return kCTLineBreakByTruncatingMiddle;
 		default: return 0;
 	}
-#else                                         // iOS 5.X or earlier
+#else
   return CTLineBreakModeFromUILineBreakMode(lineBreakMode);
 #endif
 }
@@ -94,7 +89,7 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 }
 
 static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000 // iOS 6.0 or later
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return UILineBreakModeWordWrap;
 		case NSLineBreakByCharWrapping: return UILineBreakModeCharacterWrap;
@@ -104,7 +99,7 @@ static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 		case NSLineBreakByTruncatingMiddle: return UILineBreakModeTailTruncation;
 		default: return 0;
 	}
-#else                                         // iOS 5.X or earlier
+#else
   return lineBreakMode;
 #endif
 }
@@ -1271,5 +1266,3 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 @end
-
-#pragma clang diagnostic pop
