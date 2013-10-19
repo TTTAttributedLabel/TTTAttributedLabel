@@ -1053,6 +1053,16 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #pragma mark - UIResponder
 
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (BOOL)canPerformAction:(SEL)action
+              withSender:(id)sender
+{
+    return (action == @selector(copy:));
+}
+
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
@@ -1140,6 +1150,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     } else {
         [super touchesCancelled:touches withEvent:event];
     }
+}
+
+#pragma mark - UIResponderStandardEditActions
+
+- (void)copy:(id)sender {
+    [[UIPasteboard generalPasteboard] setString:self.text];
 }
 
 #pragma mark - NSCoding
