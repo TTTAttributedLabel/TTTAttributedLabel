@@ -73,13 +73,13 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 #pragma mark - UIViewController
 
 - (void)loadView {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 100.0f, 100.0f)];
-    
-    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(view.bounds, 10.0f, 10.0f)];
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(self.view.bounds, 10.0f, 70.0f)];
     self.attributedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [view addSubview:self.attributedLabel];
-    
-    self.view = view;
+    [self.view addSubview:self.attributedLabel];
 }
 
 - (void)viewDidLoad {

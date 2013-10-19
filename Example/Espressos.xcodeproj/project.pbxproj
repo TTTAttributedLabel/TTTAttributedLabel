@@ -116,10 +116,10 @@
 		F877A39013782E870022A8AB /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				F8C05AA91657171400B0ACDD /* DetailViewController.h */,
 				F8C05AAA1657171400B0ACDD /* RootViewController.h */,
-				F8C05AAB1657171400B0ACDD /* DetailViewController.m */,
 				F8C05AAC1657171400B0ACDD /* RootViewController.m */,
+				F8C05AA91657171400B0ACDD /* DetailViewController.h */,
+				F8C05AAB1657171400B0ACDD /* DetailViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
