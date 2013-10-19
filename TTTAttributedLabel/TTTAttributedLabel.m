@@ -224,22 +224,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
-
-- (void)commonInit;
-- (void)setNeedsFramesetter;
-- (void)addLinksWithTextCheckingResults:(NSArray *)results
-                             attributes:(NSDictionary *)attributes;
-- (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx;
-- (NSTextCheckingResult *)linkAtPoint:(CGPoint)p;
-- (CFIndex)characterIndexAtPoint:(CGPoint)p;
-- (void)drawFramesetter:(CTFramesetterRef)framesetter
-       attributedString:(NSAttributedString *)attributedString
-              textRange:(CFRange)textRange
-                 inRect:(CGRect)rect
-                context:(CGContextRef)c;
-- (void)drawStrike:(CTFrameRef)frame
-            inRect:(CGRect)rect
-           context:(CGContextRef)c;
 @end
 
 @implementation TTTAttributedLabel {
@@ -251,25 +235,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
-@synthesize inactiveAttributedText = _inactiveAttributedText;
-@synthesize renderedAttributedText = _renderedAttributedText;
-@synthesize delegate = _delegate;
-@synthesize dataDetectorTypes = _dataDetectorTypes;
-@synthesize dataDetector = _dataDetector;
-@synthesize links = _links;
-@synthesize linkAttributes = _linkAttributes;
-@synthesize activeLinkAttributes = _activeLinkAttributes;
-@synthesize shadowRadius = _shadowRadius;
-@synthesize highlightedShadowRadius = _highlightedShadowRadius;
-@synthesize highlightedShadowOffset = _highlightedShadowOffset;
-@synthesize highlightedShadowColor = _highlightedShadowColor;
-@synthesize leading = _leading;
-@synthesize lineHeightMultiple = _lineHeightMultiple;
-@synthesize firstLineIndent = _firstLineIndent;
-@synthesize textInsets = _textInsets;
-@synthesize verticalAlignment = _verticalAlignment;
-@synthesize truncationTokenString = _truncationTokenString;
-@synthesize activeLink = _activeLink;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -404,11 +369,19 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 #pragma mark -
 
+- (NSTextCheckingTypes)dataDetectorTypes {
+    return self.enabledTextCheckingTypes;
+}
+
 - (void)setDataDetectorTypes:(NSTextCheckingTypes)dataDetectorTypes {
-    _dataDetectorTypes = dataDetectorTypes;
+    self.enabledTextCheckingTypes = dataDetectorTypes;
+}
+
+- (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)enabledTextCheckingTypes {
+    _enabledTextCheckingTypes = enabledTextCheckingTypes;
     
-    if (self.dataDetectorTypes) {
-        self.dataDetector = [NSDataDetector dataDetectorWithTypes:self.dataDetectorTypes error:nil];
+    if (self.enabledTextCheckingTypes) {
+        self.dataDetector = [NSDataDetector dataDetectorWithTypes:self.enabledTextCheckingTypes error:nil];
     } else {
         self.dataDetector = nil;
     }
