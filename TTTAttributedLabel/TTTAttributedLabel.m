@@ -819,7 +819,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.activeLink = nil;
 
     self.links = [NSArray array];
-    if (self.attributedText && self.dataDetectorTypes) {
+    if (self.attributedText && self.enabledTextCheckingTypes) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSArray *results = [self.dataDetector matchesInString:[text string] options:0 range:NSMakeRange(0, [text length])];
             if ([results count] > 0) {
@@ -1163,7 +1163,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
 
-    [coder encodeInteger:(NSInteger)self.dataDetectorTypes forKey:@"dataDetectorTypes"];
+    [coder encodeInteger:(NSInteger)self.enabledTextCheckingTypes forKey:@"dataDetectorTypes"];
     [coder encodeObject:self.links forKey:@"links"];
     if ([NSMutableParagraphStyle class]) {
         [coder encodeObject:self.linkAttributes forKey:@"linkAttributes"];
@@ -1191,7 +1191,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [self commonInit];
 
     if ([coder containsValueForKey:@"dataDetectorTypes"]) {
-        self.dataDetectorTypes = [coder decodeIntegerForKey:@"dataDetectorTypes"];
+        self.enabledTextCheckingTypes = [coder decodeIntegerForKey:@"dataDetectorTypes"];
     }
 
     if ([coder containsValueForKey:@"links"]) {
