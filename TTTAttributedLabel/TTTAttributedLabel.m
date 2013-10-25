@@ -26,6 +26,8 @@
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
+static CGFloat const TTTFLOAT_MAX = 100000;
+
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
 NSString * const kTTTBackgroundFillPaddingAttributeName = @"TTTBackgroundFillPadding";
@@ -958,7 +960,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     // Adjust the font size to fit width, if necessarry 
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
         // Use infinite width to find the max width, which will be compared to availableWidth if needed.
-        CGSize maxSize = (self.numberOfLines > 1) ? CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) : CGSizeZero;
+        CGSize maxSize = (self.numberOfLines > 1) ? CGSizeMake(TTTFLOAT_MAX, TTTFLOAT_MAX) : CGSizeZero;
         
         CGFloat textWidth = [self sizeThatFits:maxSize].width;
         CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
@@ -1026,15 +1028,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
     
     CFRange rangeToSize = CFRangeMake(0, [self.attributedText length]);
-    CGSize constraints = CGSizeMake(size.width, CGFLOAT_MAX);
+    CGSize constraints = CGSizeMake(size.width, TTTFLOAT_MAX);
     
     if (self.numberOfLines == 1) {
         // If there is one line, the size that fits is the full width of the line
-        constraints = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+        constraints = CGSizeMake(TTTFLOAT_MAX, TTTFLOAT_MAX);
     } else if (self.numberOfLines > 0) {
         // If the line count of the label more than 1, limit the range to size to the number of lines that have been set
         CGMutablePathRef path = CGPathCreateMutable();
-        CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, constraints.width, CGFLOAT_MAX));
+        CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, constraints.width, TTTFLOAT_MAX));
         CTFrameRef frame = CTFramesetterCreateFrame([self framesetter], CFRangeMake(0, 0), path, NULL);
         CFArrayRef lines = CTFrameGetLines(frame);
         

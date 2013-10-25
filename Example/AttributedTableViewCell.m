@@ -137,10 +137,8 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 }
 
 + (CGFloat)heightForCellWithText:(NSString *)text {
-    CGFloat height = 10.0f;
-    height += ceilf([text sizeWithFont:[UIFont systemFontOfSize:kEspressoDescriptionTextFontSize] constrainedToSize:CGSizeMake(270.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height);
-    height += kAttributedTableViewCellVerticalMargin;
-    return height;
+    static CGFloat padding = 10.0f;
+    return ceilf([text sizeWithFont:[UIFont systemFontOfSize:kEspressoDescriptionTextFontSize] constrainedToSize:CGSizeMake(300.0f, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap].height) + padding;
 }
 
 #pragma mark - UIView
