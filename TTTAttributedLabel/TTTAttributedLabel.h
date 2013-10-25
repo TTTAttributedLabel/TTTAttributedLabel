@@ -195,12 +195,21 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
+///--------------------------------------------
+/// @name Accessing Truncation Token Appearance
+///--------------------------------------------
+
 /**
  The truncation token that appears at the end of the truncated line. `nil` by default.
 
  @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
  */
 @property (nonatomic, strong) NSString *truncationTokenString;
+
+/**
+ The attributes to apply to the truncation token at the end of a truncated line. If unspecified, attributes will be inherited from the preceding character.
+ */
+@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
 
 ///----------------------------------
 /// @name Setting the Text Attributes
