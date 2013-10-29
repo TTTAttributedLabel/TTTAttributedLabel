@@ -36,12 +36,39 @@ NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+const NSTextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
+const NSTextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
+const NSTextAlignment TTTTextAlignmentRigth = NSTextAlignmentRight;
+const NSTextAlignment TTTTextAlignmentJustified = NSTextAlignmentJustified;
+const NSTextAlignment TTTTextAlignmentNatural = NSTextAlignmentNatural;
+
+const NSLineBreakMode TTTLineBreakByWordWrapping = NSLineBreakByWordWrapping;
+const NSLineBreakMode TTTLineBreakByCharWrapping = NSLineBreakByCharWrapping;
+const NSLineBreakMode TTTLineBreakByClipping = NSLineBreakByClipping;
+const NSLineBreakMode TTTLineBreakByTruncatingHead = NSLineBreakByTruncatingHead;
+const NSLineBreakMode TTTLineBreakByTruncatingMiddle = NSLineBreakByTruncatingMiddle;
+const NSLineBreakMode TTTLineBreakByTruncatingTail = NSLineBreakByTruncatingTail;
+
 typedef NSTextAlignment TTTTextAlignment;
 typedef NSLineBreakMode TTTLineBreakMode;
 #else
+const UITextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
+const UITextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
+const UITextAlignment TTTTextAlignmentRigth = NSTextAlignmentRight;
+const UITextAlignment TTTTextAlignmentJustified = NSTextAlignmentJustified;
+const UITextAlignment TTTTextAlignmentNatural = NSTextAlignmentNatural;
+
+const UITextAlignment TTTLineBreakByWordWrapping = NSLineBreakByWordWrapping;
+const UITextAlignment TTTLineBreakByCharWrapping = NSLineBreakByCharWrapping;
+const UITextAlignment TTTLineBreakByClipping = NSLineBreakByClipping;
+const UITextAlignment TTTLineBreakByTruncatingHead = NSLineBreakByTruncatingHead;
+const UITextAlignment TTTLineBreakByTruncatingMiddle = NSLineBreakByTruncatingMiddle;
+const UITextAlignment TTTLineBreakByTruncatingTail = NSLineBreakByTruncatingTail;
+
 typedef UITextAlignment TTTTextAlignment;
 typedef UILineBreakMode TTTLineBreakMode;
 #endif
+
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
@@ -62,7 +89,6 @@ static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignme
 }
 
 static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
- 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
@@ -79,6 +105,8 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 }
 
 static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   switch (lineBreakMode) {
     case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
     case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
@@ -88,10 +116,13 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
     case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
     default: return 0;
   }
+#pragma clang diagnostic pop
 }
 
 static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return UILineBreakModeWordWrap;
 		case NSLineBreakByCharWrapping: return UILineBreakModeCharacterWrap;
@@ -101,6 +132,7 @@ static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 		case NSLineBreakByTruncatingMiddle: return UILineBreakModeTailTruncation;
 		default: return 0;
 	}
+#pragma clang diagnostic pop
 #else
   return lineBreakMode;
 #endif
@@ -147,10 +179,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CGFloat rightMargin = -label.textInsets.right;
         CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
 
-        CTLineBreakMode lineBreakMode;
-        if (label.numberOfLines != 1) {
-            lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
-        } else {
+        CTLineBreakMode lineBreakMode = kCTLineBreakByWordWrapping;
+        if (label.numberOfLines == 1) {
             lineBreakMode = CTLineBreakModeFromTTTLineBreakMode(label.lineBreakMode);
         }
 
@@ -177,7 +207,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     return [NSDictionary dictionaryWithDictionary:mutableAttributes];
 }
 
-static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale, CGFloat minimumFontSize) {    
+static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale) {
     NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];
     [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont *font = (UIFont *)value;
@@ -276,7 +306,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         [mutableLinkAttributes setObject:(__bridge id)[[UIColor blueColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableActiveLinkAttributes setObject:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
 
-        CTLineBreakMode lineBreakMode = CTLineBreakModeFromUILineBreakMode(UILineBreakModeWordWrap);
+        CTLineBreakMode lineBreakMode = kCTLineBreakByWordWrapping;
         CTParagraphStyleSetting paragraphStyles[1] = {
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
         };
@@ -554,7 +584,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     CFArrayRef lines = CTFrameGetLines(frame);
     NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
-    BOOL truncateLastLine = (self.lineBreakMode == UILineBreakModeHeadTruncation || self.lineBreakMode == UILineBreakModeMiddleTruncation || self.lineBreakMode == UILineBreakModeTailTruncation);
+    BOOL truncateLastLine = (self.lineBreakMode == TTTLineBreakByTruncatingHead || self.lineBreakMode == TTTLineBreakByTruncatingMiddle || self.lineBreakMode == TTTLineBreakByTruncatingTail);
 	
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
@@ -572,22 +602,22 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
                 NSUInteger truncationAttributePosition = lastLineRange.location;
-                UILineBreakMode lineBreakMode = UILineBreakModeFromTTTLineBreakMode(self.lineBreakMode);
+                TTTLineBreakMode lineBreakMode = self.lineBreakMode;
                 
                 // Multiple lines, only use UILineBreakModeTailTruncation
                 if (numberOfLines != 1) {
-                    lineBreakMode = UILineBreakModeTailTruncation;
+                    lineBreakMode = TTTLineBreakByTruncatingTail;
                 }
                 
                 switch (lineBreakMode) {
-                    case UILineBreakModeHeadTruncation:
+                    case TTTLineBreakByTruncatingHead:
                         truncationType = kCTLineTruncationStart;
                         break;
-                    case UILineBreakModeMiddleTruncation:
+                    case TTTLineBreakByTruncatingMiddle:
                         truncationType = kCTLineTruncationMiddle;
                         truncationAttributePosition += (lastLineRange.length / 2);
                         break;
-                    case UILineBreakModeTailTruncation:
+                    case TTTLineBreakByTruncatingTail:
                     default:
                         truncationType = kCTLineTruncationEnd;
                         truncationAttributePosition += (lastLineRange.length - 1);
@@ -631,13 +661,13 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Adjust pen offset for flush depending on text alignment
                 CGFloat flushFactor = 0.0f;
                 switch (self.textAlignment) {
-                    case UITextAlignmentCenter:
+                    case TTTTextAlignmentCenter:
                         flushFactor = 0.5f;
                         break;
-                    case UITextAlignmentRight:
+                    case TTTTextAlignmentRigth:
                         flushFactor = 1.0f;
                         break;
-                    case UITextAlignmentLeft:
+                    case TTTTextAlignmentLeft:
                     default:
                         break;
                 }
@@ -964,13 +994,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         
         CGFloat textWidth = [self sizeThatFits:maxSize].width;
         CGFloat availableWidth = self.frame.size.width * self.numberOfLines;
-        if (self.numberOfLines > 1 && self.lineBreakMode == UILineBreakModeWordWrap) {
+        if (self.numberOfLines > 1 && self.lineBreakMode == TTTLineBreakByWordWrapping) {
             textWidth *= kTTTLineBreakWordWrapTextWidthScalingFactor;
         }
         
         if (textWidth > availableWidth && textWidth > 0.0f) {
             originalAttributedText = [self.attributedText copy];
-            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth, self.minimumFontSize);
+            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth);
         }
     }
     
