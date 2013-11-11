@@ -1045,7 +1045,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         
         // If we adjusted the font size, set it back to its original size
         if (originalAttributedText) {
-            self.attributedText = originalAttributedText;
+            // Use ivar directly to avoid clearing out framesetter and renderedAttributedText
+            _attributedText = originalAttributedText;
         }
     } CGContextRestoreGState(c);
 }
