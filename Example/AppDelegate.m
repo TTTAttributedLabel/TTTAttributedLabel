@@ -25,20 +25,19 @@
 #import "RootViewController.h"
 
 @implementation AppDelegate
-@synthesize window = _window;
-@synthesize navigationController = _navigationController;
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
+- (BOOL)application:(__unused UIApplication *)application
+didFinishLaunchingWithOptions:(__unused NSDictionary *)launchOptions
+{
     RootViewController *viewController = [[RootViewController alloc] init];    
-    _navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    self.navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];  
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
+
     return YES;
 }
-
 
 @end

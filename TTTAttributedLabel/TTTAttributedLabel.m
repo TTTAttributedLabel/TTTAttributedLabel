@@ -209,7 +209,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
 static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale) {
     NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];
-    [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL * __unused stop) {
         UIFont *font = (UIFont *)value;
         if (font) {
             NSString *fontName;
@@ -239,7 +239,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
     
     NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];    
-    [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, __unused BOOL *stop) {
         BOOL usesColorFromContext = (BOOL)value;
         if (usesColorFromContext) {
             [mutableAttributedString setAttributes:[NSDictionary dictionaryWithObject:color forKey:(NSString *)kCTForegroundColorAttributeName] range:range];
@@ -519,7 +519,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, textRect);
-    CTFrameRef frame = CTFramesetterCreateFrame([self framesetter], CFRangeMake(0, [self.attributedText length]), path, NULL);
+    CTFrameRef frame = CTFramesetterCreateFrame([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), path, NULL);
     if (frame == NULL) {
         CFRelease(path);
         return NSNotFound;
@@ -533,7 +533,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         return NSNotFound;
     }
     
-    NSUInteger idx = NSNotFound;
+    CFIndex idx = NSNotFound;
 
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
@@ -544,9 +544,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         
         // Get bounding information of line
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
-        CGFloat width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-        CGFloat yMin = floor(lineOrigin.y - descent);
-        CGFloat yMax = ceil(lineOrigin.y + ascent);
+        CGFloat width = (CGFloat)CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+        CGFloat yMin = (CGFloat)floor(lineOrigin.y - descent);
+        CGFloat yMax = (CGFloat)ceil(lineOrigin.y + ascent);
         
         // Check if we've already passed the line
         if (p.y > yMax) {
@@ -601,7 +601,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
             if (!(lastLineRange.length == 0 && lastLineRange.location == 0) && lastLineRange.location + lastLineRange.length < textRange.location + textRange.length) {
                 // Get correct truncationType and attribute position
                 CTLineTruncationType truncationType;
-                NSUInteger truncationAttributePosition = lastLineRange.location;
+                CFIndex truncationAttributePosition = lastLineRange.location;
                 TTTLineBreakMode lineBreakMode = self.lineBreakMode;
                 
                 // Multiple lines, only use UILineBreakModeTailTruncation
@@ -631,7 +631,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
                 NSDictionary *truncationTokenStringAttributes = self.truncationTokenStringAttributes;
                 if (!truncationTokenStringAttributes) {
-                    truncationTokenStringAttributes = [attributedString attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
+                    truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
                 }
 
                 NSAttributedString *attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
@@ -640,12 +640,12 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 // Append truncationToken to the string
                 // because if string isn't too long, CT wont add the truncationToken on it's own
                 // There is no change of a double truncationToken because CT only add the token if it removes characters (and the one we add will go first)
-                NSMutableAttributedString *truncationString = [[attributedString attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
+                NSMutableAttributedString *truncationString = [[attributedString attributedSubstringFromRange:NSMakeRange((NSUInteger)lastLineRange.location, (NSUInteger)lastLineRange.length)] mutableCopy];
                 if (lastLineRange.length > 0) {
                     // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
-                    unichar lastCharacter = [[truncationString string] characterAtIndex:lastLineRange.length - 1];
+                    unichar lastCharacter = [[truncationString string] characterAtIndex:(NSUInteger)(lastLineRange.length - 1)];
                     if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
-                        [truncationString deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
+                        [truncationString deleteCharactersInRange:NSMakeRange((NSUInteger)(lastLineRange.length - 1), 1)];
                     }
                 }
                 [truncationString appendAttributedString:attributedTokenString];
@@ -672,7 +672,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                         break;
                 }
 
-                CGFloat penOffset = CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
+                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y);
                 
                 CTLineDraw(truncatedLine, c);
@@ -711,7 +711,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
-        CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+        CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
         CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
         lineBounds.origin.y = origins[lineIndex].y;
@@ -729,7 +729,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGFloat runAscent = 0.0f;
                 CGFloat runDescent = 0.0f;
                 
-                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL) + fillPadding.left + fillPadding.right;
+                runBounds.size.width = (CGFloat)CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL) + fillPadding.left + fillPadding.right;
                 runBounds.size.height = runAscent + runDescent + fillPadding.top + fillPadding.bottom;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
@@ -765,7 +765,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 }
 
 - (void)drawStrike:(CTFrameRef)frame
-            inRect:(CGRect)rect
+            inRect:(__unused CGRect)rect
            context:(CGContextRef)c
 {
     NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
@@ -775,7 +775,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CFIndex lineIndex = 0;
     for (id line in lines) {        
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
-        CGFloat width = CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
+        CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
         CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
         lineBounds.origin.y = origins[lineIndex].y;
@@ -790,7 +790,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGFloat runAscent = 0.0f;
                 CGFloat runDescent = 0.0f;
                 
-                runBounds.size.width = CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL);
+                runBounds.size.width = (CGFloat)CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL);
                 runBounds.size.height = runAscent + runDescent;
                 
                 CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
@@ -845,11 +845,13 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark - TTTAttributedLabel
 
 - (void)setText:(id)text {
+    NSParameterAssert([text isKindOfClass:[NSAttributedString class]] || [text isKindOfClass:[NSString class]]);
+
     if ([text isKindOfClass:[NSString class]]) {
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
         return;
     }
-    
+
     self.attributedText = text;
     self.activeLink = nil;
 
@@ -862,10 +864,10 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #endif
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             __strong __typeof(weakSelf)strongSelf = weakSelf;
-            NSArray *results = [strongSelf.dataDetector matchesInString:[text string] options:0 range:NSMakeRange(0, [text length])];
+            NSArray *results = [strongSelf.dataDetector matchesInString:[(NSAttributedString *)text string] options:0 range:NSMakeRange(0, [(NSAttributedString *)text length])];
             if ([results count] > 0) {
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    if ([[strongSelf.attributedText string] isEqualToString:[text string]]) {
+                    if ([[strongSelf.attributedText string] isEqualToString:[(NSAttributedString *)text string]]) {
                         [strongSelf addLinksWithTextCheckingResults:results attributes:strongSelf.linkAttributes];
                     }
                 });
@@ -956,7 +958,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     textRect.size.height = fmaxf(self.font.pointSize * 2.0f, bounds.size.height);
 
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
-    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], CFRangeMake(0, [self.attributedText length]), NULL, textRect.size, NULL);
+    CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), NULL, textRect.size, NULL);
     textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
     if (textSize.height < textRect.size.height) {
@@ -1012,7 +1014,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         CGContextTranslateCTM(c, 0.0f, rect.size.height);
         CGContextScaleCTM(c, 1.0f, -1.0f);
         
-        CFRange textRange = CFRangeMake(0, [self.attributedText length]);
+        CFRange textRange = CFRangeMake(0, (CFIndex)[self.attributedText length]);
 
         // First, get the text rect (which takes vertical centering into account)
         CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
@@ -1058,7 +1060,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         return [super sizeThatFits:size];
     }
     
-    CFRange rangeToSize = CFRangeMake(0, [self.attributedText length]);
+    CFRange rangeToSize = CFRangeMake(0, (CFIndex)[self.attributedText length]);
     CGSize constraints = CGSizeMake(size.width, TTTFLOAT_MAX);
     
     if (self.numberOfLines == 1) {
@@ -1100,7 +1102,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 - (BOOL)canPerformAction:(SEL)action
-              withSender:(id)sender
+              withSender:(__unused id)sender
 {
     return (action == @selector(copy:));
 }
@@ -1196,7 +1198,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #pragma mark - UIResponderStandardEditActions
 
-- (void)copy:(id)sender {
+- (void)copy:(__unused id)sender {
     [[UIPasteboard generalPasteboard] setString:self.text];
 }
 

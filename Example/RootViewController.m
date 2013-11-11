@@ -51,12 +51,16 @@
 
 #pragma mark - UITableViewDataSource
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.espressos count];
+- (NSInteger)tableView:(__unused UITableView *)tableView
+ numberOfRowsInSection:(__unused NSInteger)section
+{
+    return (NSInteger)[self.espressos count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:indexPath.row]];
+- (CGFloat)tableView:(__unused UITableView *)tableView
+heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
+{
+    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:(NSUInteger)indexPath.row]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -68,7 +72,7 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
-    NSString *description = [self.espressos objectAtIndex:indexPath.row];
+    NSString *description = [self.espressos objectAtIndex:(NSUInteger)indexPath.row];
     cell.summaryText = description;
     cell.summaryLabel.delegate = self;
     cell.summaryLabel.userInteractionEnabled = YES;
@@ -78,15 +82,19 @@
 
 #pragma mark - UITableViewDelegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *description = [self.espressos objectAtIndex:indexPath.row];
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *description = [self.espressos objectAtIndex:(NSUInteger)indexPath.row];
     DetailViewController *viewController = [[DetailViewController alloc] initWithEspressoDescription:description];
     [self.navigationController pushViewController:viewController animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - TTTAttributedLabelDelegate
 
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
+- (void)attributedLabel:(__unused TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url {
     [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
 }
 
