@@ -845,7 +845,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark - TTTAttributedLabel
 
 - (void)setText:(id)text {
-    NSParameterAssert([text isKindOfClass:[NSAttributedString class]] || [text isKindOfClass:[NSString class]]);
+    NSParameterAssert(!text || [text isKindOfClass:[NSAttributedString class]] || [text isKindOfClass:[NSString class]]);
 
     if ([text isKindOfClass:[NSString class]]) {
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
