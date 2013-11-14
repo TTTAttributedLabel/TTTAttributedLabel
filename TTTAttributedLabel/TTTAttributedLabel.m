@@ -138,6 +138,31 @@ static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 #endif
 }
 
+static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return ceil(cgfloat);
+#else
+    return ceilf(cgfloat);
+#endif
+}
+
+static inline CGFLOAT_TYPE CGFloat_floor(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return floor(cgfloat);
+#else
+    return floorf(cgfloat);
+#endif
+}
+
+static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return round(cgfloat);
+#else
+    return roundf(cgfloat);
+#endif
+}
+
+
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
 
