@@ -137,8 +137,17 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 }
 
 + (CGFloat)heightForCellWithText:(NSString *)text {
-    static CGFloat padding = 10.0f;
-    return ceilf([text sizeWithFont:[UIFont systemFontOfSize:kEspressoDescriptionTextFontSize] constrainedToSize:CGSizeMake(300.0f, CGFLOAT_MAX) lineBreakMode:NSLineBreakByWordWrapping].height) + padding;
+    static CGFloat padding = 10.0;
+
+    UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
+    CGSize textSize = CGSizeMake(300.0, CGFLOAT_MAX);
+    CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
+
+#if defined(__LP64__) && __LP64__
+    return ceil(sizeWithFont.height) + padding;
+#else
+    return ceilf(sizeWithFont.height) + padding;
+#endif
 }
 
 #pragma mark - UIView
