@@ -196,7 +196,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
-        CGFloat lineSpacingAdjustment = ceilf(label.font.lineHeight - label.font.ascender + label.font.descender);
+        CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
         CGFloat topMargin = label.textInsets.top;
         CGFloat bottomMargin = label.textInsets.bottom;
@@ -249,7 +249,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             }
             
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
-            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, floorf(pointSize * scale), NULL);
+            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, CGFloat_floor(pointSize * scale), NULL);
             [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
             CFRelease(fontRef);
         }
@@ -855,7 +855,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
-                CGFloat y = roundf(runBounds.origin.y + runBounds.size.height / 2.0f);
+                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.0f);
                 CGContextMoveToPoint(c, runBounds.origin.x, y);
                 CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
                 
@@ -984,13 +984,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), NULL, textRect.size, NULL);
-    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
+    textSize = CGSizeMake(CGFloat_ceil(textSize.width), CGFloat_ceil(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
         switch (self.verticalAlignment) {
             case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((bounds.size.height - textSize.height) / 2.0f);
+                yOffset = CGFloat_floor((bounds.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
                 yOffset = bounds.size.height - textSize.height;
@@ -1112,7 +1112,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], rangeToSize, NULL, constraints, NULL);
     
-    return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
+    return CGSizeMake(CGFloat_ceil(suggestedSize.width), CGFloat_ceil(suggestedSize.height));
 }
 
 - (CGSize)intrinsicContentSize {
