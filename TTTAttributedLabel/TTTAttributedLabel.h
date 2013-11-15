@@ -108,7 +108,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  @deprecated Use `enabledTextCheckingTypes` property instead.
  */
-@property (nonatomic, assign) NSTextCheckingTypes dataDetectorTypes DEPRECATED_MSG_ATTRIBUTE("Use enabledTextCheckingTypes property instead.");
+@property (nonatomic, assign) NSTextCheckingTypes dataDetectorTypes DEPRECATED_ATTRIBUTE;
 
 /**
  A bitmask of `NSTextCheckingType` which are used to automatically detect links in the label text.
