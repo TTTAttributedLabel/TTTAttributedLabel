@@ -138,6 +138,31 @@ static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 #endif
 }
 
+static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return ceil(cgfloat);
+#else
+    return ceilf(cgfloat);
+#endif
+}
+
+static inline CGFLOAT_TYPE CGFloat_floor(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return floor(cgfloat);
+#else
+    return floorf(cgfloat);
+#endif
+}
+
+static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
+#if defined(__LP64__) && __LP64__
+    return round(cgfloat);
+#else
+    return roundf(cgfloat);
+#endif
+}
+
+
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
 
@@ -171,7 +196,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
-        CGFloat lineSpacingAdjustment = ceilf(label.font.lineHeight - label.font.ascender + label.font.descender);
+        CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
         CGFloat topMargin = label.textInsets.top;
         CGFloat bottomMargin = label.textInsets.bottom;
@@ -224,7 +249,7 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
             }
             
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
-            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, floorf(pointSize * scale), NULL);
+            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, CGFloat_floor(pointSize * scale), NULL);
             [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
             CFRelease(fontRef);
         }
@@ -830,7 +855,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
-                CGFloat y = roundf(runBounds.origin.y + runBounds.size.height / 2.0f);
+                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.0f);
                 CGContextMoveToPoint(c, runBounds.origin.x, y);
                 CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
                 
@@ -955,17 +980,17 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     CGRect textRect = bounds;
 
     // Calculate height with a minimum of double the font pointSize, to ensure that CTFramesetterSuggestFrameSizeWithConstraints doesn't return CGSizeZero, as it would if textRect height is insufficient.
-    textRect.size.height = fmaxf(self.font.pointSize * 2.0f, bounds.size.height);
+    textRect.size.height = MAX(self.font.pointSize * 2.0f, bounds.size.height);
 
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), NULL, textRect.size, NULL);
-    textSize = CGSizeMake(ceilf(textSize.width), ceilf(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
+    textSize = CGSizeMake(CGFloat_ceil(textSize.width), CGFloat_ceil(textSize.height)); // Fix for iOS 4, CTFramesetterSuggestFrameSizeWithConstraints sometimes returns fractional sizes
     
     if (textSize.height < textRect.size.height) {
         CGFloat yOffset = 0.0f;
         switch (self.verticalAlignment) {
             case TTTAttributedLabelVerticalAlignmentCenter:
-                yOffset = floorf((bounds.size.height - textSize.height) / 2.0f);
+                yOffset = CGFloat_floor((bounds.size.height - textSize.height) / 2.0f);
                 break;
             case TTTAttributedLabelVerticalAlignmentBottom:
                 yOffset = bounds.size.height - textSize.height;
@@ -1087,7 +1112,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], rangeToSize, NULL, constraints, NULL);
     
-    return CGSizeMake(ceilf(suggestedSize.width), ceilf(suggestedSize.height));
+    return CGSizeMake(CGFloat_ceil(suggestedSize.width), CGFloat_ceil(suggestedSize.height));
 }
 
 - (CGSize)intrinsicContentSize {
@@ -1213,13 +1238,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         [coder encodeObject:self.linkAttributes forKey:NSStringFromSelector(@selector(linkAttributes))];
         [coder encodeObject:self.activeLinkAttributes forKey:NSStringFromSelector(@selector(activeLinkAttributes))];
     }
-    [coder encodeFloat:self.shadowRadius forKey:NSStringFromSelector(@selector(shadowRadius))];
-    [coder encodeFloat:self.highlightedShadowRadius forKey:NSStringFromSelector(@selector(highlightedShadowRadius))];
+    [coder encodeObject:@(self.shadowRadius) forKey:NSStringFromSelector(@selector(shadowRadius))];
+    [coder encodeObject:@(self.highlightedShadowRadius) forKey:NSStringFromSelector(@selector(highlightedShadowRadius))];
     [coder encodeCGSize:self.highlightedShadowOffset forKey:NSStringFromSelector(@selector(highlightedShadowOffset))];
     [coder encodeObject:self.highlightedShadowColor forKey:NSStringFromSelector(@selector(highlightedShadowColor))];
-    [coder encodeFloat:self.firstLineIndent forKey:NSStringFromSelector(@selector(firstLineIndent))];
-    [coder encodeFloat:self.leading forKey:NSStringFromSelector(@selector(leading))];
-    [coder encodeFloat:self.lineHeightMultiple forKey:NSStringFromSelector(@selector(lineHeightMultiple))];
+    [coder encodeObject:@(self.firstLineIndent) forKey:NSStringFromSelector(@selector(firstLineIndent))];
+    [coder encodeObject:@(self.leading) forKey:NSStringFromSelector(@selector(leading))];
+    [coder encodeObject:@(self.lineHeightMultiple) forKey:NSStringFromSelector(@selector(lineHeightMultiple))];
     [coder encodeUIEdgeInsets:self.textInsets forKey:NSStringFromSelector(@selector(textInsets))];
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
     [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
