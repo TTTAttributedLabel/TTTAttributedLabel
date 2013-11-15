@@ -349,8 +349,13 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 }
 
 - (void)dealloc {
-    if (_framesetter) CFRelease(_framesetter);
-    if (_highlightFramesetter) CFRelease(_highlightFramesetter);
+    if (_framesetter) {
+        CFRelease(_framesetter);
+    }
+    
+    if (_highlightFramesetter) {
+        CFRelease(_highlightFramesetter);
+    }
 }
 
 #pragma mark -
