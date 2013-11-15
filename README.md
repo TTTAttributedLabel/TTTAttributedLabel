@@ -84,11 +84,11 @@ Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttrib
 
 ## Requirements
 
-`TTTAttributedLabel` is compatible with iOS 4.3+ as a deployment target, but must be compiled using the iOS 6 SDK. If you get compiler errors for undefined constants, try upgrading to the latest version of Xcode, and updating your project to the recommended build settings.
+`TTTAttributedLabel` is compatible with iOS 4.3+ as a deployment target, but must be compiled using the iOS 6 SDK, or higher. If you get compiler errors for undefined constants, try upgrading to the latest version of Xcode, and updating your project to the recommended build settings.
 
 `TTTAttributedLabel` also requires the `CoreText` and `Core Graphics` frameworks. If you're installing with CocoaPods these frameworks will automatically be linked for you, otherwise you will have to add them to your project.
 
-For arm64 compatibility you must compile your project with the iOS 7 SDK.
+For `arm64` compatibility, you must compile your project with the iOS 7 SDK.
 
 ## Contact
 
