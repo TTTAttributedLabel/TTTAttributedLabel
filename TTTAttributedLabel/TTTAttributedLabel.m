@@ -463,8 +463,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 - (void)addLinksWithTextCheckingResults:(NSArray *)results
                              attributes:(NSDictionary *)attributes
 {
-    NSArray *links = self.links;
-
+    NSMutableArray *mutableLinks = [NSMutableArray arrayWithArray:self.links];
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         for (NSTextCheckingResult *result in results) {
@@ -473,7 +472,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         self.attributedText = mutableAttributedString;
         [self setNeedsDisplay];
     }
-    self.links = [links arrayByAddingObjectsFromArray:results];
+    [mutableLinks addObjectsFromArray:results];
+    
+    self.links = [NSArray arrayWithArray:mutableLinks];
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
