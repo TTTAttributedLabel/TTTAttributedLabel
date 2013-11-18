@@ -367,8 +367,6 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     
     _attributedText = [text copy];
     
-    self.links = [NSArray array];
-    
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
 }
@@ -892,6 +890,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     self.attributedText = text;
     self.activeLink = nil;
 
+    self.links = [NSArray array];
     if (self.attributedText && self.enabledTextCheckingTypes) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < 50000
         __unsafe_unretained __typeof(self)weakSelf = self;
