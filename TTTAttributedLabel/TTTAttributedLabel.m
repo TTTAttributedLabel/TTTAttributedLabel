@@ -27,6 +27,7 @@
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
 static CGFloat const TTTFLOAT_MAX = 100000;
+static NSInteger const TTTTruncationTokenIndex = NSIntegerMax - 1;
 
 NSString * const kTTTStrikeOutAttributeName = @"TTTStrikeOutAttribute";
 NSString * const kTTTBackgroundFillColorAttributeName = @"TTTBackgroundFillColor";
@@ -281,6 +282,8 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
+@property (readwrite, nonatomic, assign) NSRange xRangeOftruncationToken;
+@property (readwrite, nonatomic, strong) NSTextCheckingResult *truncationTokenLink;
 @end
 
 @implementation TTTAttributedLabel {
@@ -520,11 +523,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 #pragma mark -
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
-    NSEnumerator *enumerator = [self.links reverseObjectEnumerator];
-    NSTextCheckingResult *result = nil;
-    while ((result = [enumerator nextObject])) {
-        if (NSLocationInRange((NSUInteger)idx, result.range)) {
-            return result;
+    if (TTTTruncationTokenIndex == idx) {
+        return self.truncationTokenLink;
+    }
+    else if (NSNotFound != idx) {
+        NSEnumerator *enumerator = [self.links reverseObjectEnumerator];
+        NSTextCheckingResult *result = nil;
+        while ((result = [enumerator nextObject])) {
+            if (NSLocationInRange((NSUInteger)idx, result.range)) {
+                return result;
+            }
         }
     }
     
@@ -589,12 +597,20 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         }
         // Check if the point is within this line vertically
         if (p.y >= yMin) {
-            // Check if the point is within this line horizontally
-            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
-                // Convert CT coordinates to line-relative coordinates
-                CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-                idx = CTLineGetStringIndexForPosition(line, relativePoint);
+            if (lineIndex == numberOfLines - 1 &&
+                !NSEqualRanges(self.xRangeOftruncationToken, NSMakeRange(0, 0)) &&
+                NSLocationInRange((NSUInteger)p.x, self.xRangeOftruncationToken)) {
+                idx = TTTTruncationTokenIndex;
                 break;
+            }
+            else {
+                // Check if the point is within this line horizontally
+                if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
+                    // Convert CT coordinates to line-relative coordinates
+                    CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
+                    idx = CTLineGetStringIndexForPosition(line, relativePoint);
+                    break;
+                }
             }
         }
     }
@@ -711,6 +727,27 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y);
                 
                 CTLineDraw(truncatedLine, c);
+                
+                if (self.truncationTokenString && self.truncationTokenLinkUrl) {
+                    if (!self.truncationTokenLink) {
+                        CGFloat truncatedLineWidth = (CGFloat)CTLineGetTypographicBounds(truncatedLine, NULL, NULL, NULL);
+                        CTLineRef truncationTokenLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTokenString);
+                        CGFloat truncationTokenLineWidth = (CGFloat)CTLineGetTypographicBounds(truncationTokenLine, NULL, NULL, NULL);
+                        
+                        CGPoint relativePoint = CGPointZero;
+                        self.xRangeOftruncationToken = NSMakeRange(CGFloat_ceil(truncatedLineWidth - truncationTokenLineWidth), CGFloat_ceil(truncationTokenLineWidth));
+                        relativePoint = CGPointMake(truncatedLineWidth - truncationTokenLineWidth, lineOrigin.y);
+                        
+                        CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
+                        NSRange r = NSMakeRange((NSUInteger)idx, [self.truncationTokenString length]);
+                        self.truncationTokenLink = [NSTextCheckingResult linkCheckingResultWithRange:r
+                                                                                                 URL:[NSURL URLWithString:self.truncationTokenLinkUrl]];
+                        CFRelease(truncationTokenLine);
+                    }
+                }
+                else {
+                    self.xRangeOftruncationToken = NSMakeRange(0, 0);
+                }
                 
                 CFRelease(truncatedLine);
                 CFRelease(truncationLine);
@@ -1330,7 +1367,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
     }
-
+    
     return self;
 }
 
