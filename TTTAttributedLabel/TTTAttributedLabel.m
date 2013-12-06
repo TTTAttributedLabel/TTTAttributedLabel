@@ -288,10 +288,16 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     BOOL _needsFramesetter;
     CTFramesetterRef _framesetter;
     CTFramesetterRef _highlightFramesetter;
+    NSString *_strokeColorAttributeProperty;
+    NSString *_strokeWidthAttributeProperty;
+    NSString *_cornerRadiusAttributeProperty;
 }
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
+@synthesize strokeColorAttributeProperty = _strokeColorAttributeProperty;
+@synthesize strokeWidthAttributeProperty = _strokeWidthAttributeProperty;
+@synthesize cornerRadiusAttributeProperty = _cornerRadiusAttributeProperty;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -345,7 +351,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 	    
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
-    
+    self.strokeColorAttributeProperty = kTTTBackgroundStrokeColorAttributeName;
+    self.strokeWidthAttributeProperty = kTTTBackgroundLineWidthAttributeName;
+    self.cornerRadiusAttributeProperty = kTTTBackgroundCornerRadiusAttributeName;
 }
 
 - (void)dealloc {
@@ -729,6 +737,14 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     CFRelease(path);    
 }
 
+-(CGFloat)NSNumberFloat:(NSNumber*)number withDefault:(CGFloat)defaultValue
+{
+    if (number != nil) {
+        return [number floatValue];
+    }
+    return defaultValue;
+}
+
 - (void)drawBackground:(CTFrameRef)frame
                 inRect:(CGRect)rect
                context:(CGContextRef)c
@@ -753,11 +769,11 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
         
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
-            CGColorRef strokeColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundStrokeColorAttributeName];
-            CGColorRef fillColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundFillColorAttributeName];
+            CGColorRef strokeColor = (__bridge CGColorRef)[attributes objectForKey:_strokeColorAttributeProperty];
+            CGColorRef fillColor = ((UIColor*)[attributes objectForKey:NSBackgroundColorAttributeName]).CGColor;
             UIEdgeInsets fillPadding = [[attributes objectForKey:kTTTBackgroundFillPaddingAttributeName] UIEdgeInsetsValue];
-            CGFloat cornerRadius = [[attributes objectForKey:kTTTBackgroundCornerRadiusAttributeName] floatValue];
-            CGFloat lineWidth = [[attributes objectForKey:kTTTBackgroundLineWidthAttributeName] floatValue];
+            CGFloat cornerRadius = [[attributes objectForKey:_cornerRadiusAttributeProperty] floatValue];
+            CGFloat lineWidth = [self NSNumberFloat:[attributes objectForKey:_strokeWidthAttributeProperty] withDefault:1.0f];
 
             if (strokeColor || fillColor) {
                 CGRect runBounds = CGRectZero;
