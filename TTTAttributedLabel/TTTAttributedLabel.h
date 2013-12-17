@@ -211,6 +211,24 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
 
+
+///--------------------------------------------
+/// @name Calculating Size of Attributed String
+///--------------------------------------------
+
+/**
+ Calculate and return the size that best fits an attributed string, given the specified constraints on size and number of lines.
+
+ @param attributedString The attributed string.
+ @param size The maximum dimensions used to calculate size.
+ @param numberOfLines The maximum number of lines in the text to draw, if the constraining size cannot accomodate the full attributed string.
+ 
+ @return The size that fits the attributed string within the specified constraints.
+ */
++ (CGSize)sizeThatFitsAttributedString:(NSAttributedString *)attributedString
+                       withConstraints:(CGSize)size
+                limitedToNumberOfLines:(NSUInteger)numberOfLines;
+
 ///----------------------------------
 /// @name Setting the Text Attributes
 ///----------------------------------
