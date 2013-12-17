@@ -815,8 +815,18 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 
                 runBounds.size.width = (CGFloat)CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL) + fillPadding.left + fillPadding.right;
                 runBounds.size.height = runAscent + runDescent + fillPadding.top + fillPadding.bottom;
-                
-                CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
+
+                CGFloat xOffset = 0.0f;
+                CFRange glyphRange = CTRunGetStringRange((__bridge CTRunRef)glyphRun);
+                switch (CTRunGetStatus((__bridge CTRunRef)glyphRun)) {
+                    case kCTRunStatusRightToLeft:
+                        xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, glyphRange.location + glyphRange.length, NULL);
+                        break;
+                    default:
+                        xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, glyphRange.location, NULL);
+                        break;
+                }
+
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left;
                 runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom;
                 runBounds.origin.y -= runDescent;
@@ -877,7 +887,16 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 runBounds.size.width = (CGFloat)CTRunGetTypographicBounds((__bridge CTRunRef)glyphRun, CFRangeMake(0, 0), &runAscent, &runDescent, NULL);
                 runBounds.size.height = runAscent + runDescent;
                 
-                CGFloat xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, CTRunGetStringRange((__bridge CTRunRef)glyphRun).location, NULL);
+                CGFloat xOffset = 0.0f;
+                CFRange glyphRange = CTRunGetStringRange((__bridge CTRunRef)glyphRun);
+                switch (CTRunGetStatus((__bridge CTRunRef)glyphRun)) {
+                    case kCTRunStatusRightToLeft:
+                        xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, glyphRange.location + glyphRange.length, NULL);
+                        break;
+                    default:
+                        xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, glyphRange.location, NULL);
+                        break;
+                }
                 runBounds.origin.x = origins[lineIndex].x + xOffset;
                 runBounds.origin.y = origins[lineIndex].y;
                 runBounds.origin.y -= runDescent;
