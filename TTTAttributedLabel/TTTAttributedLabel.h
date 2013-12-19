@@ -211,6 +211,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
 
+/**
+ The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
+ */
+@property (nonatomic, strong) NSAttributedString *truncationTokenAttributedString;
+
 
 ///--------------------------------------------
 /// @name Calculating Size of Attributed String
