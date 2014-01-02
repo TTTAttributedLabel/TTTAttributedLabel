@@ -224,7 +224,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The interval that activates the long press gesture. `0.65` by default, set `0` to disable.
  */
-@property (nonatomic) NSTimeInterval longPressInterval;
+@property (nonatomic, assign) NSTimeInterval longPressInterval;
 
 /**
  The selection state determines whether the user activates by tap/long press gesture.
