@@ -32,6 +32,12 @@ typedef enum {
     TTTAttributedLabelVerticalAlignmentBottom   = 2,
 } TTTAttributedLabelVerticalAlignment;
 
+
+typedef enum {
+    TTTAttributedLabelSelectionStateTouchUp      = 0,
+    TTTAttributedLabelSelectionStateLongPress    = 1,
+} TTTAttributedLabelSelectionState;
+
 /**
  Determines whether the text to which this attribute applies has a strikeout drawn through itself.
  */
@@ -211,6 +217,19 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
 
+///---------------------------------
+/// @name Long Press Gesture support
+///---------------------------------
+
+/**
+ The interval that activates the long press gesture. `0.65` by default, set `0` to disable.
+ */
+@property (nonatomic, assign) NSTimeInterval longPressInterval;
+
+/**
+ The selection state determines whether the user activates by tap/long press gesture.
+ */
+@property (nonatomic, readonly) TTTAttributedLabelSelectionState selectionState;
 
 ///--------------------------------------------
 /// @name Calculating Size of Attributed String
