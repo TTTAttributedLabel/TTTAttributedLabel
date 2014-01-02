@@ -1404,10 +1404,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
     }
 
-    if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
-        self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
-    }
-
     if ([coder containsValueForKey:NSStringFromSelector(@selector(selectionState))]) {
         self.longPressInterval = [coder decodeFloatForKey:NSStringFromSelector(@selector(longPressInterval))];
     }
