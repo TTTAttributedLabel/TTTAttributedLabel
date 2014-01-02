@@ -1020,6 +1020,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
+#pragma mark - NSAttributedString
+
+- (NSAttributedString *)getAttributedTextFromString:(NSString *)string
+{
+    return [[NSAttributedString alloc] initWithString:string attributes:NSAttributedStringAttributesFromLabel(self)];
+}
+
 #pragma mark - UILabel
 
 - (void)setHighlighted:(BOOL)highlighted {
