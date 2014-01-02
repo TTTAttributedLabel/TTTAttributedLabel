@@ -49,8 +49,6 @@ const NSLineBreakMode TTTLineBreakByTruncatingHead = NSLineBreakByTruncatingHead
 const NSLineBreakMode TTTLineBreakByTruncatingMiddle = NSLineBreakByTruncatingMiddle;
 const NSLineBreakMode TTTLineBreakByTruncatingTail = NSLineBreakByTruncatingTail;
 
-typedef NSTextAlignment TTTTextAlignment;
-typedef NSLineBreakMode TTTLineBreakMode;
 #else
 const UITextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
 const UITextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;

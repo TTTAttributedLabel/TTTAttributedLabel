@@ -33,6 +33,16 @@ typedef enum {
 } TTTAttributedLabelVerticalAlignment;
 
 /**
+ text alignment for text in a label 
+ */
+typedef NSTextAlignment TTTTextAlignment;
+
+/**
+ Line breake mode
+ */
+typedef NSLineBreakMode TTTLineBreakMode;
+
+/**
  Determines whether the text to which this attribute applies has a strikeout drawn through itself.
  */
 extern NSString * const kTTTStrikeOutAttributeName;
