@@ -98,6 +98,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
 }
 
+- (void)attributedLabel:(__unused TTTAttributedLabel *)label
+didLongPressLinkWithURL:(NSURL *)url
+                atPoint:(__unused CGPoint)point {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Long-press detected", nil)
+                                                    message:url.absoluteString
+                                                   delegate:nil
+                                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
 #pragma mark - UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
