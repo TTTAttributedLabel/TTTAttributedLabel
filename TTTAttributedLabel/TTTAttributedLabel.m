@@ -1024,7 +1024,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 - (NSAttributedString *)getAttributedTextFromString:(NSString *)string
 {
-    return [[NSAttributedString alloc] initWithString:string attributes:NSAttributedStringAttributesFromLabel(self)];
+    if (string)
+    {
+        return [[NSAttributedString alloc] initWithString:string attributes:NSAttributedStringAttributesFromLabel(self)];
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 #pragma mark - UILabel
