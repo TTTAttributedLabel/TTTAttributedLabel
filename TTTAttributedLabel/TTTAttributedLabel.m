@@ -1030,7 +1030,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
     else
     {
-        return nil;
+        [NSException raise:@"getAttributedTextFromString:, can not receive nil value" format:nil];
     }
 }
 
