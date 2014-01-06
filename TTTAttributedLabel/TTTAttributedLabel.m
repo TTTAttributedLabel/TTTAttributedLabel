@@ -708,17 +708,20 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         break;
                 }
                 
-                NSString *truncationTokenString = self.truncationTokenString;
-                if (!truncationTokenString) {
-                    truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
+                NSAttributedString *attributedTokenString = self.truncationTokenAttributedString;
+                if (!attributedTokenString) {
+                    NSString *truncationTokenString = self.truncationTokenString;
+                    if (!truncationTokenString) {
+                        truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
+                    }
+                    
+                    NSDictionary *truncationTokenStringAttributes = self.truncationTokenStringAttributes;
+                    if (!truncationTokenStringAttributes) {
+                        truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
+                    }
+                    
+                    attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
                 }
-
-                NSDictionary *truncationTokenStringAttributes = self.truncationTokenStringAttributes;
-                if (!truncationTokenStringAttributes) {
-                    truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
-                }
-
-                NSAttributedString *attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTokenString);
                 
                 // Append truncationToken to the string
