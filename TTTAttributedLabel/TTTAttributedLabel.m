@@ -38,7 +38,7 @@ NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCorner
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 const NSTextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
 const NSTextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
-const NSTextAlignment TTTTextAlignmentRigth = NSTextAlignmentRight;
+const NSTextAlignment TTTTextAlignmentRight = NSTextAlignmentRight;
 const NSTextAlignment TTTTextAlignmentJustified = NSTextAlignmentJustified;
 const NSTextAlignment TTTTextAlignmentNatural = NSTextAlignmentNatural;
 
@@ -54,7 +54,7 @@ typedef NSLineBreakMode TTTLineBreakMode;
 #else
 const UITextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
 const UITextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
-const UITextAlignment TTTTextAlignmentRigth = NSTextAlignmentRight;
+const UITextAlignment TTTTextAlignmentRight = NSTextAlignmentRight;
 const UITextAlignment TTTTextAlignmentJustified = NSTextAlignmentJustified;
 const UITextAlignment TTTTextAlignmentNatural = NSTextAlignmentNatural;
 
@@ -748,7 +748,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     case TTTTextAlignmentCenter:
                         flushFactor = 0.5f;
                         break;
-                    case TTTTextAlignmentRigth:
+                    case TTTTextAlignmentRight:
                         flushFactor = 1.0f;
                         break;
                     case TTTTextAlignmentLeft:
