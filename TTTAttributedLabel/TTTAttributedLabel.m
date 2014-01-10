@@ -451,33 +451,32 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return _framesetter;
 }
 
-- (void)setFramesetter:(CTFramesetterRef)framesetter
-{
-    CTFramesetterRef oldFramesetter = _framesetter;
-    _framesetter = framesetter;
+- (void)setFramesetter:(CTFramesetterRef)framesetter {
+    if (framesetter) {
+        CFRetain(framesetter);
+    }
+
     if (_framesetter) {
-        CFRetain(_framesetter);
+        CFRelease(_framesetter);
     }
-    if (oldFramesetter) {
-        CFRelease(oldFramesetter);
-    }
+
+    _framesetter = framesetter;
 }
 
-- (CTFramesetterRef)highlightFramesetter
-{
+- (CTFramesetterRef)highlightFramesetter {
     return _highlightFramesetter;
 }
 
-- (void)setHighlightFramesetter:(CTFramesetterRef)highlightFramesetter
-{
-    CTFramesetterRef oldHighlightFramesetter = _highlightFramesetter;
-    _highlightFramesetter = highlightFramesetter;
+- (void)setHighlightFramesetter:(CTFramesetterRef)highlightFramesetter {
+    if (highlightFramesetter) {
+        CFRetain(highlightFramesetter);
+    }
+
     if (_highlightFramesetter) {
-        CFRetain(_highlightFramesetter);
+        CFRelease(_highlightFramesetter);
     }
-    if (oldHighlightFramesetter) {
-        CFRelease(oldHighlightFramesetter);
-    }
+
+    _highlightFramesetter = highlightFramesetter;
 }
 
 - (NSAttributedString *)renderedAttributedText {
