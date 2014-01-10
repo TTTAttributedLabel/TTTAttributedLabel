@@ -1008,7 +1008,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
 
         NSMutableAttributedString *mutableAttributedString = [self.inactiveAttributedText mutableCopy];
-        [mutableAttributedString addAttributes:self.activeLinkAttributes range:_activeLink.range];
+        
+        if (NSMaxRange(_activeLink.range) <= mutableAttributedString.length)
+            [mutableAttributedString addAttributes:self.activeLinkAttributes range:_activeLink.range];
+        
         self.attributedText = mutableAttributedString;
 
         [self setNeedsDisplay];
