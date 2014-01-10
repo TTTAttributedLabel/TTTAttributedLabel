@@ -26,7 +26,6 @@
 #import "DetailViewController.h"
 
 @implementation RootViewController
-@synthesize espressos = _espressos;
 
 - (id)init {
     self = [super initWithStyle:UITableViewStylePlain];

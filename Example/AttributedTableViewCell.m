@@ -94,9 +94,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 
 - (void)setSummaryText:(NSString *)text {
-    [self willChangeValueForKey:@"summaryText"];
     _summaryText = [text copy];
-    [self didChangeValueForKey:@"summaryText"];
     
     [self.summaryLabel setText:self.summaryText afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
         NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
