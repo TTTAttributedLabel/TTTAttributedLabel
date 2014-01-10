@@ -23,6 +23,7 @@
 #import "TTTAttributedLabel.h"
 
 #import <Availability.h>
+#import <objc/runtime.h>
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
@@ -323,6 +324,40 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @dynamic text;
 @synthesize attributedText = _attributedText;
 
++ (void)initialize {
+    NSArray *stringsOfSettersAffectingParagraphStyle = @[
+                                                         NSStringFromSelector(@selector(setTextAlignment:)),
+                                                         NSStringFromSelector(@selector(setLeading:)),
+                                                         NSStringFromSelector(@selector(setLineHeightMultiple:)),
+                                                         NSStringFromSelector(@selector(setTextInsets:)),
+                                                         NSStringFromSelector(@selector(setFirstLineHeadIndent:)),
+                                                         NSStringFromSelector(@selector(setLineBreakMode:))
+                                                        ];
+
+    for (NSString *string in stringsOfSettersAffectingParagraphStyle) {
+        Class class = [self class];
+        SEL selector = NSSelectorFromString(string);
+        SEL swizzledSelector = NSSelectorFromString([NSString stringWithFormat:@"ttt_%@", NSStringFromSelector(selector)]);
+
+        Method method = class_getInstanceMethod(class, selector);
+
+        char type;
+        method_getArgumentType(method, 0, &type, sizeof(type));
+
+        void (*implementationFunction)(id, SEL, typeof(type)) = (void *)method_getImplementation(method);
+        IMP swizzledImplementation = imp_implementationWithBlock(^(id _self, typeof(type) _value){
+            implementationFunction(_self, selector, _value);
+            if ([_self isKindOfClass:class]) {
+                [_self performSelector:@selector(updateLinkAttributesParagraphStyles)];
+            }
+        });
+
+        if (class_addMethod(self, swizzledSelector, swizzledImplementation, method_getTypeEncoding(method))) {
+            method_exchangeImplementations(method, class_getInstanceMethod(class, swizzledSelector));
+        }
+    }
+}
+
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (!self) {
@@ -355,34 +390,16 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         [mutableLinkAttributes setObject:[UIColor blueColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableActiveLinkAttributes setObject:[UIColor redColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableInactiveLinkAttributes setObject:[UIColor grayColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-        
-        [mutableLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-        [mutableActiveLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-        [mutableInactiveLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
     } else {
         [mutableLinkAttributes setObject:(__bridge id)[[UIColor blueColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableActiveLinkAttributes setObject:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
         [mutableInactiveLinkAttributes setObject:(__bridge id)[[UIColor grayColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-
-        CTLineBreakMode lineBreakMode = kCTLineBreakByWordWrapping;
-        CTParagraphStyleSetting paragraphStyles[1] = {
-            {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode}
-        };
-        CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 1);
-        
-        [mutableLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-        [mutableActiveLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-        [mutableInactiveLinkAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
-
-        CFRelease(paragraphStyle);
     }
 	    
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
+    [self updateLinkAttributesParagraphStyles];
 }
 
 - (void)dealloc {
@@ -486,6 +503,21 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
     
     return _renderedAttributedText;
+}
+
+- (void)updateLinkAttributesParagraphStyles {
+    NSMutableDictionary *mutableLinkAttributes = [self.linkAttributes mutableCopy];
+    NSMutableDictionary *mutableActiveLinkAttributes = [self.activeLinkAttributes mutableCopy];
+    NSMutableDictionary *mutableInactiveLinkAttributes = [self.inactiveLinkAttributes mutableCopy];
+
+    id paragraphStyle = [NSAttributedStringAttributesFromLabel(self) objectForKey:(NSString *)kCTParagraphStyleAttributeName];
+    [mutableLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+    [mutableActiveLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+    [mutableInactiveLinkAttributes setObject:paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+
+    self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
+    self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
+    self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
 }
 
 #pragma mark -
