@@ -162,7 +162,6 @@ static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
 #endif
 }
 
-
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary]; 
 
@@ -174,10 +173,10 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         paragraphStyle.alignment = label.textAlignment;
         paragraphStyle.lineSpacing = label.leading;
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
-        paragraphStyle.firstLineHeadIndent = label.firstLineIndent;
         paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
-        paragraphStyle.headIndent = label.textInsets.left;
+        paragraphStyle.firstLineHeadIndent = label.firstLineIndent + label.textInsets.left;
+        paragraphStyle.headIndent = paragraphStyle.firstLineHeadIndent;
         paragraphStyle.tailIndent = -label.textInsets.right;
 
         if (label.numberOfLines == 1) {
@@ -215,9 +214,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
             {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
             {.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment, .valueSize = sizeof (CGFloat), .value = (const void *)&lineSpacingAdjustment},
             {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
-            {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
             {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
             {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
+            {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
             {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
             {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin}
         };
@@ -452,33 +451,32 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return _framesetter;
 }
 
-- (void)setFramesetter:(CTFramesetterRef)framesetter
-{
-    CTFramesetterRef oldFramesetter = _framesetter;
-    _framesetter = framesetter;
+- (void)setFramesetter:(CTFramesetterRef)framesetter {
+    if (framesetter) {
+        CFRetain(framesetter);
+    }
+
     if (_framesetter) {
-        CFRetain(_framesetter);
+        CFRelease(_framesetter);
     }
-    if (oldFramesetter) {
-        CFRelease(oldFramesetter);
-    }
+
+    _framesetter = framesetter;
 }
 
-- (CTFramesetterRef)highlightFramesetter
-{
+- (CTFramesetterRef)highlightFramesetter {
     return _highlightFramesetter;
 }
 
-- (void)setHighlightFramesetter:(CTFramesetterRef)highlightFramesetter
-{
-    CTFramesetterRef oldHighlightFramesetter = _highlightFramesetter;
-    _highlightFramesetter = highlightFramesetter;
+- (void)setHighlightFramesetter:(CTFramesetterRef)highlightFramesetter {
+    if (highlightFramesetter) {
+        CFRetain(highlightFramesetter);
+    }
+
     if (_highlightFramesetter) {
-        CFRetain(_highlightFramesetter);
+        CFRelease(_highlightFramesetter);
     }
-    if (oldHighlightFramesetter) {
-        CFRelease(oldHighlightFramesetter);
-    }
+
+    _highlightFramesetter = highlightFramesetter;
 }
 
 - (NSAttributedString *)renderedAttributedText {
@@ -1364,7 +1362,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
 
         if ([coder containsValueForKey:NSStringFromSelector(@selector(inactiveLinkAttributes))]) {
-            self.activeLinkAttributes = [coder decodeObjectForKey:NSStringFromSelector(@selector(inactiveLinkAttributes))];
+            self.inactiveLinkAttributes = [coder decodeObjectForKey:NSStringFromSelector(@selector(inactiveLinkAttributes))];
         }
     }
 
