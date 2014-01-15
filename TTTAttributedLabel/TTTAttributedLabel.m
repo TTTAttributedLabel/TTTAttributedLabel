@@ -1367,11 +1367,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(shadowRadius))]) {
-        self.shadowRadius = [coder decodeFloatForKey:NSStringFromSelector(@selector(shadowRadius))];
+        self.shadowRadius = [[coder decodeObjectForKey:NSStringFromSelector(@selector(shadowRadius))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(highlightedShadowRadius))]) {
-        self.highlightedShadowRadius = [coder decodeFloatForKey:NSStringFromSelector(@selector(highlightedShadowRadius))];
+        self.highlightedShadowRadius = [[coder decodeObjectForKey:NSStringFromSelector(@selector(highlightedShadowRadius))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(highlightedShadowOffset))]) {
@@ -1383,15 +1383,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(firstLineIndent))]) {
-        self.firstLineIndent = [coder decodeFloatForKey:NSStringFromSelector(@selector(firstLineIndent))];
+        self.firstLineIndent = [[coder decodeObjectForKey:NSStringFromSelector(@selector(firstLineIndent))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(leading))]) {
-        self.leading = [coder decodeFloatForKey:NSStringFromSelector(@selector(leading))];
+        self.leading = [[coder decodeObjectForKey:NSStringFromSelector(@selector(leading))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(lineHeightMultiple))]) {
-        self.lineHeightMultiple = [coder decodeFloatForKey:NSStringFromSelector(@selector(lineHeightMultiple))];
+        self.lineHeightMultiple = [[coder decodeObjectForKey:NSStringFromSelector(@selector(lineHeightMultiple))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(textInsets))]) {
