@@ -119,25 +119,6 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 #pragma clang diagnostic pop
 }
 
-static inline UILineBreakMode UILineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-	switch (lineBreakMode) {
-		case NSLineBreakByWordWrapping: return UILineBreakModeWordWrap;
-		case NSLineBreakByCharWrapping: return UILineBreakModeCharacterWrap;
-		case NSLineBreakByClipping: return UILineBreakModeClip;
-		case NSLineBreakByTruncatingHead: return UILineBreakModeHeadTruncation;
-		case NSLineBreakByTruncatingTail: return UILineBreakModeMiddleTruncation;
-		case NSLineBreakByTruncatingMiddle: return UILineBreakModeTailTruncation;
-		default: return 0;
-	}
-#pragma clang diagnostic pop
-#else
-  return lineBreakMode;
-#endif
-}
-
 static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
 #if defined(__LP64__) && __LP64__
     return ceil(cgfloat);
