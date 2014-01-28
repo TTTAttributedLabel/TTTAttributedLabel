@@ -406,6 +406,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
+    
+    [self invalidateIntrinsicContentSize];
 }
 
 - (void)setNeedsFramesetter {
