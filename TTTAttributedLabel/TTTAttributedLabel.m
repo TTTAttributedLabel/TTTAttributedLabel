@@ -407,7 +407,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
     
-    [self invalidateIntrinsicContentSize];
+    if([self respondsToSelector:@selector(invalidateIntrinsicContentSize)])
+    {
+        [self invalidateIntrinsicContentSize];
+    }
 }
 
 - (void)setNeedsFramesetter {
