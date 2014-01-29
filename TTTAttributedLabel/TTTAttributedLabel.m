@@ -406,6 +406,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
+    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+    if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
+        [self invalidateIntrinsicContentSize];
+    }
+#endif
 }
 
 - (void)setNeedsFramesetter {
