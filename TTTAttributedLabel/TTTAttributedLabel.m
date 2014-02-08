@@ -294,6 +294,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
+@property (readwrite, nonatomic) TTTAttributedLabelSelectionState selectionState;
 @end
 
 @implementation TTTAttributedLabel {
@@ -318,6 +319,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (void)commonInit {
+    self.longPressInterval = 0.65;
     self.userInteractionEnabled = YES;
     self.multipleTouchEnabled = NO;
         
@@ -376,6 +378,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if (_highlightFramesetter) {
         CFRelease(_highlightFramesetter);
     }
+
+    [self cancelLongPress];
 }
 
 #pragma mark -
@@ -1208,7 +1212,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     UITouch *touch = [touches anyObject];
     
     self.activeLink = [self linkAtPoint:[touch locationInView:self]];
-        
+
+    if (self.longPressInterval > 0) {
+        [self performSelector:@selector(handleLongPressActivated) withObject:nil afterDelay:self.longPressInterval];
+    }
+
     if (!self.activeLink) {
         [super touchesBegan:touches withEvent:event];
     }
@@ -1231,6 +1239,30 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)touchesEnded:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
+    [self cancelLongPress];
+    self.selectionState = TTTAttributedLabelSelectionStateTouchUp;
+
+    if (self.activeLink) {
+        [self performActionWithActiveLink];
+    } else {
+        [super touchesEnded:touches withEvent:event];
+    }
+}
+
+- (void)touchesCancelled:(NSSet *)touches
+               withEvent:(UIEvent *)event
+{
+    if (self.activeLink) {
+        self.activeLink = nil;
+    } else {
+        [super touchesCancelled:touches withEvent:event];
+    }
+}
+
+#pragma mark - Long Press
+
+- (void)performActionWithActiveLink {
+
     if (self.activeLink) {
         NSTextCheckingResult *result = self.activeLink;
         self.activeLink = nil;
@@ -1271,24 +1303,22 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             default:
                 break;
         }
-        
+
         // Fallback to `attributedLabel:didSelectLinkWithTextCheckingResult:` if no other delegate method matched.
         if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectLinkWithTextCheckingResult:)]) {
             [self.delegate attributedLabel:self didSelectLinkWithTextCheckingResult:result];
         }
-    } else {
-        [super touchesEnded:touches withEvent:event];
+
     }
 }
 
-- (void)touchesCancelled:(NSSet *)touches
-               withEvent:(UIEvent *)event
-{
-    if (self.activeLink) {
-        self.activeLink = nil;
-    } else {
-        [super touchesCancelled:touches withEvent:event];
-    }
+- (void)cancelLongPress {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleLongPressActivated) object:nil];
+}
+
+- (void)handleLongPressActivated {
+    self.selectionState = TTTAttributedLabelSelectionStateLongPress;
+    [self performActionWithActiveLink];
 }
 
 #pragma mark - UIResponderStandardEditActions
@@ -1321,6 +1351,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
     [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
     [coder encodeObject:self.attributedText forKey:NSStringFromSelector(@selector(attributedText))];
+    [coder encodeObject:@(self.longPressInterval) forKey:NSStringFromSelector(@selector(longPressInterval))];
+    [coder encodeObject:@(self.selectionState) forKey:NSStringFromSelector(@selector(selectionState))];
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
@@ -1399,6 +1431,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
+    }
+
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(selectionState))]) {
+        self.longPressInterval = [coder decodeFloatForKey:NSStringFromSelector(@selector(longPressInterval))];
+    }
+
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(selectionState))]) {
+        self.selectionState = [coder decodeIntegerForKey:NSStringFromSelector(@selector(selectionState))];
     }
 
     return self;

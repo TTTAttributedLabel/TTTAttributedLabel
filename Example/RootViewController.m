@@ -94,7 +94,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
-    [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
+    if (label.selectionState == TTTAttributedLabelSelectionStateLongPress) {
+        [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
+    } else {
+        [[UIApplication sharedApplication] openURL:url];
+    }
 }
 
 #pragma mark - UIActionSheetDelegate
