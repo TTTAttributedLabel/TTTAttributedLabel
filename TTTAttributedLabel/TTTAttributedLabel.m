@@ -833,7 +833,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     runBounds.size.width = CGRectGetWidth(lineBounds);
                 }
                 
-                CGPathRef path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(CGRectInset(runBounds, -1.0f, -3.0f), lineWidth, lineWidth) cornerRadius:cornerRadius] CGPath];
+                CGPathRef path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(CGRectInset(runBounds, -1.0f, 0.0f), lineWidth, lineWidth) cornerRadius:cornerRadius] CGPath];
                 
                 CGContextSetLineJoin(c, kCGLineJoinRound);
                 
