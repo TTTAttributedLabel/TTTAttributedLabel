@@ -13,6 +13,6 @@ Pod::Spec.new do |s|
   s.platform = :ios
   s.ios.deployment_target = '4.3'
 
-  s.frameworks = 'CoreText', 'CoreGraphics'
+  s.frameworks = 'CoreText', 'CoreGraphics', 'QuartzCore'
   s.source_files = 'TTTAttributedLabel'
 end

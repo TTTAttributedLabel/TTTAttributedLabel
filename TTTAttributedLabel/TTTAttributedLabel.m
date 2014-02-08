@@ -22,6 +22,7 @@
 
 #import "TTTAttributedLabel.h"
 
+#import <QuartzCore/QuartzCore.h>
 #import <Availability.h>
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
@@ -1010,6 +1011,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
         self.attributedText = mutableAttributedString;
         [self setNeedsDisplay];
+
+        [CATransaction flush];
     } else if (self.inactiveAttributedText) {
         self.attributedText = self.inactiveAttributedText;
         self.inactiveAttributedText = nil;
