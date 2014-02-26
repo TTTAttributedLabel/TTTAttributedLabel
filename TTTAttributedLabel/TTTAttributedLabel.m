@@ -510,7 +510,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         for (NSTextCheckingResult *result in results) {
-            [mutableAttributedString addAttributes:attributes range:result.range];
+            [mutableAttributedString setAttributes:attributes range:result.range];
         }
 
         self.attributedText = mutableAttributedString;
