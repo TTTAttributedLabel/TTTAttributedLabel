@@ -125,7 +125,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  A dictionary containing the `NSAttributedString` attributes to be applied to links detected or manually added to the label text. The default link style is blue and underlined.
  
- @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
+ @warning These attributes will override any other attributes of the string at the link's range.  You must specify `linkAttributes` before setting auto-detecting or manually-adding links for these attributes to be applied.
  */
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 
@@ -140,7 +140,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
 
 ///---------------------------------------
-/// @name Acccessing Text Style Attributes
+/// @name Accessing Text Style Attributes
 ///---------------------------------------
 
 /**
@@ -167,7 +167,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, assign) CGFloat kern;
 
 ///--------------------------------------------
-/// @name Acccessing Paragraph Style Attributes
+/// @name Accessing Paragraph Style Attributes
 ///--------------------------------------------
 
 /**
@@ -231,7 +231,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 
  @param attributedString The attributed string.
  @param size The maximum dimensions used to calculate size.
- @param numberOfLines The maximum number of lines in the text to draw, if the constraining size cannot accomodate the full attributed string.
+ @param numberOfLines The maximum number of lines in the text to draw, if the constraining size cannot accommodate the full attributed string.
  
  @return The size that fits the attributed string within the specified constraints.
  */
@@ -395,7 +395,7 @@ didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
  Tells the delegate that the user did select a link to a date.
  
  @param label The label whose link was selected.
- @param date The datefor the selected link.
+ @param date The date for the selected link.
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label
   didSelectLinkWithDate:(NSDate *)date;
