@@ -1307,7 +1307,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
 
-    [coder encodeInteger:(NSInteger)self.enabledTextCheckingTypes forKey:NSStringFromSelector(@selector(enabledTextCheckingTypes))];
+    [coder encodeObject:@(self.enabledTextCheckingTypes) forKey:NSStringFromSelector(@selector(enabledTextCheckingTypes))];
+
     [coder encodeObject:self.links forKey:NSStringFromSelector(@selector(links))];
     if ([NSMutableParagraphStyle class]) {
         [coder encodeObject:self.linkAttributes forKey:NSStringFromSelector(@selector(linkAttributes))];
@@ -1336,8 +1337,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     [self commonInit];
 
-    if ([coder containsValueForKey:NSStringFromSelector(@selector(dataDetectorTypes))]) {
-        self.enabledTextCheckingTypes = [coder decodeIntegerForKey:NSStringFromSelector(@selector(dataDetectorTypes))];
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(enabledTextCheckingTypes))]) {
+        self.enabledTextCheckingTypes = [[coder decodeObjectForKey:NSStringFromSelector(@selector(enabledTextCheckingTypes))] unsignedLongLongValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(links))]) {
