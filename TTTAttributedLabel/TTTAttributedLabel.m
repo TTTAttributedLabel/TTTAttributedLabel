@@ -407,6 +407,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     
     _attributedText = [text copy];
     
+    self.links = [NSArray array];
+    
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
     
