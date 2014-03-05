@@ -294,6 +294,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
+@property (nonatomic, strong) NSArray *attributes;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
 @end
 
@@ -507,18 +508,21 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                              attributes:(NSDictionary *)attributes
 {
     NSMutableArray *mutableLinks = [NSMutableArray arrayWithArray:self.links];
+    NSMutableArray *mutableAttributes = [NSMutableArray arrayWithArray:self.attributes];
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         for (NSTextCheckingResult *result in results) {
+            [mutableAttributes addObject:attributes];
             [mutableAttributedString addAttributes:attributes range:result.range];
         }
-
+        
         self.attributedText = mutableAttributedString;
         [self setNeedsDisplay];
     }
     [mutableLinks addObjectsFromArray:results];
     
     self.links = [NSArray arrayWithArray:mutableLinks];
+    self.attributes = [NSArray arrayWithArray:mutableAttributes];
 }
 
 - (void)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result {
@@ -1174,21 +1178,31 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 - (void)tintColorDidChange {
     BOOL isInactive = (CGColorSpaceGetModel(CGColorGetColorSpace([self.tintColor CGColor])) == kCGColorSpaceModelMonochrome);
-
-    NSDictionary *attributesToRemove = isInactive ? self.linkAttributes : self.inactiveLinkAttributes;
-    NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : self.linkAttributes;
-
+    
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    NSUInteger linkIndex = 0;
     for (NSTextCheckingResult *result in self.links) {
+        NSDictionary *attributesToRemove = isInactive ? [self.attributes objectAtIndex:linkIndex] : self.inactiveLinkAttributes;
         [attributesToRemove enumerateKeysAndObjectsUsingBlock:^(NSString *name, __unused id value, __unused BOOL *stop) {
-            [mutableAttributedString removeAttribute:name range:result.range];
+            if (isInactive) {
+                // Only remove the foreground color attribute, preserving the rest of the styling
+                if ([name isEqualToString:(__bridge NSString *)kCTForegroundColorAttributeName]) {
+                    [mutableAttributedString removeAttribute:name range:result.range];
+                }
+            } else {
+                // Remove the inactive link styling
+                [mutableAttributedString removeAttribute:name range:result.range];
+            }
         }];
-
+        
+        NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : [self.attributes objectAtIndex:linkIndex];
         if (attributesToAdd) {
             [mutableAttributedString addAttributes:attributesToAdd range:result.range];
         }
+        
+        linkIndex++;
     }
-
+    
     self.attributedText = mutableAttributedString;
     [self setNeedsDisplay];
 }
