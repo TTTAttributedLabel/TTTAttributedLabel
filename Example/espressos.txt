@@ -21,3 +21,5 @@ Normale: A normal length shot, not ristretto or lungo.
 Ristretto: Espresso with less volume, yielding a stronger sweeter taste (10–20 mL).
 Solo: Single (1 US fluid ounce) shot of espresso.
 Triplo: Triple (3 US fluid ounces) shot of espresso; "triplo" is rare; "triple shot" is more common.
+qdvictory: @门梁真可怕 当中英文混合之后，🐻🐻🐻🐻🐻会出现行高不统一的情况，现在在绘制的时候根据字体的descender来偏移绘制，对齐baseline。🐻🐻🐻🐻🐻同时点击链接的时候会调用drawRect: 造成绘制异常，所以将setNeedsDisplay注释，如需刷新，请手动调用。带上emoji以供测试🐻🐻🐻🐻🐻🐻🐻🐻🐻🐻
+qdvictory: @门梁真可怕 当中英文Mix Chinese & English, Line Height has error.🐻🐻🐻🐻🐻🐻
