@@ -155,6 +155,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
         paragraphStyle.lineSpacing = label.leading;
+        paragraphStyle.minimumLineHeight = label.minimumLineHeight;
+        paragraphStyle.maximumLineHeight = label.maximumLineHeight;
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
         paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
@@ -179,6 +181,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
+        CGFloat minimumLineHeight = label.minimumLineHeight;
+        CGFloat maximumLineHeight = label.maximumLineHeight;
         CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
         CGFloat topMargin = label.textInsets.top;
@@ -192,10 +196,12 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
             lineBreakMode = CTLineBreakModeFromTTTLineBreakMode(label.lineBreakMode);
         }
 
-        CTParagraphStyleSetting paragraphStyles[10] = {
+        CTParagraphStyleSetting paragraphStyles[12] = {
             {.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
             {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
+            {.spec = kCTParagraphStyleSpecifierMinimumLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&minimumLineHeight},
+            {.spec = kCTParagraphStyleSpecifierMaximumLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&maximumLineHeight},
             {.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment, .valueSize = sizeof (CGFloat), .value = (const void *)&lineSpacingAdjustment},
             {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
             {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
@@ -205,7 +211,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
             {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin}
         };
 
-        CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 10);
+        CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 12);
         
         [mutableAttributes setObject:(__bridge id)paragraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
         
@@ -408,7 +414,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     _attributedText = [text copy];
     
     [self setNeedsFramesetter];
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
     
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
@@ -514,7 +520,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         }
 
         self.attributedText = mutableAttributedString;
-        [self setNeedsDisplay];
+//        [self setNeedsDisplay];
     }
     [mutableLinks addObjectsFromArray:results];
     
@@ -562,6 +568,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 {
     [self addLinkWithTextCheckingResult:[NSTextCheckingResult transitInformationCheckingResultWithRange:range components:components]];
 }
+
 
 #pragma mark -
 
@@ -674,6 +681,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
+        CGFloat width = (CGFloat)CTLineGetTypographicBounds((CTLineRef)line, &ascent, &descent, &leading);
+        
         
         if (lineIndex == numberOfLines - 1 && truncateLastLine) {
             // Check if the range of text in the last line reaches the end of the full attributed string
@@ -754,7 +764,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 }
 
                 CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
-                CGContextSetTextPosition(c, penOffset, lineOrigin.y);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
                 
                 CTLineDraw(truncatedLine, c);
                 
@@ -762,9 +772,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CFRelease(truncationLine);
                 CFRelease(truncationToken);
             } else {
+                CGContextSetTextPosition(c, 0, lineOrigin.y-descent-self.font.descender);
                 CTLineDraw(line, c);
             }
         } else {
+            CGContextSetTextPosition(c, 0, lineOrigin.y-descent-self.font.descender);
             CTLineDraw(line, c);
         }
     }
@@ -1010,14 +1022,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
 
         self.attributedText = mutableAttributedString;
-        [self setNeedsDisplay];
+//        [self setNeedsDisplay];
 
         [CATransaction flush];
     } else if (self.inactiveAttributedText) {
         self.attributedText = self.inactiveAttributedText;
         self.inactiveAttributedText = nil;
 
-        [self setNeedsDisplay];
+//        [self setNeedsDisplay];
     }
 }
 
@@ -1025,7 +1037,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 // Fixes crash when loading from a UIStoryboard
@@ -1045,7 +1057,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     // Redraw to allow any ColorFromContext attributes a chance to update
     if (textColor != oldTextColor) {
         [self setNeedsFramesetter];
-        [self setNeedsDisplay];
+//        [self setNeedsDisplay];
     }
 }
 
@@ -1190,7 +1202,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     self.attributedText = mutableAttributedString;
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 #pragma mark - UIResponder
@@ -1283,6 +1295,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         [super touchesEnded:touches withEvent:event];
     }
 }
+
 
 - (void)touchesCancelled:(NSSet *)touches
                withEvent:(UIEvent *)event
@@ -1382,6 +1395,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(leading))]) {
         self.leading = [[coder decodeObjectForKey:NSStringFromSelector(@selector(leading))] floatValue];
+    }
+    
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(minimumLineHeight))]) {
+        self.minimumLineHeight = [[coder decodeObjectForKey:NSStringFromSelector(@selector(minimumLineHeight))] floatValue];
+    }
+    
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(maximumLineHeight))]) {
+        self.maximumLineHeight = [[coder decodeObjectForKey:NSStringFromSelector(@selector(maximumLineHeight))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(lineHeightMultiple))]) {

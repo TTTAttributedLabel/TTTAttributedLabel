@@ -180,6 +180,17 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, assign) CGFloat leading;
 
+
+/**
+ Line height is the distance from bottom of descenders to top of ascenders; basically the line fragment height. Does not include lineSpacing (which is added after this computation). 
+ */
+@property (nonatomic, assign) CGFloat minimumLineHeight;
+
+/**
+ 0 implies no maximum. 
+ */
+@property (nonatomic, assign) CGFloat maximumLineHeight;
+
 /**
  The line height multiple. This value is 1.0 by default.
  */
