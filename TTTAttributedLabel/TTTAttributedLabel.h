@@ -26,11 +26,11 @@
 /**
  Vertical alignment for text in a label whose bounds are larger than its text bounds
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, TTTAttributedLabelVerticalAlignment) {
     TTTAttributedLabelVerticalAlignmentCenter   = 0,
     TTTAttributedLabelVerticalAlignmentTop      = 1,
     TTTAttributedLabelVerticalAlignmentBottom   = 2,
-} TTTAttributedLabelVerticalAlignment;
+};
 
 /**
  Determines whether the text to which this attribute applies has a strikeout drawn through itself.
@@ -179,6 +179,16 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default. 
  */
 @property (nonatomic, assign) CGFloat leading;
+
+/**
+ The minimum line height within the paragraph. If the value is 0.0, the minimum line height is set to the line height of the `font`. 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat minimumLineHeight;
+
+/**
+ The maximum line height within the paragraph. If the value is 0.0, the maximum line height is set to the line height of the `font`. 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat maximumLineHeight;
 
 /**
  The line height multiple. This value is 1.0 by default.
