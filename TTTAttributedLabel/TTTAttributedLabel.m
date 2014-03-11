@@ -72,7 +72,7 @@ typedef UILineBreakMode TTTLineBreakMode;
 
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
   switch (alignment) {
 		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
 		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
@@ -90,7 +90,7 @@ static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignme
 }
 
 static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
 		case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
@@ -105,7 +105,7 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 #endif
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 60000
 static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
