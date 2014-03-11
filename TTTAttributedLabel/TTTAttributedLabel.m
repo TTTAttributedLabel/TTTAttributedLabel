@@ -681,9 +681,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
-        CGFloat width = (CGFloat)CTLineGetTypographicBounds((CTLineRef)line, &ascent, &descent, &leading);
-        
+        CGFloat descent = 0.0f;
+
         if (lineIndex == numberOfLines - 1 && truncateLastLine) {
             // Check if the range of text in the last line reaches the end of the full attributed string
             CFRange lastLineRange = CTLineGetStringRange(line);
