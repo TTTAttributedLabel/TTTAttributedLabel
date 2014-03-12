@@ -687,6 +687,20 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGFloat descent = 0.0f;
         CTLineGetTypographicBounds((CTLineRef)line, NULL, &descent, NULL);
 
+        // Adjust pen offset for flush depending on text alignment
+        CGFloat flushFactor = 0.0f;
+        switch (self.textAlignment) {
+            case TTTTextAlignmentCenter:
+                flushFactor = 0.5f;
+                break;
+            case TTTTextAlignmentRight:
+                flushFactor = 1.0f;
+                break;
+            case TTTTextAlignmentLeft:
+            default:
+                break;
+        }
+
         if (lineIndex == numberOfLines - 1 && truncateLastLine) {
             // Check if the range of text in the last line reaches the end of the full attributed string
             CFRange lastLineRange = CTLineGetStringRange(line);
@@ -751,20 +765,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     truncatedLine = CFRetain(truncationToken);
                 }
 
-                // Adjust pen offset for flush depending on text alignment
-                CGFloat flushFactor = 0.0f;
-                switch (self.textAlignment) {
-                    case TTTTextAlignmentCenter:
-                        flushFactor = 0.5f;
-                        break;
-                    case TTTTextAlignmentRight:
-                        flushFactor = 1.0f;
-                        break;
-                    case TTTTextAlignmentLeft:
-                    default:
-                        break;
-                }
-
                 CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
 
@@ -774,11 +774,13 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CFRelease(truncationLine);
                 CFRelease(truncationToken);
             } else {
-                CGContextSetTextPosition(c, 0, lineOrigin.y-descent-self.font.descender);
+                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
                 CTLineDraw(line, c);
             }
         } else {
-            CGContextSetTextPosition(c, 0, lineOrigin.y-descent-self.font.descender);
+            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+            CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
             CTLineDraw(line, c);
         }
     }
