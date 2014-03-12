@@ -522,7 +522,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         }
 
         self.attributedText = mutableAttributedString;
-//        [self setNeedsDisplay];
+        [self setNeedsDisplay];
     }
     [mutableLinks addObjectsFromArray:results];
 
@@ -766,7 +766,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 }
 
                 CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
-                CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
 
                 CTLineDraw(truncatedLine, c);
 
@@ -774,13 +774,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CFRelease(truncationLine);
                 CFRelease(truncationToken);
             } else {
-                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
-                CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
+                CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
                 CTLineDraw(line, c);
             }
         } else {
-            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
-            CGContextSetTextPosition(c, penOffset, lineOrigin.y-descent-self.font.descender);
+            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
             CTLineDraw(line, c);
         }
     }
