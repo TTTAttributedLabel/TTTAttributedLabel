@@ -183,8 +183,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
         CGFloat lineSpacing = label.leading;
-        CGFloat minimumLineHeight = label.minimumLineHeight;
-        CGFloat maximumLineHeight = label.maximumLineHeight;
+        CGFloat minimumLineHeight = label.minimumLineHeight * label.lineHeightMultiple;
+        CGFloat maximumLineHeight = label.maximumLineHeight * label.lineHeightMultiple;
         CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
         CGFloat topMargin = label.textInsets.top;
