@@ -1344,6 +1344,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
     [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
     [coder encodeObject:self.attributedText forKey:NSStringFromSelector(@selector(attributedText))];
+    [coder encodeObject:self.text forKey:NSStringFromSelector(@selector(text))];
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
@@ -1430,6 +1431,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
+    } else if ([coder containsValueForKey:NSStringFromSelector(@selector(text))]) {
+        self.text = [coder decodeObjectForKey:NSStringFromSelector(@selector(text))];
     }
 
     return self;
