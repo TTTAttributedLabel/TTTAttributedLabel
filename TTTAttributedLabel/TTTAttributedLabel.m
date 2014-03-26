@@ -73,14 +73,14 @@ typedef UILineBreakMode TTTLineBreakMode;
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
-  switch (alignment) {
+    switch (alignment) {
 		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
 		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
 		case NSTextAlignmentRight: return kCTRightTextAlignment;
 		default: return kCTNaturalTextAlignment;
 	}
 #else
-  switch (alignment) {
+    switch (alignment) {
 		case UITextAlignmentLeft: return kCTLeftTextAlignment;
 		case UITextAlignmentCenter: return kCTCenterTextAlignment;
 		case UITextAlignmentRight: return kCTRightTextAlignment;
@@ -101,7 +101,7 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 		default: return 0;
 	}
 #else
-  return CTLineBreakModeFromUILineBreakMode(lineBreakMode);
+    return CTLineBreakModeFromUILineBreakMode(lineBreakMode);
 #endif
 }
 
@@ -109,15 +109,15 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  switch (lineBreakMode) {
-    case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
-    case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
-    case UILineBreakModeClip: return kCTLineBreakByClipping;
-    case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-    case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
-    case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
-    default: return 0;
-  }
+    switch (lineBreakMode) {
+        case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
+        case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
+        case UILineBreakModeClip: return kCTLineBreakByClipping;
+        case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
+        case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
+        case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
+        default: return 0;
+    }
 #pragma clang diagnostic pop
 }
 #endif
@@ -157,8 +157,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
         paragraphStyle.lineSpacing = label.leading;
-        paragraphStyle.minimumLineHeight = (label.minimumLineHeight > 0 ? label.minimumLineHeight : label.font.lineHeight);
-        paragraphStyle.maximumLineHeight = (label.maximumLineHeight > 0 ? label.maximumLineHeight : label.font.lineHeight);
+        paragraphStyle.minimumLineHeight = (label.minimumLineHeight > 0 ? label.minimumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
+        paragraphStyle.maximumLineHeight = (label.maximumLineHeight > 0 ? label.maximumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
         paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
         paragraphStyle.paragraphSpacing = label.textInsets.bottom;
@@ -331,6 +331,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.multipleTouchEnabled = NO;
 
     self.textInsets = UIEdgeInsetsZero;
+    self.lineHeightMultiple = 1.0f;
 
     self.links = [NSArray array];
 
@@ -390,8 +391,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 #pragma mark -
 
 + (CGSize)sizeThatFitsAttributedString:(NSAttributedString *)attributedString
-                        withConstraints:(CGSize)size
-                 limitedToNumberOfLines:(NSUInteger)numberOfLines
+                       withConstraints:(CGSize)size
+                limitedToNumberOfLines:(NSUInteger)numberOfLines
 {
     if (!attributedString) {
         return CGSizeZero;
@@ -1412,29 +1413,29 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if ([coder containsValueForKey:NSStringFromSelector(@selector(maximumLineHeight))]) {
         self.maximumLineHeight = [[coder decodeObjectForKey:NSStringFromSelector(@selector(maximumLineHeight))] floatValue];
     }
-
+    
     if ([coder containsValueForKey:NSStringFromSelector(@selector(lineHeightMultiple))]) {
         self.lineHeightMultiple = [[coder decodeObjectForKey:NSStringFromSelector(@selector(lineHeightMultiple))] floatValue];
     }
-
+    
     if ([coder containsValueForKey:NSStringFromSelector(@selector(textInsets))]) {
         self.textInsets = [coder decodeUIEdgeInsetsForKey:NSStringFromSelector(@selector(textInsets))];
     }
-
+    
     if ([coder containsValueForKey:NSStringFromSelector(@selector(verticalAlignment))]) {
         self.verticalAlignment = [coder decodeIntegerForKey:NSStringFromSelector(@selector(verticalAlignment))];
     }
-
+    
     if ([coder containsValueForKey:NSStringFromSelector(@selector(truncationTokenString))]) {
         self.truncationTokenString = [coder decodeObjectForKey:NSStringFromSelector(@selector(truncationTokenString))];
     }
-
+    
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
     } else if ([coder containsValueForKey:NSStringFromSelector(@selector(text))]) {
         self.text = [coder decodeObjectForKey:NSStringFromSelector(@selector(text))];
     }
-
+    
     return self;
 }
 
