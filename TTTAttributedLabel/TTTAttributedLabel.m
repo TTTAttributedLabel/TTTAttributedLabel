@@ -1192,6 +1192,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
     BOOL isInactive = (CGColorSpaceGetModel(CGColorGetColorSpace([self.tintColor CGColor])) == kCGColorSpaceModelMonochrome);
 
@@ -1212,6 +1213,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     self.attributedText = mutableAttributedString;
     [self setNeedsDisplay];
 }
+#endif
 
 #pragma mark - UIResponder
 
