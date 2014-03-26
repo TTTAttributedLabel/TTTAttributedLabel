@@ -160,11 +160,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         paragraphStyle.minimumLineHeight = (label.minimumLineHeight > 0 ? label.minimumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
         paragraphStyle.maximumLineHeight = (label.maximumLineHeight > 0 ? label.maximumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
-        paragraphStyle.paragraphSpacingBefore = label.textInsets.top;
-        paragraphStyle.paragraphSpacing = label.textInsets.bottom;
-        paragraphStyle.firstLineHeadIndent = label.firstLineIndent + label.textInsets.left;
+        paragraphStyle.firstLineHeadIndent = label.firstLineIndent;
         paragraphStyle.headIndent = paragraphStyle.firstLineHeadIndent;
-        paragraphStyle.tailIndent = -label.textInsets.right;
 
         if (label.numberOfLines == 1) {
             paragraphStyle.lineBreakMode = label.lineBreakMode;
@@ -187,11 +184,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CGFloat maximumLineHeight = label.maximumLineHeight * label.lineHeightMultiple;
         CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
         CGFloat lineHeightMultiple = label.lineHeightMultiple;
-        CGFloat topMargin = label.textInsets.top;
-        CGFloat bottomMargin = label.textInsets.bottom;
-        CGFloat leftMargin = label.textInsets.left;
-        CGFloat rightMargin = -label.textInsets.right;
-        CGFloat firstLineIndent = label.firstLineIndent + leftMargin;
+        CGFloat firstLineIndent = label.firstLineIndent;
 
         CTLineBreakMode lineBreakMode = kCTLineBreakByWordWrapping;
         if (label.numberOfLines == 1) {
@@ -206,11 +199,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
             {.spec = kCTParagraphStyleSpecifierMaximumLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&maximumLineHeight},
             {.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment, .valueSize = sizeof (CGFloat), .value = (const void *)&lineSpacingAdjustment},
             {.spec = kCTParagraphStyleSpecifierLineHeightMultiple, .valueSize = sizeof(CGFloat), .value = (const void *)&lineHeightMultiple},
-            {.spec = kCTParagraphStyleSpecifierParagraphSpacingBefore, .valueSize = sizeof(CGFloat), .value = (const void *)&topMargin},
-            {.spec = kCTParagraphStyleSpecifierParagraphSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&bottomMargin},
             {.spec = kCTParagraphStyleSpecifierFirstLineHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&firstLineIndent},
-            {.spec = kCTParagraphStyleSpecifierHeadIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&leftMargin},
-            {.spec = kCTParagraphStyleSpecifierTailIndent, .valueSize = sizeof(CGFloat), .value = (const void *)&rightMargin}
         };
 
         CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphStyles, 12);
@@ -799,18 +788,15 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
     // Compensate for y-offset of text rect from vertical positioning
-    CGFloat yOffset = 0.0f;
-    if (self.verticalAlignment != TTTAttributedLabelVerticalAlignmentTop) {
-        yOffset -= [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines].origin.y;
-    }
+    CGFloat yOffset = self.textInsets.top - [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines].origin.y;
 
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
-        CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
-        lineBounds.origin.x = origins[lineIndex].x;
-        lineBounds.origin.y = origins[lineIndex].y;
+        CGRect lineBounds = CGRectMake(rect.origin.x, rect.origin.y, width, ascent + descent + leading) ;
+        lineBounds.origin.x += origins[lineIndex].x;
+        lineBounds.origin.y += origins[lineIndex].y;
 
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
@@ -839,8 +825,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         break;
                 }
 
-                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left;
-                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom;
+                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left - rect.origin.x;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom - rect.origin.y;
                 runBounds.origin.y -= runDescent;
 
                 // Don't draw higlightedLinkBackground too far to the right
@@ -1071,11 +1057,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (CGRect)textRectForBounds:(CGRect)bounds
      limitedToNumberOfLines:(NSInteger)numberOfLines
 {
+    CGRect textRect;
+    
+    bounds = UIEdgeInsetsInsetRect(bounds, self.textInsets);
     if (!self.attributedText) {
         return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
     }
 
-    CGRect textRect = bounds;
+    textRect = bounds;
 
     // Calculate height with a minimum of double the font pointSize, to ensure that CTFramesetterSuggestFrameSizeWithConstraints doesn't return CGSizeZero, as it would if textRect height is insufficient.
     textRect.size.height = MAX(self.font.pointSize * 2.0f, bounds.size.height);
@@ -1104,7 +1093,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return textRect;
 }
 
-- (void)drawTextInRect:(CGRect)rect {
+- (void)drawTextInRect:(CGRect)drawRect {
+    CGRect rect = UIEdgeInsetsInsetRect(drawRect, self.textInsets);
     if (!self.attributedText) {
         [super drawTextInRect:rect];
         return;
@@ -1140,7 +1130,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         CFRange textRange = CFRangeMake(0, (CFIndex)[self.attributedText length]);
 
         // First, get the text rect (which takes vertical centering into account)
-        CGRect textRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
+        CGRect textRect = [self textRectForBounds:drawRect limitedToNumberOfLines:self.numberOfLines];
 
         // CoreText draws it's text aligned to the bottom, so we move the CTM here to take our vertical offsets into account
         CGContextTranslateCTM(c, rect.origin.x, rect.size.height - textRect.origin.y - textRect.size.height);
@@ -1179,11 +1169,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIView
 
 - (CGSize)sizeThatFits:(CGSize)size {
+    CGSize outSize;
     if (!self.attributedText) {
-        return [super sizeThatFits:size];
+        outSize = [super sizeThatFits:size];
+    } else {
+        outSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], self.attributedText, size, (NSUInteger)self.numberOfLines);
     }
-
-    return CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], self.attributedText, size, (NSUInteger)self.numberOfLines);
+    outSize.width += self.textInsets.left + self.textInsets.right;
+    outSize.height += self.textInsets.top + self.textInsets.bottom;
+    return outSize;
 }
 
 - (CGSize)intrinsicContentSize {
