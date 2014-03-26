@@ -1433,8 +1433,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
-    } else if ([coder containsValueForKey:NSStringFromSelector(@selector(text))]) {
-        self.text = [coder decodeObjectForKey:NSStringFromSelector(@selector(text))];
+    } else {
+        self.text = super.text;
     }
     
     return self;
