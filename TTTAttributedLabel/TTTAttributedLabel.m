@@ -979,6 +979,19 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             }
         });
     }
+    
+    [self.attributedText enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, self.attributedText.length) options:kNilOptions usingBlock:^(id value, NSRange range, BOOL *stop) {
+        if (!value) return;
+        
+        // NSLinkAttributeName can be NSURL or NSString
+        NSURL *URL;
+        if ([value isKindOfClass:NSString.class]) {
+            URL = [NSURL URLWithString:value];
+        } else {
+            URL = value;
+        }
+        [self addLinkToURL:URL withRange:range];
+    }];
 
     [super setText:[self.attributedText string]];
 }
