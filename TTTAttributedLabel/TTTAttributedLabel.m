@@ -979,13 +979,15 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             }
         });
     }
-    
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
     [self.attributedText enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(id value, __unused NSRange range, __unused BOOL *stop) {
         if (value) {
             NSURL *URL = [value isKindOfClass:[NSString class]] ? [NSURL URLWithString:value] : value;
             [self addLinkToURL:URL withRange:range];
         }
     }];
+#endif
 
     [super setText:[self.attributedText string]];
 }
@@ -1192,6 +1194,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
     BOOL isInactive = (CGColorSpaceGetModel(CGColorGetColorSpace([self.tintColor CGColor])) == kCGColorSpaceModelMonochrome);
 
@@ -1212,6 +1215,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     self.attributedText = mutableAttributedString;
     [self setNeedsDisplay];
 }
+#endif
 
 #pragma mark - UIResponder
 
