@@ -413,6 +413,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         [self invalidateIntrinsicContentSize];
     }
 #endif
+    [super setAttributedText:text];
 }
 
 - (void)setNeedsFramesetter {
