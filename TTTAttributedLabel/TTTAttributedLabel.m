@@ -1196,10 +1196,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
-    BOOL isInactive = self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed;
+    BOOL isInactive = (CGColorSpaceGetModel(CGColorGetColorSpace([self.tintColor CGColor])) == kCGColorSpaceModelMonochrome);
 
-    NSDictionary *attributesToRemove = isInactive ? self.activeLinkAttributes : self.inactiveLinkAttributes;
-    NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : self.activeLinkAttributes;
+    NSDictionary *attributesToRemove = isInactive ? self.linkAttributes : self.inactiveLinkAttributes;
+    NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : self.linkAttributes;
 
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
     for (NSTextCheckingResult *result in self.links) {
