@@ -1305,6 +1305,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
     } else {
         [super touchesEnded:touches withEvent:event];
+        if ([self.delegate respondsToSelector:@selector(attributedLabel:didSelectNonLinkTextWithEvent:)]) {
+            [self.delegate attributedLabel:self didSelectNonLinkTextWithEvent:event];
+        }
     }
 }
 

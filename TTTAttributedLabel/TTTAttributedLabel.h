@@ -445,4 +445,12 @@ didSelectLinkWithTransitInformation:(NSDictionary *)components;
 - (void)attributedLabel:(TTTAttributedLabel *)label
 didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 
+
+/**
+ Tells the delegate that the user did select an area without a link.
+
+ @param event The event that caused the delegate call.
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label didSelectNonLinkTextWithEvent:(UIEvent *)event;
+
 @end
