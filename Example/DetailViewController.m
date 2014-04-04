@@ -53,6 +53,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 @interface DetailViewController () <TTTAttributedLabelDelegate, UIActionSheetDelegate>
 @property (nonatomic, copy) NSString *espressoDescription;
 @property (nonatomic) TTTAttributedLabel *attributedLabel;
+@property (nonatomic) UIButton *orderButton;
 @end
 
 @implementation DetailViewController
@@ -76,10 +77,16 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     [super loadView];
 
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.orderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.orderButton.frame = CGRectInset(self.view.bounds, 10.0f, 70.0f);
+    self.orderButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.orderButton addTarget:self action:@selector(didTapOrderButton) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.orderButton];
 
-    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(self.view.bounds, 10.0f, 70.0f)];
+    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:self.orderButton.bounds];
     self.attributedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:self.attributedLabel];
+    [self.orderButton addSubview:self.attributedLabel];
 }
 
 - (void)viewDidLoad {
@@ -139,6 +146,10 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     NSRange linkRange = [regexp rangeOfFirstMatchInString:self.espressoDescription options:0 range:NSMakeRange(0, [self.espressoDescription length])];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://en.wikipedia.org/wiki/%@", [self.espressoDescription substringWithRange:linkRange]]];
     [self.attributedLabel addLinkToURL:url withRange:linkRange];
+}
+
+- (void)didTapOrderButton {
+    [[[UIAlertView alloc] initWithTitle:@"Order Now" message:@"Unfortunately, online ordering is not yet available. Check back tomorrow." delegate:nil cancelButtonTitle:@"Okey Dokey" otherButtonTitles:nil] show];
 }
 
 #pragma mark - TTTAttributedLabelDelegate
