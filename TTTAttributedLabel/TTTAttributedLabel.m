@@ -1217,6 +1217,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 #endif
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(__unused UIEvent *)event {
+    if ([self linkAtPoint:point] != nil) {
+        return self;
+    }
+    return nil;
+}
+
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
