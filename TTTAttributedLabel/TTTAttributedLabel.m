@@ -1220,10 +1220,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #endif
 
 - (UIView *)hitTest:(CGPoint)point
-          withEvent:(__unused UIEvent *)event
+          withEvent:(UIEvent *)event
 {
     if (![self linkAtPoint:point]) {
-        return nil;
+        return [super hitTest:point withEvent:event];
     }
 
     return self;
