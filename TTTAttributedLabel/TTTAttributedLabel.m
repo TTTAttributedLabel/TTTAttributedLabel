@@ -614,6 +614,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
 
     CFIndex idx = NSNotFound;
+    BOOL hasTruncationTokenLinkAttribute = NO;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    if (&NSLinkAttributeName && self.truncationTokenStringAttributes[NSLinkAttributeName]) {
+        hasTruncationTokenLinkAttribute = YES;
+    }
+#endif
 
     CGPoint lineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
@@ -635,7 +641,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         // Check if the point is within this line vertically
         if (p.y >= yMin) {
             // Check if the point is within this line horizontally
-            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
+            if ((p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) || (hasTruncationTokenLinkAttribute && lineIndex == (numberOfLines - 1))) {
                 // Convert CT coordinates to line-relative coordinates
                 CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
                 idx = CTLineGetStringIndexForPosition(line, relativePoint);
@@ -754,6 +760,15 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     // If the line is not as wide as the truncationToken, truncatedLine is NULL
                     truncatedLine = CFRetain(truncationToken);
                 }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+                // Check for link attribute in truncationToken attributes
+                if (&NSLinkAttributeName && truncationTokenStringAttributes[NSLinkAttributeName])  {
+                    NSRange truncationTokenLinkRange = NSMakeRange((NSUInteger) (lastLineRange.location + lastLineRange.length), truncationTokenString.length);
+                    NSTextCheckingResult *result = [NSTextCheckingResult linkCheckingResultWithRange:truncationTokenLinkRange URL:truncationTokenStringAttributes[NSLinkAttributeName]];
+                    [self addLinksWithTextCheckingResults:[NSArray arrayWithObject:result] attributes:nil];
+                }
+#endif
 
                 CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
