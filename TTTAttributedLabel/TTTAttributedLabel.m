@@ -1198,6 +1198,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
+    if (self.inactiveLinkAttributes.count==0) {
+        return;
+    }
+    
     BOOL isInactive = (self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed);
 
     NSDictionary *attributesToRemove = isInactive ? self.linkAttributes : self.inactiveLinkAttributes;
