@@ -157,8 +157,8 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
         paragraphStyle.lineSpacing = label.leading;
-        paragraphStyle.minimumLineHeight = (label.minimumLineHeight > 0 ? label.minimumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
-        paragraphStyle.maximumLineHeight = (label.maximumLineHeight > 0 ? label.maximumLineHeight * label.lineHeightMultiple : label.font.lineHeight);
+        paragraphStyle.minimumLineHeight = label.minimumLineHeight > 0 ? label.minimumLineHeight : label.font.lineHeight * label.lineHeightMultiple;
+        paragraphStyle.maximumLineHeight = label.maximumLineHeight > 0 ? label.maximumLineHeight : label.font.lineHeight * label.lineHeightMultiple;
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
         paragraphStyle.firstLineHeadIndent = label.firstLineIndent;
         paragraphStyle.headIndent = paragraphStyle.firstLineHeadIndent;
@@ -1430,29 +1430,29 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if ([coder containsValueForKey:NSStringFromSelector(@selector(maximumLineHeight))]) {
         self.maximumLineHeight = [[coder decodeObjectForKey:NSStringFromSelector(@selector(maximumLineHeight))] floatValue];
     }
-    
+
     if ([coder containsValueForKey:NSStringFromSelector(@selector(lineHeightMultiple))]) {
         self.lineHeightMultiple = [[coder decodeObjectForKey:NSStringFromSelector(@selector(lineHeightMultiple))] floatValue];
     }
-    
+
     if ([coder containsValueForKey:NSStringFromSelector(@selector(textInsets))]) {
         self.textInsets = [coder decodeUIEdgeInsetsForKey:NSStringFromSelector(@selector(textInsets))];
     }
-    
+
     if ([coder containsValueForKey:NSStringFromSelector(@selector(verticalAlignment))]) {
         self.verticalAlignment = [coder decodeIntegerForKey:NSStringFromSelector(@selector(verticalAlignment))];
     }
-    
+
     if ([coder containsValueForKey:NSStringFromSelector(@selector(truncationTokenString))]) {
         self.truncationTokenString = [coder decodeObjectForKey:NSStringFromSelector(@selector(truncationTokenString))];
     }
-    
+
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
     } else {
         self.text = super.text;
     }
-    
+
     return self;
 }
 
