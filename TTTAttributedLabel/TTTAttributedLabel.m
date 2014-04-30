@@ -1198,7 +1198,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
-    if (self.inactiveLinkAttributes.count==0) {
+    if (!self.inactiveLinkAttributes || [self.inactiveLinkAttributes count] == 0) {
         return;
     }
     
