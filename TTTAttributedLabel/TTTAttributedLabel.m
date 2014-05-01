@@ -304,6 +304,17 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @dynamic text;
 @synthesize attributedText = _attributedText;
 
+- (instancetype)init {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    [self commonInit];
+
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (!self) {
