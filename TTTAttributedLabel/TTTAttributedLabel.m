@@ -1224,9 +1224,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 - (NSInteger)accessibilityElementCount {
-    NSInteger count = (NSInteger)[[self accessibleElements] count];
-    NSLog(@"count: %llu", (long long unsigned)count);
-    return count;
+    return (NSInteger)[[self accessibleElements] count];
 }
 
 - (id)accessibilityElementAtIndex:(NSInteger)index
