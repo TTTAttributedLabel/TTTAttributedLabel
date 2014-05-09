@@ -88,8 +88,26 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
     [self.contentView addSubview:self.summaryLabel];
     
+    self.isAccessibilityElement = NO;
+    
     return self;
 }
+
+- (NSInteger)accessibilityElementCount
+{
+    return 1;
+}
+
+- (id)accessibilityElementAtIndex:(NSInteger)index
+{
+    return self.summaryLabel;
+}
+
+- (NSInteger)indexOfAccessibilityElement:(id)element
+{
+    return 0;
+}
+
 
 - (void)setSummaryText:(NSString *)text {
     _summaryText = [text copy];
