@@ -292,6 +292,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
+@property (nonatomic, strong) NSDateFormatter *accessibilityDateFormatter;
 @end
 
 @implementation TTTAttributedLabel {
@@ -1113,6 +1114,32 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return textRect;
 }
 
+- (CGRect)boundingRectForCharacterRange:(NSRange)range
+{
+    NSMutableAttributedString *mutableAttributedString;
+    
+    if ([self.text isKindOfClass:[NSString class]]) {
+        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.text attributes:NSAttributedStringAttributesFromLabel(self)];
+    } else {
+        mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.text];
+        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
+    }
+    
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:mutableAttributedString];
+
+    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    [textStorage addLayoutManager:layoutManager];
+    
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
+    [layoutManager addTextContainer:textContainer];
+    
+    NSRange glyphRange;
+    
+    [layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
+    
+    return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+}
+
 - (void)drawTextInRect:(CGRect)rect {
     CGRect insetRect = UIEdgeInsetsInsetRect(rect, self.textInsets);
     if (!self.attributedText) {
@@ -1187,6 +1214,95 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
     CGContextRestoreGState(c);
 }
+
+#pragma mark - Accessibility
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
+- (BOOL) isAccessibilityElement {
+    return NO;
+}
+
+- (NSInteger)accessibilityElementCount {
+    return (NSInteger)[[self accessibleElements] count];
+}
+
+- (id)accessibilityElementAtIndex:(NSInteger)index
+{
+    return [[self accessibleElements] objectAtIndex:(NSUInteger)index];
+}
+
+- (NSInteger)indexOfAccessibilityElement:(id)element
+{
+    return (NSInteger)[[self accessibleElements] indexOfObject:element];
+}
+
+- (NSDateFormatter *) accessibilityDateFormatter {
+    if (!_accessibilityDateFormatter) {
+        _accessibilityDateFormatter = [[NSDateFormatter alloc] init];
+    }
+    
+    return _accessibilityDateFormatter;
+}
+
+- (CGRect) accessibilityFrameFromFrame:(CGRect) sourceFrame {
+    UIWindow *window = [self window];
+    CGRect frame = [self convertRect:sourceFrame toView:window];
+    frame = [window convertRect:frame toWindow:nil];
+    return frame;
+}
+
+- (NSArray *) accessibleElements {
+    NSMutableArray *items = [NSMutableArray array];
+    
+    for (NSTextCheckingResult *result in self.links) {
+        NSString *sourceText = [self.text isKindOfClass:[NSString class]] ? self.text : [(NSAttributedString *)self.text string];
+        
+        NSString *accessibilityLabel = [sourceText substringWithRange:result.range];
+        NSString *accessibilityValue;
+        
+        switch (result.resultType) {
+            case NSTextCheckingTypeLink:
+                accessibilityValue = result.URL.absoluteString;
+                break;
+            case NSTextCheckingTypePhoneNumber:
+                accessibilityValue = result.phoneNumber;
+                break;
+            case NSTextCheckingTypeDate:
+                accessibilityValue = [self.accessibilityDateFormatter stringFromDate:result.date];
+                break;
+            default:
+                break;
+        }
+
+        if (accessibilityLabel) {
+            UIAccessibilityElement *linkElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
+            linkElement.accessibilityTraits = UIAccessibilityTraitLink;
+            linkElement.accessibilityFrame = [self accessibilityFrameFromFrame:[self boundingRectForCharacterRange:result.range]];
+
+            if (![accessibilityLabel isEqualToString:accessibilityValue]) {
+                linkElement.accessibilityValue = accessibilityValue;
+            }
+            
+            [items addObject:linkElement];
+        }
+        
+        
+    }
+
+    UIAccessibilityElement *baseElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
+    baseElement.accessibilityLabel = [super accessibilityLabel];
+    baseElement.accessibilityHint = [super accessibilityHint];
+    baseElement.accessibilityValue = [super accessibilityValue];
+    baseElement.accessibilityFrame = [self accessibilityFrameFromFrame:self.bounds];
+    baseElement.accessibilityTraits = [super accessibilityTraits];
+    
+    [items addObject:baseElement];
+
+    return items;
+}
+
+#endif
 
 #pragma mark - UIView
 
