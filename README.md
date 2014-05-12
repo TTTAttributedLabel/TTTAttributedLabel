@@ -17,7 +17,7 @@ It also includes advanced paragraph style properties:
 - `verticalAlignment`
 - `textInsets`
 - `firstLineIndent`
-- `leading`
+- `lineSpacing`
 - `lineHeightMultiple`
 - `shadowRadius`
 - `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
