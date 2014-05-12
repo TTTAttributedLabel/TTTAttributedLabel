@@ -123,7 +123,7 @@ static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode
 #endif
 
 static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
-#if defined(__LP64__) && __LP64__
+#if CGFLOAT_IS_DOUBLE
     return ceil(cgfloat);
 #else
     return ceilf(cgfloat);
@@ -131,7 +131,7 @@ static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
 }
 
 static inline CGFLOAT_TYPE CGFloat_floor(CGFLOAT_TYPE cgfloat) {
-#if defined(__LP64__) && __LP64__
+#if CGFLOAT_IS_DOUBLE
     return floor(cgfloat);
 #else
     return floorf(cgfloat);
@@ -139,7 +139,7 @@ static inline CGFLOAT_TYPE CGFloat_floor(CGFLOAT_TYPE cgfloat) {
 }
 
 static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
-#if defined(__LP64__) && __LP64__
+#if CGFLOAT_IS_DOUBLE
     return round(cgfloat);
 #else
     return roundf(cgfloat);
