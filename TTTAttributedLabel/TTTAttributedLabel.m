@@ -668,6 +668,25 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return idx;
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+- (CGRect)boundingRectForCharacterRange:(NSRange)range {
+    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:mutableAttributedString];
+
+    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    [textStorage addLayoutManager:layoutManager];
+
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
+    [layoutManager addTextContainer:textContainer];
+
+    NSRange glyphRange;
+    [layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
+
+    return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+}
+#endif
+
 - (void)drawFramesetter:(CTFramesetterRef)framesetter
        attributedString:(NSAttributedString *)attributedString
               textRange:(CFRange)textRange
@@ -1118,31 +1137,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     return textRect;
-}
-
-- (CGRect)boundingRectForCharacterRange:(NSRange)range {
-    NSMutableAttributedString *mutableAttributedString;
-    
-    if ([self.text isKindOfClass:[NSString class]]) {
-        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.text attributes:NSAttributedStringAttributesFromLabel(self)];
-    } else {
-        mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.text];
-        [mutableAttributedString addAttributes:NSAttributedStringAttributesFromLabel(self) range:NSMakeRange(0, [mutableAttributedString length])];
-    }
-    
-    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:mutableAttributedString];
-
-    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-    [textStorage addLayoutManager:layoutManager];
-    
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
-    [layoutManager addTextContainer:textContainer];
-    
-    NSRange glyphRange;
-    
-    [layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
-    
-    return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
 }
 
 - (void)drawTextInRect:(CGRect)rect {
