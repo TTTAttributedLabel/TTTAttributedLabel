@@ -23,6 +23,10 @@ It also includes advanced paragraph style properties:
 - `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
 - `truncationTokenString`
 
+####Accessibility
+
+As of version 1.1.0, `TTTAttributedLabel` contains support for `UIAccessibility`, which allows vision-impared and other VoiceOver users to tap on embedded links.  `accessibilityValue` is set for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
+
 ## Installation
 
 [CocoaPods](http://cocoapods.org) is the recommended method of installing TTTAttributedLabel. Simply add the following line to your `Podfile`:
