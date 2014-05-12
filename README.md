@@ -23,9 +23,9 @@ It also includes advanced paragraph style properties:
 - `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
 - `truncationTokenString`
 
-####Accessibility
+### Accessibility
 
-As of version 1.1.0, `TTTAttributedLabel` contains support for `UIAccessibility`, which allows vision-impared and other VoiceOver users to tap on embedded links.  `accessibilityValue` is set for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
+As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver, through the  `UIAccessibilityElement` protocol. Each link can be individually selected, with an `accessibilityLabel` equal to its string value, and a corresponding `accessibilityValue` for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
 
 ## Installation
 
