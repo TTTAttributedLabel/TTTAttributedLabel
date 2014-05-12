@@ -1189,7 +1189,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
         if (textWidth > availableWidth && textWidth > 0.0f) {
             originalAttributedText = [self.attributedText copy];
-            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, availableWidth / textWidth);
+
+            CGFloat scaleFactor = availableWidth / textWidth;
+            if ([self respondsToSelector:@selector(minimumScaleFactor)] && self.minimumScaleFactor > scaleFactor) {
+                scaleFactor = self.minimumScaleFactor;
+            }
+
+            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, scaleFactor);
         }
     }
 
