@@ -146,6 +146,18 @@ static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
 #endif
 }
 
+static inline CGFloat TTTFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
+    switch (textAlignment) {
+        case TTTTextAlignmentCenter:
+            return 0.5f;
+        case TTTTextAlignmentRight:
+            return 1.0f;
+        case TTTTextAlignmentLeft:
+        default:
+            return 0.0f;
+    }
+}
+
 static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributedLabel *label) {
     NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary];
 
@@ -618,6 +630,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         return NSNotFound;
     }
 
+    // Adjust pen offset for flush depending on text alignment
+    CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
+
     // Offset tap coordinates by textRect origin to make them relative to the origin of frame
     p = CGPointMake(p.x - textRect.origin.x, p.y - textRect.origin.y);
     // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
@@ -647,6 +662,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+        CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, textRect.size.width);
 
         // Get bounding information of line
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
@@ -661,9 +677,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         // Check if the point is within this line vertically
         if (p.y >= yMin) {
             // Check if the point is within this line horizontally
-            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
+            if (p.x >= penOffset && p.x <= penOffset + width) {
                 // Convert CT coordinates to line-relative coordinates
-                CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
+                CGPoint relativePoint = CGPointMake(p.x - penOffset, p.y - lineOrigin.y);
                 idx = CTLineGetStringIndexForPosition(line, relativePoint);
                 break;
             }
@@ -716,6 +732,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
+        lineOrigin = CGPointMake(CGFloat_ceil(lineOrigin.x), CGFloat_ceil(lineOrigin.y));
+
         CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y);
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
 
@@ -723,18 +741,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CTLineGetTypographicBounds((CTLineRef)line, NULL, &descent, NULL);
 
         // Adjust pen offset for flush depending on text alignment
-        CGFloat flushFactor = 0.0f;
-        switch (self.textAlignment) {
-            case TTTTextAlignmentCenter:
-                flushFactor = 0.5f;
-                break;
-            case TTTTextAlignmentRight:
-                flushFactor = 1.0f;
-                break;
-            case TTTTextAlignmentLeft:
-            default:
-                break;
-        }
+        CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
 
         if (lineIndex == numberOfLines - 1 && truncateLastLine) {
             // Check if the range of text in the last line reaches the end of the full attributed string
@@ -809,11 +816,13 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CFRelease(truncationLine);
                 CFRelease(truncationToken);
             } else {
-                CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
+                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
                 CTLineDraw(line, c);
             }
         } else {
-            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
+            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+            CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
             CTLineDraw(line, c);
         }
     }
@@ -832,6 +841,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
+    // Adjust pen offset for flush depending on text alignment
+    CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
+
     // Compensate for y-offset of text rect from vertical positioning
     CGFloat yOffset = self.textInsets.top - [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines].origin.y;
 
@@ -840,6 +852,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
         CGRect lineBounds = CGRectMake(rect.origin.x, rect.origin.y, width, ascent + descent + leading) ;
+
+        CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush((CTLineRef)line, flushFactor, rect.size.width);
+
         lineBounds.origin.x += origins[lineIndex].x;
         lineBounds.origin.y += origins[lineIndex].y;
 
@@ -870,7 +885,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         break;
                 }
 
-                runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left - rect.origin.x;
+                runBounds.origin.x = penOffset + rect.origin.x + xOffset - fillPadding.left - rect.origin.x;
                 runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom - rect.origin.y;
                 runBounds.origin.y -= runDescent;
 
@@ -909,6 +924,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
+    // Adjust pen offset for flush depending on text alignment
+    CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
+
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
@@ -916,6 +934,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
         lineBounds.origin.x = origins[lineIndex].x;
         lineBounds.origin.y = origins[lineIndex].y;
+
+        CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush((CTLineRef)line, flushFactor, rect.size.width);
 
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
@@ -940,7 +960,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         xOffset = CTLineGetOffsetForStringIndex((__bridge CTLineRef)line, glyphRange.location, NULL);
                         break;
                 }
-                runBounds.origin.x = origins[lineIndex].x + xOffset;
+                runBounds.origin.x = penOffset + xOffset;
                 runBounds.origin.y = origins[lineIndex].y;
                 runBounds.origin.y -= runDescent;
 
@@ -1320,7 +1340,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (!self.inactiveLinkAttributes || [self.inactiveLinkAttributes count] == 0) {
         return;
     }
-    
+
     BOOL isInactive = (self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed);
 
     NSDictionary *attributesToRemove = isInactive ? self.linkAttributes : self.inactiveLinkAttributes;
@@ -1338,6 +1358,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 
     self.attributedText = mutableAttributedString;
+
     [self setNeedsDisplay];
 }
 #endif
@@ -1574,7 +1595,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     } else {
         self.text = super.text;
     }
-
+    
     return self;
 }
 
