@@ -156,7 +156,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = label.textAlignment;
-        paragraphStyle.lineSpacing = label.leading;
+        paragraphStyle.lineSpacing = label.lineSpacing;
         paragraphStyle.minimumLineHeight = label.minimumLineHeight > 0 ? label.minimumLineHeight : label.font.lineHeight * label.lineHeightMultiple;
         paragraphStyle.maximumLineHeight = label.maximumLineHeight > 0 ? label.maximumLineHeight : label.font.lineHeight * label.lineHeightMultiple;
         paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
@@ -179,7 +179,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         [mutableAttributes setObject:@(label.kern) forKey:(NSString *)kCTKernAttributeName];
 
         CTTextAlignment alignment = CTTextAlignmentFromTTTTextAlignment(label.textAlignment);
-        CGFloat lineSpacing = label.leading;
+        CGFloat lineSpacing = label.lineSpacing;
         CGFloat minimumLineHeight = label.minimumLineHeight * label.lineHeightMultiple;
         CGFloat maximumLineHeight = label.maximumLineHeight * label.lineHeightMultiple;
         CGFloat lineSpacingAdjustment = CGFloat_ceil(label.font.lineHeight - label.font.ascender + label.font.descender);
@@ -491,6 +491,14 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
 
     _highlightFramesetter = highlightFramesetter;
+}
+
+- (CGFloat)leading {
+    return self.lineSpacing;
+}
+
+- (void)setLeading:(CGFloat)leading {
+    self.lineSpacing = leading;
 }
 
 #pragma mark -
@@ -1470,7 +1478,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeObject:self.highlightedShadowColor forKey:NSStringFromSelector(@selector(highlightedShadowColor))];
     [coder encodeObject:@(self.kern) forKey:NSStringFromSelector(@selector(kern))];
     [coder encodeObject:@(self.firstLineIndent) forKey:NSStringFromSelector(@selector(firstLineIndent))];
-    [coder encodeObject:@(self.leading) forKey:NSStringFromSelector(@selector(leading))];
+    [coder encodeObject:@(self.lineSpacing) forKey:NSStringFromSelector(@selector(lineSpacing))];
     [coder encodeObject:@(self.lineHeightMultiple) forKey:NSStringFromSelector(@selector(lineHeightMultiple))];
     [coder encodeUIEdgeInsets:self.textInsets forKey:NSStringFromSelector(@selector(textInsets))];
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
@@ -1533,8 +1541,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         self.firstLineIndent = [[coder decodeObjectForKey:NSStringFromSelector(@selector(firstLineIndent))] floatValue];
     }
 
-    if ([coder containsValueForKey:NSStringFromSelector(@selector(leading))]) {
-        self.leading = [[coder decodeObjectForKey:NSStringFromSelector(@selector(leading))] floatValue];
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(lineSpacing))]) {
+        self.lineSpacing = [[coder decodeObjectForKey:NSStringFromSelector(@selector(lineSpacing))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(minimumLineHeight))]) {
