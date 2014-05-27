@@ -1251,20 +1251,40 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIAccessibilityElement
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+- (BOOL)shouldSupportAccessibilityProtocol {
+    return ([NSURLSession class] != nil);
+}
+
 - (BOOL)isAccessibilityElement {
-    return NO;
+    if ([self shouldSupportAccessibilityProtocol]) {
+        return NO;
+    } else {
+        return [super isAccessibilityElement];
+    }
 }
 
 - (NSInteger)accessibilityElementCount {
-    return (NSInteger)[[self accessibilityElements] count];
+    if ([self shouldSupportAccessibilityProtocol]) {
+        return (NSInteger)[[self accessibilityElements] count];
+    } else {
+        return [super accessibilityElementCount];
+    }
 }
 
 - (id)accessibilityElementAtIndex:(NSInteger)index {
-    return [[self accessibilityElements] objectAtIndex:(NSUInteger)index];
+    if ([self shouldSupportAccessibilityProtocol]) {
+        return [[self accessibilityElements] objectAtIndex:(NSUInteger)index];
+    } else {
+        return [super accessibilityElementAtIndex:index];
+    }
 }
 
 - (NSInteger)indexOfAccessibilityElement:(id)element {
-    return (NSInteger)[[self accessibilityElements] indexOfObject:element];
+    if ([self shouldSupportAccessibilityProtocol]) {
+        return (NSInteger)[[self accessibilityElements] indexOfObject:element];
+    } else {
+        return [super indexOfAccessibilityElement:element];
+    }
 }
 
 - (NSArray *)accessibilityElements {
