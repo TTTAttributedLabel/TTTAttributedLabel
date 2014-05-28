@@ -26,11 +26,11 @@
 /**
  Vertical alignment for text in a label whose bounds are larger than its text bounds
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, TTTAttributedLabelVerticalAlignment) {
     TTTAttributedLabelVerticalAlignmentCenter   = 0,
     TTTAttributedLabelVerticalAlignmentTop      = 1,
     TTTAttributedLabelVerticalAlignmentBottom   = 2,
-} TTTAttributedLabelVerticalAlignment;
+};
 
 /**
  Determines whether the text to which this attribute applies has a strikeout drawn through itself.
@@ -41,6 +41,11 @@ extern NSString * const kTTTStrikeOutAttributeName;
  The background fill color. Value must be a `CGColorRef`. Default value is `nil` (no fill).
  */
 extern NSString * const kTTTBackgroundFillColorAttributeName;
+
+/**
+ The padding for the background fill. Value must be a `UIEdgeInsets`. Default value is `UIEdgeInsetsZero` (no padding).
+ */
+extern NSString * const kTTTBackgroundFillPaddingAttributeName;
 
 /**
  The background stroke color. Value must be a `CGColorRef`. Default value is `nil` (no stroke).
@@ -82,6 +87,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  `TTTAttributedLabel`, like `UILabel`, conforms to `NSCoding`. However, if the build target is set to less than iOS 6.0, `linkAttributes` and `activeLinkAttributes` will not be encoded or decoded. This is due to an runtime exception thrown when attempting to copy non-object CoreText values in dictionaries.
  
  @warning Any properties changed on the label after setting the text will not be reflected until a subsequent call to `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`. This is to say, order of operations matters in this case. For example, if the label text color is originally black when the text is set, changing the text color to red will have no effect on the display of the label until the text is set once again.
+ 
+ @bug Setting `attributedText` directly is not recommended, as it may cause a crash when attempting to access any links previously set. Instead, call `setText:`, passing an `NSAttributedString`.
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate>
 
@@ -94,18 +101,23 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  
  @discussion A `TTTAttributedLabel` delegate responds to messages sent by tapping on links in the label. You can use the delegate to respond to links referencing a URL, address, phone number, date, or date with a specified time zone and duration.
  */
-@property (nonatomic, unsafe_unretained) id <TTTAttributedLabelDelegate> delegate;
+@property (nonatomic, unsafe_unretained) IBOutlet id <TTTAttributedLabelDelegate> delegate;
 
 ///--------------------------------------------
 /// @name Detecting, Accessing, & Styling Links
 ///--------------------------------------------
 
 /**
- A bitmask of `UIDataDetectorTypes` which are used to automatically detect links in the label text. This is `UIDataDetectorTypeNone` by default.
- 
- @warning You must specify `dataDetectorTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
+ @deprecated Use `enabledTextCheckingTypes` property instead.
  */
-@property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
+@property (nonatomic, assign) NSTextCheckingTypes dataDetectorTypes DEPRECATED_ATTRIBUTE;
+
+/**
+ A bitmask of `NSTextCheckingType` which are used to automatically detect links in the label text.
+
+ @warning You must specify `enabledTextCheckingTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
+ */
+@property (nonatomic, assign) NSTextCheckingTypes enabledTextCheckingTypes;
 
 /**
  An array of `NSTextCheckingResult` objects for links detected or manually added to the label text.
@@ -120,9 +132,14 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 
 /**
- A dictionary containing the `NSAttributedString` attributes to be applied to links when they are in the active state. Supply `nil` or an empty dictionary to opt out of active link styling. The default active link style is red and underlined.
+ A dictionary containing the `NSAttributedString` attributes to be applied to links when they are in the active state. If `nil` or an empty `NSDictionary`, active links will not be styled. The default active link style is red and underlined.
  */
 @property (nonatomic, strong) NSDictionary *activeLinkAttributes;
+
+/**
+ A dictionary containing the `NSAttributedString` attributes to be applied to links when they are in the inactive state, which is triggered a change in `tintColor` in iOS 7. If `nil` or an empty `NSDictionary`, inactive links will not be styled. The default inactive link style is gray and unadorned.
+ */
+@property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
 
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
@@ -149,7 +166,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The amount to kern the next character. Default is standard kerning. If this attribute is set to 0.0, no kerning is done at all.
  */
-@property (nonatomic, strong) NSNumber *kern;
+@property (nonatomic, assign) CGFloat kern;
 
 ///--------------------------------------------
 /// @name Acccessing Paragraph Style Attributes
@@ -161,9 +178,24 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, assign) CGFloat firstLineIndent;
 
 /**
- The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default. 
+ @deprecated Use `lineSpacing` instead.
  */
-@property (nonatomic, assign) CGFloat leading;
+@property (nonatomic, assign) CGFloat leading DEPRECATED_ATTRIBUTE;
+
+/**
+ The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat lineSpacing;
+
+/**
+ The minimum line height within the paragraph. If the value is 0.0, the minimum line height is set to the line height of the `font`. 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat minimumLineHeight;
+
+/**
+ The maximum line height within the paragraph. If the value is 0.0, the maximum line height is set to the line height of the `font`. 0.0 by default.
+ */
+@property (nonatomic, assign) CGFloat maximumLineHeight;
 
 /**
  The line height multiple. This value is 1.0 by default.
@@ -190,12 +222,49 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, assign) TTTAttributedLabelVerticalAlignment verticalAlignment;
 
+///--------------------------------------------
+/// @name Accessing Truncation Token Appearance
+///--------------------------------------------
+
 /**
  The truncation token that appears at the end of the truncated line. `nil` by default.
 
  @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
  */
 @property (nonatomic, strong) NSString *truncationTokenString;
+
+/**
+ The attributes to apply to the truncation token at the end of a truncated line. If unspecified, attributes will be inherited from the preceding character.
+ */
+@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
+
+///-------------------------
+/// @name Gesture recognizer
+///-------------------------
+
+/**
+ The gesture recognizer to handle links.
+ 
+ @discussion The gesture recognizer to handle taps on links. It will only receive touches when a link is touched so it can be used along with other gesture recognizers. E.g. [otherGestureRecognizer requireGestureRecognizerToFail:tttAttributedLabel.linkGestureRecognizer].
+ */
+@property (nonatomic, strong) UILongPressGestureRecognizer *linkGestureRecognizer;
+
+///--------------------------------------------
+/// @name Calculating Size of Attributed String
+///--------------------------------------------
+
+/**
+ Calculate and return the size that best fits an attributed string, given the specified constraints on size and number of lines.
+
+ @param attributedString The attributed string.
+ @param size The maximum dimensions used to calculate size.
+ @param numberOfLines The maximum number of lines in the text to draw, if the constraining size cannot accomodate the full attributed string.
+ 
+ @return The size that fits the attributed string within the specified constraints.
+ */
++ (CGSize)sizeThatFitsAttributedString:(NSAttributedString *)attributedString
+                       withConstraints:(CGSize)size
+                limitedToNumberOfLines:(NSUInteger)numberOfLines;
 
 ///----------------------------------
 /// @name Setting the Text Attributes
@@ -301,17 +370,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
              duration:(NSTimeInterval)duration
             withRange:(NSRange)range;
 
-///-------------------------
-/// @name Gesture recognizer
-///-------------------------
-
 /**
- The gesture recognizer to handle links.
- 
- @discussion The gesture recognizer to handle taps on links. It will only receive touches when a link is touched so it can be used along with other gesture recognizers. E.g. [otherGestureRecognizer requireGestureRecognizerToFail:tttAttributedLabel.linkGestureRecognizer].
- 
+ Adds a link to transit information for a specified range in the label text.
+
+ @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
+ @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  */
-@property (nonatomic, strong) UILongPressGestureRecognizer *linkGestureRecognizer;
+- (void)addLinkToTransitInformation:(NSDictionary *)components
+                          withRange:(NSRange)range;
 
 @end
 
@@ -373,6 +439,15 @@ didSelectLinkWithPhoneNumber:(NSString *)phoneNumber;
   didSelectLinkWithDate:(NSDate *)date
                timeZone:(NSTimeZone *)timeZone
                duration:(NSTimeInterval)duration;
+
+/**
+ Tells the delegate that the user did select a link to transit information
+
+ @param label The label whose link was selected.
+ @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didSelectLinkWithTransitInformation:(NSDictionary *)components;
 
 /**
  Tells the delegate that the user did select a link to a text checking result.

@@ -2,25 +2,50 @@
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
-[NSAttributedString](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html) is pretty rad. When it was ported into iOS 4 from Mac OS, iPhone developers everywhere rejoiced. Unfortunately, as of iOS 4 none of the standard controls in UIKit support it. Bummer.
+`TTTAttributedLabel` is a drop-in replacement for `UILabel`, which provides a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
-`TTTAttributedLabel` was created to be a drop-in replacement for `UILabel`, that provided a simple API to styling text with `NSAttributedString` while remaining performant. As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, or event.
+Even though `NSAttributedString` support was added for UILabel in iOS 6, `TTTAttributedLabel` has several unique features:
 
-## Documentation
+- Compatibility with iOS >= 4.3
+- Compatible with arm64 architecture when compiled with `$(ARCHS_STANDARD_INCLUDING_64_BIT)`
+- Automatic data detection
+- Manual link embedding
+- Label style inheritance for attributed strings
 
-To install the docset directly into your local Xcode organizer, first [install `appledoc`](https://github.com/tomaz/appledoc), and then clone this project and run `appledoc -p TTTAttributedLabel -c "Mattt Thompson" --company-id com.mattt TTTAttributedLabel.*`
+It also includes advanced paragraph style properties:
 
-## Demo
+- `verticalAlignment`
+- `textInsets`
+- `firstLineIndent`
+- `lineSpacing`
+- `lineHeightMultiple`
+- `shadowRadius`
+- `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
+- `truncationTokenString`
 
-Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttributedLabel` in action.
+### Accessibility
+
+As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver, through the  `UIAccessibilityElement` protocol. Each link can be individually selected, with an `accessibilityLabel` equal to its string value, and a corresponding `accessibilityValue` for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
+
+## Communication
+
+- If you **need help**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/tttattributedlabel). (Tag 'tttattributedlabel')
+- If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/tttattributedlabel).
+- If you **found a bug**, open an issue.
+- If you **have a feature request**, open an issue.
+- If you **want to contribute**, submit a pull request.
 
 ## Installation
 
-`TTTAttributedLabel` requires the `CoreText` Framework, so the first thing you'll need to do is include the framework into your project. In Xcode 4, go to the project file at the root of your workspace and select your active target. There should be several sections across the top of that window; choose "Build Phases". Next, click "Link Binary With Libraries" to expand that section to see the frameworks currently included in your project. Click the "+" at the bottom left and select "CoreText.framework".
+[CocoaPods](http://cocoapods.org) is the recommended method of installing TTTAttributedLabel. Simply add the following line to your `Podfile`:
 
-Now that the framework has been linked, all you need to do is drop `TTTAttributedLabel.{h,m}` into your project, and add `#include "TTTAttributedLabel.h"` to the top of classes that will use it.
+#### Podfile
 
-## Example Usage
+```ruby
+pod 'TTTAttributedLabel'
+```
+
+## Usage
 
 ``` objective-c
 TTTAttributedLabel *label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
@@ -36,7 +61,7 @@ NSString *text = @"Lorem ipsum dolar sit amet";
 
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
-  CTFontRef font = CTFontCreateWithName((CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+  CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
   if (font) {
     [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
     [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:[NSNumber numberWithBool:YES] range:strikeRange];
@@ -51,12 +76,12 @@ First, we create and configure the label, the same way you would instantiate `UI
 
 The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; in the latter case, the attributed string is directly set, without inheriting the base style of the label.
 
-### Links and UIDataDetectors
+### Links and Data Detection
 
-In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for URLs, addresses, phone numbers, and dates, or allow you to embed your own.
+In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for dates, addresses, links, phone numbers, transit information, or allow you to embed your own.
 
 ``` objective-c
-label.dataDetectorTypes = UIDataDetectorTypeAll; // Automatically detect links when the label text is subsequently changed
+label.enabledTextCheckingTypes = NSTextCheckingTypeLink; // Automatically detect links when the label text is subsequently changed
 label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
 
 label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
@@ -65,11 +90,17 @@ NSRange range = [label.text rangeOfString:@"me"];
 [label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
 ```
 
-## Credits
+## Demo
 
-Inspired by [Olivier Halligon](https://github.com/AliSoftware)'s [OHAttributedLabel](https://github.com/AliSoftware/OHAttributedLabel), borrowing some general approaches in converting between UIKit and Core Text text attributes.
+Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttributedLabel` in action.
 
-Many thanks to [the contributors to TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/contributors), for all of their features, fixes, and feedback.
+## Requirements
+
+`TTTAttributedLabel` is compatible with iOS 4.3+ as a deployment target, but must be compiled using the iOS 6 SDK, or higher. If you get compiler errors for undefined constants, try upgrading to the latest version of Xcode, and updating your project to the recommended build settings.
+
+`TTTAttributedLabel` also requires the `CoreText` and `Core Graphics` frameworks. If you're installing with CocoaPods these frameworks will automatically be linked for you, otherwise you will have to add them to your project.
+
+For `arm64` compatibility, you must compile your project with the iOS 7 SDK.
 
 ## Contact
 

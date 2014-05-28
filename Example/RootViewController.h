@@ -23,10 +23,8 @@
 #import <UIKit/UIKit.h>
 #import "TTTAttributedLabel.h"
 
-@interface RootViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate> {
-    NSArray *_espressos;
-}
+@interface RootViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate>
 
-@property (nonatomic) NSArray *espressos;
+@property (nonatomic, strong) NSArray *espressos;
 
 @end

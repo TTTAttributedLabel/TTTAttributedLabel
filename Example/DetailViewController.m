@@ -73,13 +73,13 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 #pragma mark - UIViewController
 
 - (void)loadView {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 100.0f, 100.0f)];
-    
-    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(view.bounds, 10.0f, 10.0f)];
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    self.attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectInset(self.view.bounds, 10.0f, 70.0f)];
     self.attributedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [view addSubview:self.attributedLabel];
-    
-    self.view = view;
+    [self.view addSubview:self.attributedLabel];
 }
 
 - (void)viewDidLoad {
@@ -88,9 +88,13 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.title = NSLocalizedString(@"Espresso", nil);
     
     self.attributedLabel.delegate = self;
-    self.attributedLabel.font = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
+    UIFont *f = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
+    self.attributedLabel.font = f;
     self.attributedLabel.textColor = [UIColor darkGrayColor];
     self.attributedLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.attributedLabel.leading = -100;
+    self.attributedLabel.maximumLineHeight = f.lineHeight;
+    self.attributedLabel.minimumLineHeight = f.lineHeight;
     self.attributedLabel.numberOfLines = 0;
     self.attributedLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     
@@ -115,7 +119,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
         
         regexp = ParenthesisRegularExpression();
-        [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {            
+        [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL * stop) {
             UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
             CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
             if (italicFont) {
@@ -139,7 +143,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 #pragma mark - TTTAttributedLabelDelegate
 
-- (void)attributedLabel:(TTTAttributedLabel *)label
+- (void)attributedLabel:(__unused TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url
 {
     [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
