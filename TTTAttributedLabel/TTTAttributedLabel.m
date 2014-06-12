@@ -350,17 +350,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 #endif
 
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (!self) {
