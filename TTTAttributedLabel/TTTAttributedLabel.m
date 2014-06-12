@@ -24,6 +24,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <Availability.h>
+#import <objc/runtime.h>
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
@@ -316,6 +317,38 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
+#ifndef kCFCoreFoundationVersionNumber_iOS_7_0
+#define kCFCoreFoundationVersionNumber_iOS_7_0 847.2
+#endif
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0) {
+            Class class = [self class];
+            Class superclass = class_getSuperclass(class);
+
+            NSArray *strings = @[
+                                 NSStringFromSelector(@selector(isAccessibilityElement)),
+                                 NSStringFromSelector(@selector(accessibilityElementCount)),
+                                 NSStringFromSelector(@selector(accessibilityElementAtIndex:)),
+                                 NSStringFromSelector(@selector(indexOfAccessibilityElement:)),
+                                 ];
+
+            for (NSString *string in strings) {
+                SEL selector = NSSelectorFromString(string);
+                IMP superImplementation = class_getMethodImplementation(superclass, selector);
+                Method method = class_getInstanceMethod(class, selector);
+                const char *types = method_getTypeEncoding(method);
+                class_replaceMethod(class, selector, superImplementation, types);
+            }
+        }
+    });
+}
+#endif
 
 - (instancetype)init {
     self = [super init];
@@ -1251,6 +1284,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIAccessibilityElement
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
 - (BOOL)isAccessibilityElement {
     return NO;
 }
