@@ -141,6 +141,16 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
 
+/**
+ The amount to inset the background of a link default is -1.
+ */
+@property (nonatomic, assign) CGFloat linkBackgroundInsetDX;
+
+/**
+ The amount to inset the background of a link default is 0.
+ */
+@property (nonatomic, assign) CGFloat linkBackgroundInsetDY;
+
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
 ///---------------------------------------
