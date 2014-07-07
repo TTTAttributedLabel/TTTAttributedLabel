@@ -313,6 +313,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     BOOL _needsFramesetter;
     CTFramesetterRef _framesetter;
     CTFramesetterRef _highlightFramesetter;
+    NSMutableDictionary *_attributesForLink;
 }
 
 @dynamic text;
@@ -411,6 +412,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
+    
+    _attributesForLink = [NSMutableDictionary dictionary];
 }
 
 - (void)dealloc {
@@ -569,6 +572,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         for (NSTextCheckingResult *result in results) {
             [mutableAttributedString addAttributes:attributes range:result.range];
+            _attributesForLink[result] = attributes;
         }
 
         self.attributedText = mutableAttributedString;
@@ -1373,11 +1377,16 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     BOOL isInactive = (self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed);
 
-    NSDictionary *attributesToRemove = isInactive ? self.linkAttributes : self.inactiveLinkAttributes;
-    NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : self.linkAttributes;
-
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
     for (NSTextCheckingResult *result in self.links) {
+        NSDictionary *currentLinkAttributes = _attributesForLink[result];
+        if (!currentLinkAttributes) {
+            currentLinkAttributes = self.linkAttributes;
+        }
+        
+        NSDictionary *attributesToRemove = isInactive ? currentLinkAttributes : self.inactiveLinkAttributes;
+        NSDictionary *attributesToAdd = isInactive ? self.inactiveLinkAttributes : currentLinkAttributes;
+
         [attributesToRemove enumerateKeysAndObjectsUsingBlock:^(NSString *name, __unused id value, __unused BOOL *stop) {
             [mutableAttributedString removeAttribute:name range:result.range];
         }];
