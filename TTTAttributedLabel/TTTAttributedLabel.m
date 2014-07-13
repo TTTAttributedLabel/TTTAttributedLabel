@@ -325,6 +325,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (void)commonInit {
+    self.leading = -100;
     self.userInteractionEnabled = YES;
     self.multipleTouchEnabled = NO;
         
@@ -1034,6 +1035,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 #pragma mark - UILabel
+- (void)setFont:(UIFont *)font
+{
+    [super setFont:font];
+    self.minimumLineHeight = font.lineHeight;
+    self.maximumLineHeight = font.lineHeight;
+}
 
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
