@@ -1022,14 +1022,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
 
         self.attributedText = mutableAttributedString;
-//        [self setNeedsDisplay];
+        [self setNeedsDisplay];
 
         [CATransaction flush];
     } else if (self.inactiveAttributedText) {
         self.attributedText = self.inactiveAttributedText;
         self.inactiveAttributedText = nil;
 
-//        [self setNeedsDisplay];
+        [self setNeedsDisplay];
     }
 }
 
