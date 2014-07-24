@@ -1162,7 +1162,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     CGRect textRect = bounds;
 
-    textRect.size.height = MIN(self.font.lineHeight * self.numberOfLines, bounds.size.height);
+    textRect.size.height = MAX(self.font.pointSize * MAX(2.0f, self.numberOfLines), bounds.size.height);
 
     // Adjust the text to be in the center vertically, if the text size is smaller than bounds
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), NULL, textRect.size, NULL);
