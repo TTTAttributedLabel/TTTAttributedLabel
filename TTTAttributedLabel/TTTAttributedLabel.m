@@ -645,7 +645,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return [self linkAtCharacterIndex:idx];
 }
 
-- (BOOL)containslinkAtPoint:(CGPoint)point {
+- (BOOL)containslinkAtPoint:(CGPoint)p {
     CFIndex idx = [self characterIndexAtPoint:p];
     
     return ([self linkAtCharacterIndex:idx] != nil);

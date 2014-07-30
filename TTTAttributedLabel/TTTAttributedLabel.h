@@ -386,7 +386,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param point The point inside the label to test at.
  */
-- (BOOL)containslinkAtPoint:(CGPoint)point;
+- (BOOL)containslinkAtPoint:(CGPoint)p;
 
 @end
 
