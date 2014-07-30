@@ -645,6 +645,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return [self linkAtCharacterIndex:idx];
 }
 
+- (BOOL)containslinkAtPoint:(CGPoint)point {
+    CFIndex idx = [self characterIndexAtPoint:p];
+    
+    return ([self linkAtCharacterIndex:idx] != nil);
+}
+
 - (CFIndex)characterIndexAtPoint:(CGPoint)p {
     if (!CGRectContainsPoint(self.bounds, p)) {
         return NSNotFound;

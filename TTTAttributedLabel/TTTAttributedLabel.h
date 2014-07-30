@@ -460,4 +460,13 @@ didSelectLinkWithTransitInformation:(NSDictionary *)components;
 - (void)attributedLabel:(TTTAttributedLabel *)label
 didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 
+/**
+ Returns YES if a NSTextCheckingResult is found at the give point.
+ 
+ @discussion This can be used together with UITapGestureRecognizer to improve the tapping on UIViews and UICollectionViewCells.
+ 
+ @param point The point inside the label to test at.
+ */
+- (BOOL)containslinkAtPoint:(CGPoint)point
+
 @end
