@@ -1384,7 +1384,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             
             if (range.location + range.length > mutableAttributedString.length) {
                 
-                if (mutableAttributedString.length - range.location > 0) {
+                if ((NSInteger)mutableAttributedString.length - (NSInteger)range.location > 0) {
                     range.length = mutableAttributedString.length - range.location;
                 }
                 else {
@@ -1401,7 +1401,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             
             if (range.location + range.length > mutableAttributedString.length) {
                 
-                if (mutableAttributedString.length - range.location > 0) {
+                if ((NSInteger)mutableAttributedString.length - (NSInteger)range.location > 0) {
                     range.length = mutableAttributedString.length - range.location;
                 }
                 else {
