@@ -444,13 +444,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 #pragma mark -
 
-- (void)setAttributedText:(NSAttributedString *)attributedText
-{
+- (void)setAttributedText:(NSAttributedString *)attributedText {
     [self setAttributedText:attributedText invalidateLinks:YES];
 }
 
-- (void)setAttributedText:(NSAttributedString *)text invalidateLinks:(BOOL)invalidateLinks
-{
+- (void)setAttributedText:(NSAttributedString *)text invalidateLinks:(BOOL)invalidateLinks {
     if ([text isEqualToAttributedString:_attributedText]) {
         return;
     }
