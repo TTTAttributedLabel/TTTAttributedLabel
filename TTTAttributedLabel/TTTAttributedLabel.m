@@ -444,12 +444,23 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 #pragma mark -
 
-- (void)setAttributedText:(NSAttributedString *)text {
+- (void)setAttributedText:(NSAttributedString *)attributedText
+{
+    [self setAttributedText:attributedText invalidateLinks:YES];
+}
+
+- (void)setAttributedText:(NSAttributedString *)text invalidateLinks:(BOOL)invalidateLinks
+{
     if ([text isEqualToAttributedString:_attributedText]) {
         return;
     }
 
     _attributedText = [text copy];
+    
+    if(invalidateLinks)
+    {
+        self.links = [NSArray array];
+    }
 
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
@@ -571,7 +582,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             [mutableAttributedString addAttributes:attributes range:result.range];
         }
 
-        self.attributedText = mutableAttributedString;
+        [self setAttributedText:mutableAttributedString invalidateLinks:NO];
         [self setNeedsDisplay];
     }
     [mutableLinks addObjectsFromArray:results];
@@ -1040,7 +1051,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         return;
     }
 
-    self.attributedText = text;
+    [self setAttributedText:text invalidateLinks:YES];
     self.activeLink = nil;
 
     self.links = [NSArray array];
@@ -1112,12 +1123,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             [mutableAttributedString addAttributes:self.activeLinkAttributes range:self.activeLink.range];
         }
 
-        self.attributedText = mutableAttributedString;
+        [self setAttributedText:mutableAttributedString invalidateLinks:NO];
         [self setNeedsDisplay];
 
         [CATransaction flush];
     } else if (self.inactiveAttributedText) {
-        self.attributedText = self.inactiveAttributedText;
+        [self setAttributedText:self.inactiveAttributedText invalidateLinks:NO];
         self.inactiveAttributedText = nil;
 
         [self setNeedsDisplay];
@@ -1217,7 +1228,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 scaleFactor = self.minimumScaleFactor;
             }
 
-            self.attributedText = NSAttributedStringByScalingFontSize(self.attributedText, scaleFactor);
+            NSAttributedString *attributedText = NSAttributedStringByScalingFontSize(self.attributedText, scaleFactor);
+            [self setAttributedText:attributedText invalidateLinks:NO];
         }
     }
 
@@ -1387,8 +1399,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
     }
 
-    self.attributedText = mutableAttributedString;
-
+    [self setAttributedText:mutableAttributedString invalidateLinks:NO];
+    
     [self setNeedsDisplay];
 }
 #endif
