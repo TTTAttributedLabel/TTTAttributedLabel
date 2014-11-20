@@ -240,6 +240,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
 
+/**
+ Manually set attributed truncation token string. If specified, `truncationTokenString` and `truncationTokenStringAttributes` will be ignored.
+ */
+@property (nonatomic, strong) NSAttributedString *attributedTruncationTokenString;
+
 
 ///--------------------------------------------
 /// @name Calculating Size of Attributed String
