@@ -69,6 +69,8 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 @property (nonatomic, copy) id text;
 @end
 
+IB_DESIGNABLE
+
 /**
  `TTTAttributedLabel` is a drop-in replacement for `UILabel` that supports `NSAttributedString`, as well as automatically-detected and manually-added links to URLs, addresses, phone numbers, and dates.
  
@@ -155,25 +157,25 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The shadow blur radius for the label. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0. 
  */
-@property (nonatomic, assign) CGFloat shadowRadius;
+@property (nonatomic, assign) IBInspectable CGFloat shadowRadius;
 
 /** 
  The shadow blur radius for the label when the label's `highlighted` property is `YES`. A value of 0 indicates no blur, while larger values produce correspondingly larger blurring. This value must not be negative. The default value is 0.
  */
-@property (nonatomic, assign) CGFloat highlightedShadowRadius;
+@property (nonatomic, assign) IBInspectable CGFloat highlightedShadowRadius;
 /** 
  The shadow offset for the label when the label's `highlighted` property is `YES`. A size of {0, 0} indicates no offset, with positive values extending down and to the right. The default size is {0, 0}.
  */
-@property (nonatomic, assign) CGSize highlightedShadowOffset;
+@property (nonatomic, assign) IBInspectable CGSize highlightedShadowOffset;
 /** 
  The shadow color for the label when the label's `highlighted` property is `YES`. The default value is `nil` (no shadow color).
  */
-@property (nonatomic, strong) UIColor *highlightedShadowColor;
+@property (nonatomic, strong) IBInspectable UIColor *highlightedShadowColor;
 
 /**
  The amount to kern the next character. Default is standard kerning. If this attribute is set to 0.0, no kerning is done at all.
  */
-@property (nonatomic, assign) CGFloat kern;
+@property (nonatomic, assign) IBInspectable CGFloat kern;
 
 ///--------------------------------------------
 /// @name Acccessing Paragraph Style Attributes
@@ -182,32 +184,32 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
  */
-@property (nonatomic, assign) CGFloat firstLineIndent;
+@property (nonatomic, assign) IBInspectable CGFloat firstLineIndent;
 
 /**
  @deprecated Use `lineSpacing` instead.
  */
-@property (nonatomic, assign) CGFloat leading DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) IBInspectable CGFloat leading DEPRECATED_ATTRIBUTE;
 
 /**
  The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.
  */
-@property (nonatomic, assign) CGFloat lineSpacing;
+@property (nonatomic, assign) IBInspectable CGFloat lineSpacing;
 
 /**
  The minimum line height within the paragraph. If the value is 0.0, the minimum line height is set to the line height of the `font`. 0.0 by default.
  */
-@property (nonatomic, assign) CGFloat minimumLineHeight;
+@property (nonatomic, assign) IBInspectable CGFloat minimumLineHeight;
 
 /**
  The maximum line height within the paragraph. If the value is 0.0, the maximum line height is set to the line height of the `font`. 0.0 by default.
  */
-@property (nonatomic, assign) CGFloat maximumLineHeight;
+@property (nonatomic, assign) IBInspectable CGFloat maximumLineHeight;
 
 /**
  The line height multiple. This value is 1.0 by default.
  */
-@property (nonatomic, assign) CGFloat lineHeightMultiple;
+@property (nonatomic, assign) IBInspectable CGFloat lineHeightMultiple;
 
 /**
  The distance, in points, from the margin to the text container. This value is `UIEdgeInsetsZero` by default.
@@ -222,7 +224,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  - `right`: `kCTParagraphStyleSpecifierTailIndent`
  
  */
-@property (nonatomic, assign) UIEdgeInsets textInsets;
+@property (nonatomic, assign) IBInspectable UIEdgeInsets textInsets;
 
 /**
  The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter` by default.
@@ -246,7 +248,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 /**
  The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
  */
-@property (nonatomic, strong) NSAttributedString *attributedTruncationToken;
+@property (nonatomic, strong) IBInspectable NSAttributedString *attributedTruncationToken;
 
 
 ///--------------------------------------------
