@@ -550,6 +550,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if (_enabledTextCheckingTypes == enabledTextCheckingTypes) {
         return;
     }
+    
     _enabledTextCheckingTypes = enabledTextCheckingTypes;
 
     if (self.enabledTextCheckingTypes) {
