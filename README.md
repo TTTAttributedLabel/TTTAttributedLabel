@@ -7,21 +7,22 @@
 Even though `NSAttributedString` support was added for UILabel in iOS 6, `TTTAttributedLabel` has several unique features:
 
 - Compatibility with iOS >= 4.3
-- Compatible with arm64 architecture when compiled with `$(ARCHS_STANDARD_INCLUDING_64_BIT)`
 - Automatic data detection
 - Manual link embedding
 - Label style inheritance for attributed strings
 
 It also includes advanced paragraph style properties:
 
-- `verticalAlignment`
-- `textInsets`
+- `attributedTruncationToken`
 - `firstLineIndent`
-- `lineSpacing`
+- `highlightedShadowRadius`
+- `highlightedShadowOffset`
+- `highlightedShadowColor`
 - `lineHeightMultiple`
+- `lineSpacing`
 - `shadowRadius`
-- `highlightedShadowRadius` / `highlightedShadowOffset` / `highlightedShadowColor`
-- `truncationTokenString`
+- `textInsets`
+- `verticalAlignment`
 
 ### Accessibility
 
@@ -96,11 +97,8 @@ Build and run the `TTTAttributedLabelExample` project in Xcode to see `TTTAttrib
 
 ## Requirements
 
-`TTTAttributedLabel` is compatible with iOS 4.3+ as a deployment target, but must be compiled using the iOS 6 SDK, or higher. If you get compiler errors for undefined constants, try upgrading to the latest version of Xcode, and updating your project to the recommended build settings.
-
-`TTTAttributedLabel` also requires the `CoreText` and `Core Graphics` frameworks. If you're installing with CocoaPods these frameworks will automatically be linked for you, otherwise you will have to add them to your project.
-
-For `arm64` compatibility, you must compile your project with the iOS 7 SDK.
+- iOS 4.3+ (iOS 6+ Base SDK)
+- Xcode 6
 
 ## Contact
 
