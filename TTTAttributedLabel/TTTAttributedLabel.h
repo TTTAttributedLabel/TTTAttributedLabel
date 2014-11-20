@@ -143,6 +143,11 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
  */
 @property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
 
+/**
+ The edge inset for the background of a link. The default value is `{0, -1, 0, -1}`.
+ */
+@property (nonatomic, assign) UIEdgeInsets linkBackgroundEdgeInset;
+
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes
 ///---------------------------------------
@@ -229,16 +234,19 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 ///--------------------------------------------
 
 /**
- The truncation token that appears at the end of the truncated line. `nil` by default.
-
- @discussion When truncation is enabled for the label, by setting `lineBreakMode` to either `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`, the token used to terminate the truncated line will be `truncationTokenString` if defined, otherwise the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
+ @deprecated Use `truncationTokenAttributedString` instead.
  */
-@property (nonatomic, strong) NSString *truncationTokenString;
+@property (nonatomic, strong) NSString *truncationTokenString DEPRECATED_ATTRIBUTE;
 
 /**
- The attributes to apply to the truncation token at the end of a truncated line. If unspecified, attributes will be inherited from the preceding character.
+ @deprecated Use `truncationTokenAttributedString` instead.
  */
-@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes;
+@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes DEPRECATED_ATTRIBUTE;
+
+/**
+ The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
+ */
+@property (nonatomic, strong) NSAttributedString *truncationTokenAttributedString;
 
 
 ///--------------------------------------------
@@ -370,6 +378,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  */
 - (void)addLinkToTransitInformation:(NSDictionary *)components
                           withRange:(NSRange)range;
+
+/**
+ Returns whether an `NSTextCheckingResult` is found at the give point.
+ 
+ @discussion This can be used together with `UITapGestureRecognizer` to tap interactions with overlapping views.
+ 
+ @param point The point inside the label.
+ */
+- (BOOL)containslinkAtPoint:(CGPoint)point;
 
 @end
 
