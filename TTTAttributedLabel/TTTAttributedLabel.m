@@ -1300,7 +1300,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             NSMutableArray *mutableAccessibilityItems = [NSMutableArray array];
 
             for (NSTextCheckingResult *result in self.links) {
-                NSString *sourceText = [self.text isKindOfClass:[NSString class]] ? self.text : [(NSAttributedString *)self.text string];
+                NSString *sourceText;
+                if (self.attributedText.length > 0) {
+                     sourceText = [self.attributedText string];
+                }
+                else {
+                    sourceText = [self.text isKindOfClass:[NSString class]] ? self.text : [(NSAttributedString *) self.text string];
+                }
 
                 NSString *accessibilityLabel = [sourceText substringWithRange:result.range];
                 NSString *accessibilityValue = nil;
