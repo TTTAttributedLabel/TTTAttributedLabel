@@ -369,6 +369,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.lineHeightMultiple = 1.0f;
 
     self.links = [NSArray array];
+    
+    self.linkBackgroundInsetDX = -1.0f;
+    self.linkBackgroundInsetDY = 0.0f;
 
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
@@ -648,6 +651,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return [self linkAtCharacterIndex:idx];
 }
 
+- (BOOL)containslinkAtPoint:(CGPoint)p {
+    CFIndex idx = [self characterIndexAtPoint:p];
+    
+    return ([self linkAtCharacterIndex:idx] != nil);
+}
+
 - (CFIndex)characterIndexAtPoint:(CGPoint)p {
     if (!CGRectContainsPoint(self.bounds, p)) {
         return NSNotFound;
@@ -839,6 +848,14 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
 
                 CTLineDraw(truncatedLine, c);
+                
+                NSRange linkRange;
+                if ([attributedTokenString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
+                    NSRange tokenRange = [truncationString.string rangeOfString:attributedTokenString.string];
+                    NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+lastLineRange.length)-tokenRange.length, (NSUInteger)tokenRange.length);
+                    
+                    [self addLinkToURL:[attributedTokenString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
+                }
 
                 CFRelease(truncatedLine);
                 CFRelease(truncationLine);
@@ -922,7 +939,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     runBounds.size.width = CGRectGetWidth(lineBounds);
                 }
 
-                CGPathRef path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(CGRectInset(runBounds, -1.0f, 0.0f), lineWidth, lineWidth) cornerRadius:cornerRadius] CGPath];
+                CGPathRef path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(CGRectInset(runBounds, self.linkBackgroundInsetDX, self.linkBackgroundInsetDY), lineWidth, lineWidth) cornerRadius:cornerRadius] CGPath];
 
                 CGContextSetLineJoin(c, kCGLineJoinRound);
 
@@ -1538,6 +1555,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeUIEdgeInsets:self.textInsets forKey:NSStringFromSelector(@selector(textInsets))];
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
     [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
+    [coder encodeObject:@(self.linkBackgroundInsetDX) forKey:NSStringFromSelector(@selector(linkBackgroundInsetDX))];
+    [coder encodeObject:@(self.linkBackgroundInsetDY) forKey:NSStringFromSelector(@selector(linkBackgroundInsetDY))];
     [coder encodeObject:self.attributedText forKey:NSStringFromSelector(@selector(attributedText))];
     [coder encodeObject:self.text forKey:NSStringFromSelector(@selector(text))];
 }
@@ -1622,6 +1641,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(truncationTokenString))]) {
         self.truncationTokenString = [coder decodeObjectForKey:NSStringFromSelector(@selector(truncationTokenString))];
+    }
+    
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(linkBackgroundInsetDX))]) {
+        self.linkBackgroundInsetDX = [[coder decodeObjectForKey:NSStringFromSelector(@selector(linkBackgroundInsetDX))] floatValue];
+    }
+    
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(linkBackgroundInsetDY))]) {
+        self.linkBackgroundInsetDY = [[coder decodeObjectForKey:NSStringFromSelector(@selector(linkBackgroundInsetDY))] floatValue];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
