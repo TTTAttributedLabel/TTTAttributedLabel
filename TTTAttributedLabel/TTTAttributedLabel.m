@@ -806,8 +806,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                NSAttributedString *attributedTokenString = self.truncationTokenAttributedString;
-                if (!attributedTokenString) {
+                NSAttributedString *attributedTruncationString = self.attributedTruncationToken;
+                if (!attributedTruncationString) {
                     NSString *truncationTokenString = self.truncationTokenString;
                     if (!truncationTokenString) {
                         truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
@@ -818,9 +818,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
                     }
                     
-                    attributedTokenString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
+                    attributedTruncationString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
                 }
-                CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTokenString);
+                CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTruncationString);
 #pragma clang diagnostic pop
 
                 // Append truncationToken to the string
@@ -834,7 +834,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         [truncationString deleteCharactersInRange:NSMakeRange((NSUInteger)(lastLineRange.length - 1), 1)];
                     }
                 }
-                [truncationString appendAttributedString:attributedTokenString];
+                [truncationString appendAttributedString:attributedTruncationString];
                 CTLineRef truncationLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)truncationString);
 
                 // Truncate the line in case it is too long.
@@ -850,11 +850,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CTLineDraw(truncatedLine, c);
                 
                 NSRange linkRange;
-                if ([attributedTokenString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
-                    NSRange tokenRange = [truncationString.string rangeOfString:attributedTokenString.string];
+                if ([attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
+                    NSRange tokenRange = [truncationString.string rangeOfString:attributedTruncationString.string];
                     NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+lastLineRange.length)-tokenRange.length, (NSUInteger)tokenRange.length);
                     
-                    [self addLinkToURL:[attributedTokenString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
+                    [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
                 }
 
                 CFRelease(truncatedLine);

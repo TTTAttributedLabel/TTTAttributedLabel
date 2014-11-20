@@ -234,19 +234,19 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 ///--------------------------------------------
 
 /**
- @deprecated Use `truncationTokenAttributedString` instead.
+ @deprecated Use `attributedTruncationToken` instead.
  */
 @property (nonatomic, strong) NSString *truncationTokenString DEPRECATED_ATTRIBUTE;
 
 /**
- @deprecated Use `truncationTokenAttributedString` instead.
+ @deprecated Use `attributedTruncationToken` instead.
  */
 @property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes DEPRECATED_ATTRIBUTE;
 
 /**
  The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
  */
-@property (nonatomic, strong) NSAttributedString *truncationTokenAttributedString;
+@property (nonatomic, strong) NSAttributedString *attributedTruncationToken;
 
 
 ///--------------------------------------------
