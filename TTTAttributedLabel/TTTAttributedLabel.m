@@ -1383,11 +1383,15 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
     for (NSTextCheckingResult *result in self.links) {
         [attributesToRemove enumerateKeysAndObjectsUsingBlock:^(NSString *name, __unused id value, __unused BOOL *stop) {
-            [mutableAttributedString removeAttribute:name range:result.range];
+            if (NSMaxRange(result.range) <= mutableAttributedString.length) {
+                [mutableAttributedString removeAttribute:name range:result.range];
+            }
         }];
 
         if (attributesToAdd) {
-            [mutableAttributedString addAttributes:attributesToAdd range:result.range];
+            if (NSMaxRange(result.range) <= mutableAttributedString.length) {
+                [mutableAttributedString addAttributes:attributesToAdd range:result.range];
+            }
         }
     }
 
