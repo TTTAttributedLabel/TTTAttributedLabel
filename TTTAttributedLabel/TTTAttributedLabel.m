@@ -546,8 +546,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)enabledTextCheckingTypes {
-    // Avoid recreating the data detector
-    if (_enabledTextCheckingTypes == enabledTextCheckingTypes) {
+    if (self.enabledTextCheckingTypes == enabledTextCheckingTypes) {
         return;
     }
     
