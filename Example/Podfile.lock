@@ -1,0 +1,14 @@
+PODS:
+  - TTTAttributedLabel (1.11.0)
+
+DEPENDENCIES:
+  - TTTAttributedLabel (from `../`)
+
+EXTERNAL SOURCES:
+  TTTAttributedLabel:
+    :path: ../
+
+SPEC CHECKSUMS:
+  TTTAttributedLabel: 0e0752f3281f3b820417dda4e0088c5cf712ca8d
+
+COCOAPODS: 0.35.0
