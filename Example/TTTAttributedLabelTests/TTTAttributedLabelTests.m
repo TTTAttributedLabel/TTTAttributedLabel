@@ -144,6 +144,14 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testLabelShadowRadius {
+    label.shadowRadius = 3.f;
+    label.shadowColor = [UIColor greenColor];
+    label.shadowOffset = CGSizeMake(1, 3);
+    label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testLinkPressCallsDelegate {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
