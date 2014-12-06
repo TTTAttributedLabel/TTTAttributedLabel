@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import <TTTAttributedLabel.h>
 #import <FBSnapshotTestCase.h>
+#import <Expecta.h>
 
 static NSString * const kTestLabelText = @"Pallando, Merlyn, and Melisandre were walking one day...";
 static CGSize const kTestLabelSize = (CGSize) { 90, CGFLOAT_MAX };
@@ -92,6 +93,15 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     XCTAssertTrue([label containslinkAtPoint:CGPointMake(5, 5)], @"Label should contain a link at the start of the string");
+    XCTAssertFalse([label containslinkAtPoint:CGPointMake(30, 5)], @"Label should not contain a link elsewhere in the string");
+}
+
+- (void)testLinkDetection {
+    label.enabledTextCheckingTypes = NSTextCheckingTypeLink;
+    label.text = [testURL absoluteString];
+    
+    // Data detection is performed asynchronously in a background thread
+    EXP_expect([label.links count] > 0).will.beTruthy();
 }
 
 - (void)testLinkArray {

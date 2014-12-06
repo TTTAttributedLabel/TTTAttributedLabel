@@ -1,8 +1,10 @@
 PODS:
+  - Expecta (0.3.1)
   - FBSnapshotTestCase (1.4)
   - TTTAttributedLabel (1.12.0)
 
 DEPENDENCIES:
+  - Expecta
   - FBSnapshotTestCase
   - TTTAttributedLabel (from `../`)
 
@@ -11,6 +13,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
+  Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
   FBSnapshotTestCase: f9f225b5ba11c8d8c09075590490df16314e4d62
   TTTAttributedLabel: ea3b165c9f9f7eb599bc26902f897199c9d73aef
 
