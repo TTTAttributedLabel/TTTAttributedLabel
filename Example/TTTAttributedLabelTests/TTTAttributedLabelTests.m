@@ -10,6 +10,8 @@
 #import <TTTAttributedLabel.h>
 #import <FBSnapshotTestCase.h>
 #import <Expecta.h>
+#import <OCMock.h>
+#import <KIF.h>
 
 static NSString * const kTestLabelText = @"Pallando, Merlyn, and Melisandre were walking one day...";
 static CGSize const kTestLabelSize = (CGSize) { 90, CGFLOAT_MAX };
@@ -134,6 +136,50 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToURL:testURL withRange:NSMakeRange(10, 6)];
     TTTSizeAttributedLabel(label);
     FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testLabelTextInsets {
+    label.textInsets = UIEdgeInsetsMake(10, 40, 10, 40);
+    label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testLinkPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testPhonePressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSString *phone = @"415-555-1212";
+    [label addLinkToPhoneNumber:phone withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithPhoneNumber:phone];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
 }
 
 @end

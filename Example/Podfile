@@ -18,4 +18,6 @@ target :TTTAttributedLabelTests, :exclusive => true do
     install_pods
     pod 'FBSnapshotTestCase'
     pod 'Expecta'
+    pod 'OCMock'
+    pod 'KIF'
 end
