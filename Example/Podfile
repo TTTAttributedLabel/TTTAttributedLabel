@@ -6,5 +6,15 @@ xcodeproj 'Espressos'
 
 deployment_target = '6.0'
 
-pod 'TTTAttributedLabel', :path => '../'
+def install_pods
+    pod 'TTTAttributedLabel', :path => '../'
+end
 
+target :Espressos do
+    install_pods
+end
+
+target :TTTAttributedLabelTests, :exclusive => true do
+    install_pods
+    pod 'FBSnapshotTestCase'
+end
