@@ -80,6 +80,13 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
+- (void)testVerticalAlignment {
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 90, 300)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testContainsLinkAtPoint {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
