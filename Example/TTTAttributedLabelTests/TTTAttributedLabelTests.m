@@ -45,8 +45,6 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     
     label = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(0, 0, 300, 100)];
     label.numberOfLines = 0;
-    label.textColor = [UIColor redColor];
-    label.font = [UIFont boldSystemFontOfSize:16.f];
     
     testURL = [NSURL URLWithString:@"http://helios.io"];
     
@@ -101,7 +99,8 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     label.text = [testURL absoluteString];
     
     // Data detection is performed asynchronously in a background thread
-    EXP_expect([label.links count] > 0).will.beTruthy();
+    EXP_expect([label.links count] == 1).will.beTruthy();
+    EXP_expect([((NSTextCheckingResult *)label.links[0]).URL isEqual:testURL]).will.beTruthy();
 }
 
 - (void)testLinkArray {
