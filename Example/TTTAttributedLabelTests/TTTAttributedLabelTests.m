@@ -61,6 +61,8 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [super tearDown];
 }
 
+#pragma mark - Logic tests
+
 - (void)testInitializable {
     XCTAssertNotNil(label, @"Label should be initializable");
 }
@@ -79,13 +81,6 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     
     UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
     XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
-}
-
-- (void)testVerticalAlignment {
-    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
-    label.text = TTTAttributedTestString();
-    [label setFrame:CGRectMake(0, 0, 90, 300)];
-    FBSnapshotVerifyView(label, nil);
 }
 
 - (void)testContainsLinkAtPoint {
@@ -115,6 +110,15 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     XCTAssertEqual(result.resultType, NSTextCheckingTypeLink, @"Should be a link checking result");
     XCTAssertTrue(result.range.location == 0 && result.range.length == 1, @"Link range should match");
     XCTAssertEqualObjects(result.URL, testURL, @"Should set and retrieve test URL");
+}
+
+#pragma mark - FBSnapshotTestCase tests
+
+- (void)testVerticalAlignment {
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 90, 300)];
+    FBSnapshotVerifyView(label, nil);
 }
 
 - (void)testMultilineLabelView {
@@ -152,6 +156,8 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     FBSnapshotVerifyView(label, nil);
 }
 
+#pragma mark - TTTAttributedLabelDelegate tests
+
 - (void)testLinkPressCallsDelegate {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
@@ -181,6 +187,94 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
     
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithPhoneNumber:phone];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testDatePressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDate *date = [NSDate date];
+    [label addLinkToDate:date withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithDate:date];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testAddressPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDictionary *address = @{
+          NSTextCheckingCityKey     : @"San Fransokyo",
+          NSTextCheckingCountryKey  : @"USA",
+          NSTextCheckingStateKey    : @"California",
+          NSTextCheckingStreetKey   : @"1 Market St",
+    };
+    [label addLinkToAddress:address withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithAddress:address];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testTransitPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDictionary *transitDict = @{
+          NSTextCheckingAirlineKey  : @"United Airlines",
+          NSTextCheckingFlightKey   : @1456,
+    };
+    [label addLinkToTransitInformation:transitDict withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTransitInformation:transitDict];
+    
+    // Simulate a touch
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:CGPointMake(5, 5)];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testTextCheckingPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    [label addLinkWithTextCheckingResult:textResult];
+    TTTSizeAttributedLabel(label);
+    
+    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTextCheckingResult:textResult];
     
     // Simulate a touch
     UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
