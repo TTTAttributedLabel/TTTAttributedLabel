@@ -28,8 +28,13 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     CGSize size = [TTTAttributedLabel sizeThatFitsAttributedString:label.attributedText
                                                    withConstraints:kTestLabelSize
                                             limitedToNumberOfLines:0];
-    
     [label setFrame:CGRectMake(0, 0, size.width, size.height)];
+};
+
+static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoint point) {
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label tapAtPoint:point];
 };
 
 @interface TTTAttributedLabelTests : FBSnapshotTestCase
@@ -40,6 +45,7 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
 {
     TTTAttributedLabel *label; // system under test
     NSURL *testURL;
+    OCMockObject *TTTDelegateMock;
 }
 
 - (void)setUp {
@@ -49,6 +55,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     label.numberOfLines = 0;
     
     testURL = [NSURL URLWithString:@"http://helios.io"];
+    
+    TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
+    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
     
     // Compatibility fix for intermittently non-rendering images
     self.renderAsLayer = YES;
@@ -180,15 +189,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
@@ -200,15 +203,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToPhoneNumber:phone withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithPhoneNumber:phone];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
@@ -220,15 +217,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToDate:date withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithDate:date];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
@@ -245,15 +236,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToAddress:address withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithAddress:address];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
@@ -268,15 +253,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkToTransitInformation:transitDict withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTransitInformation:transitDict];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
@@ -288,15 +267,9 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     [label addLinkWithTextCheckingResult:textResult];
     TTTSizeAttributedLabel(label);
     
-    OCMockObject *TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
-    label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTextCheckingResult:textResult];
     
-    // Simulate a touch
-    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
-    [window addSubview:label];
-    [label tapAtPoint:CGPointMake(5, 5)];
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
     
     [TTTDelegateMock verify];
 }
