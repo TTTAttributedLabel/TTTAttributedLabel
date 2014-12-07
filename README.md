@@ -4,7 +4,7 @@
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
-`TTTAttributedLabel` is a drop-in replacement for `UILabel`, which provides a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `UIDataDetectorTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
+`TTTAttributedLabel` is a drop-in replacement for `UILabel`, which provides a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
 Even though `NSAttributedString` support was added for UILabel in iOS 6, `TTTAttributedLabel` has several unique features:
 
