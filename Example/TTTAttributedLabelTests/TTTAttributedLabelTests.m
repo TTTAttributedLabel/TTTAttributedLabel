@@ -156,6 +156,23 @@ static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testComplexAttributedString {
+    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:kTestLabelText];
+    [string addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:16.f] range:NSMakeRange(0, [kTestLabelText length])];
+    [string addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo" size:18.f] range:NSMakeRange(0, 10)];
+    [string addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier" size:20.f] range:NSMakeRange(10, 10)];
+    [string addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(5, 10)];
+    [string addAttribute:kTTTStrikeOutAttributeName value:@1 range:NSMakeRange(15, 5)];
+    [string addAttribute:kTTTBackgroundFillColorAttributeName value:(id)[UIColor blueColor].CGColor range:NSMakeRange(23, 8)];
+    [string addAttribute:kTTTBackgroundCornerRadiusAttributeName value:@4 range:NSMakeRange(23, 8)];
+    [string addAttribute:kTTTBackgroundStrokeColorAttributeName value:(id)[UIColor orangeColor].CGColor range:NSMakeRange(34, 4)];
+    [string addAttribute:kTTTBackgroundLineWidthAttributeName value:@2 range:NSMakeRange(34, 4)];
+    
+    label.text = string;
+    TTTSizeAttributedLabel(label);
+    FBSnapshotVerifyView(label, nil);
+}
+
 #pragma mark - TTTAttributedLabelDelegate tests
 
 - (void)testLinkPressCallsDelegate {
