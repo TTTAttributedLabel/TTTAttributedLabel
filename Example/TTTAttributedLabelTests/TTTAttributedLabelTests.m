@@ -81,6 +81,29 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     XCTAssertTrue([label.attributedText isEqualToAttributedString:TTTAttributedTestString()], @"Attributed strings should match");
 }
 
+- (void)testEmptyAttributedStringSizing {
+    XCTAssertTrue(CGSizeEqualToSize(CGSizeZero, [TTTAttributedLabel sizeThatFitsAttributedString:nil
+                                                                                 withConstraints:CGSizeMake(10, CGFLOAT_MAX)
+                                                                          limitedToNumberOfLines:0]),
+                  @"nil string should size to empty");
+    XCTAssertTrue(CGSizeEqualToSize(CGSizeZero, [TTTAttributedLabel sizeThatFitsAttributedString:[[NSAttributedString alloc] initWithString:@""]
+                                                                                 withConstraints:CGSizeMake(10, CGFLOAT_MAX)
+                                                                          limitedToNumberOfLines:0]),
+                  @"empty string should size to zero");
+}
+
+- (void)testSingleLineLabelSizing {
+    NSAttributedString *testString = TTTAttributedTestString();
+    label.text = testString;
+    
+    CGSize lineSize = [TTTAttributedLabel sizeThatFitsAttributedString:testString
+                                                       withConstraints:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                                limitedToNumberOfLines:1];
+    
+    UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    XCTAssertLessThan(lineSize.height, font.pointSize * 2, @"Label should size to less than two lines");
+}
+
 - (void)testMultilineLabelSizing {
     NSAttributedString *testString = TTTAttributedTestString();
     

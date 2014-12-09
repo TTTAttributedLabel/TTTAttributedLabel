@@ -430,7 +430,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                        withConstraints:(CGSize)size
                 limitedToNumberOfLines:(NSUInteger)numberOfLines
 {
-    if (!attributedString) {
+    if (!attributedString || attributedString.length == 0) {
         return CGSizeZero;
     }
 
