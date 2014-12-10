@@ -37,6 +37,12 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [label tapAtPoint:point];
 };
 
+static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedLabel *label, CGPoint point, NSTimeInterval duration) {
+    UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    [window addSubview:label];
+    [label longPressAtPoint:point duration:duration];
+};
+
 @interface TTTAttributedLabelTests : FBSnapshotTestCase
 
 @end
@@ -256,6 +262,26 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
 
 #pragma mark - TTTAttributedLabelDelegate tests
 
+- (void)testDefaultLongPressValues {
+    XCTAssertGreaterThan(label.minimumLongPressDuration, 0, @"Should have a default minimum long press duration");
+    XCTAssertGreaterThan(label.allowableLongPressMovement, 0, @"Should have a default allowable long press movement distance");
+}
+
+- (void)testMinimumLongPressDuration {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    label.minimumLongPressDuration = 0.4f;
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.2f);
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testLinkPressCallsDelegate {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
@@ -264,6 +290,46 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
     
     TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testLongPressOffLinkDoesNotCallDelegate {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(30, 5), 0.6f);
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testDragOffLinkDoesNotCallDelegate {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    
+    [[[UIApplication sharedApplication].windows lastObject] addSubview:label];
+    [label dragFromPoint:CGPointMake(0, 1) toPoint:CGPointMake(30, 5) steps:30];
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testLongLinkPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
     
     [TTTDelegateMock verify];
 }
@@ -282,6 +348,21 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [TTTDelegateMock verify];
 }
 
+- (void)testLongPhonePressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSString *phone = @"415-555-1212";
+    [label addLinkToPhoneNumber:phone withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithPhoneNumber:phone];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithPhoneNumber:phone atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testDatePressCallsDelegate {
     label.text = TTTAttributedTestString();
     
@@ -296,12 +377,27 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [TTTDelegateMock verify];
 }
 
+- (void)testLongDatePressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDate *date = [NSDate date];
+    [label addLinkToDate:date withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithDate:date];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithDate:date atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testAddressPressCallsDelegate {
     label.text = TTTAttributedTestString();
     
     NSDictionary *address = @{
           NSTextCheckingCityKey     : @"San Fransokyo",
-          NSTextCheckingCountryKey  : @"USA",
+          NSTextCheckingCountryKey  : @"United States of Eurasia",
           NSTextCheckingStateKey    : @"California",
           NSTextCheckingStreetKey   : @"1 Market St",
     };
@@ -315,12 +411,32 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [TTTDelegateMock verify];
 }
 
+- (void)testLongAddressPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDictionary *address = @{
+          NSTextCheckingCityKey     : @"San Fransokyo",
+          NSTextCheckingCountryKey  : @"United States of Eurasia",
+          NSTextCheckingStateKey    : @"California",
+          NSTextCheckingStreetKey   : @"1 Market St",
+    };
+    [label addLinkToAddress:address withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithAddress:address];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithAddress:address atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testTransitPressCallsDelegate {
     label.text = TTTAttributedTestString();
     
     NSDictionary *transitDict = @{
-          NSTextCheckingAirlineKey  : @"United Airlines",
-          NSTextCheckingFlightKey   : @1456,
+          NSTextCheckingAirlineKey  : @"Galactic Spacelines",
+          NSTextCheckingFlightKey   : @9876,
     };
     [label addLinkToTransitInformation:transitDict withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
@@ -328,6 +444,24 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTransitInformation:transitDict];
     
     TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testLongTransitPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDictionary *transitDict = @{
+          NSTextCheckingAirlineKey  : @"Galactic Spacelines",
+          NSTextCheckingFlightKey   : @9876,
+    };
+    [label addLinkToTransitInformation:transitDict withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithTransitInformation:transitDict];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithTransitInformation:transitDict atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
     
     [TTTDelegateMock verify];
 }
@@ -342,6 +476,21 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithTextCheckingResult:textResult];
     
     TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 5));
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testLongTextCheckingPressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    [label addLinkWithTextCheckingResult:textResult];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithTextCheckingResult:textResult];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithTextCheckingResult:textResult atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
     
     [TTTDelegateMock verify];
 }
