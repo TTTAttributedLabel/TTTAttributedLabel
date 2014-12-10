@@ -877,16 +877,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CGPoint origins[[lines count]];
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
-    // Compensate for y-offset of text rect from vertical positioning
-    CGFloat yOffset = self.textInsets.top - [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines].origin.y;
-
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
-        CGRect lineBounds = CGRectMake(rect.origin.x, rect.origin.y, width, ascent + descent + leading) ;
-        lineBounds.origin.x += origins[lineIndex].x;
-        lineBounds.origin.y += origins[lineIndex].y;
 
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
@@ -916,12 +910,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 }
 
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left - rect.origin.x;
-                runBounds.origin.y = origins[lineIndex].y + rect.origin.y + yOffset - fillPadding.bottom - rect.origin.y;
+                runBounds.origin.y = origins[lineIndex].y + rect.origin.y - fillPadding.bottom - rect.origin.y;
                 runBounds.origin.y -= runDescent;
 
                 // Don't draw higlightedLinkBackground too far to the right
-                if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds)) {
-                    runBounds.size.width = CGRectGetWidth(lineBounds);
+                if (CGRectGetWidth(runBounds) > width) {
+                    runBounds.size.width = width;
                 }
 
                 CGPathRef path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(UIEdgeInsetsInsetRect(runBounds, self.linkBackgroundEdgeInset), lineWidth, lineWidth) cornerRadius:cornerRadius] CGPath];
@@ -958,9 +952,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
         CGFloat width = (CGFloat)CTLineGetTypographicBounds((__bridge CTLineRef)line, &ascent, &descent, &leading) ;
-        CGRect lineBounds = CGRectMake(0.0f, 0.0f, width, ascent + descent + leading) ;
-        lineBounds.origin.x = origins[lineIndex].x;
-        lineBounds.origin.y = origins[lineIndex].y;
 
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
@@ -990,8 +981,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 runBounds.origin.y -= runDescent;
 
                 // Don't draw strikeout too far to the right
-                if (CGRectGetWidth(runBounds) > CGRectGetWidth(lineBounds)) {
-                    runBounds.size.width = CGRectGetWidth(lineBounds);
+                if (CGRectGetWidth(runBounds) > width) {
+                    runBounds.size.width = width;
                 }
 
 				switch (superscriptStyle) {
