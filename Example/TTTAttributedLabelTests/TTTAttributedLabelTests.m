@@ -144,6 +144,34 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     XCTAssertEqualObjects(result.URL, testURL, @"Should set and retrieve test URL");
 }
 
+- (void)testInheritsAttributesFromLabel {
+    UIFont *testFont = [UIFont boldSystemFontOfSize:16.f];
+    UIColor *testColor = [UIColor greenColor];
+    CGFloat testKern = 3.f;
+    
+    label.font = testFont;
+    label.textColor = testColor;
+    label.kern = testKern;
+    
+    NSMutableAttributedString * (^configureBlock) (NSMutableAttributedString *) = ^NSMutableAttributedString *(NSMutableAttributedString *inheritedString)
+    {
+        XCTAssertEqualObjects(testFont,
+                              [inheritedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL],
+                              @"Inherited font should match");
+        XCTAssertEqualObjects(testColor,
+                              [inheritedString attribute:(NSString *)kCTForegroundColorAttributeName atIndex:0 effectiveRange:NULL],
+                              @"Inherited color should match");
+        XCTAssertEqualWithAccuracy(testKern,
+                                   [[inheritedString attribute:(NSString *)kCTKernAttributeName atIndex:0 effectiveRange:NULL] floatValue],
+                                   FLT_EPSILON,
+                                   @"Inherited kerning should match");
+        
+        return inheritedString;
+    };
+    
+    [label setText:@"1.21 GigaWatts!" afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
+}
+
 #pragma mark - FBSnapshotTestCase tests
 
 - (void)testVerticalAlignment {
