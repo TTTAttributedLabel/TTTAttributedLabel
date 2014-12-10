@@ -153,6 +153,8 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
     label.textColor = testColor;
     label.kern = testKern;
     
+    __block NSMutableAttributedString *derivedString;
+    
     NSMutableAttributedString * (^configureBlock) (NSMutableAttributedString *) = ^NSMutableAttributedString *(NSMutableAttributedString *inheritedString)
     {
         XCTAssertEqualObjects(testFont,
@@ -166,10 +168,15 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
                                    FLT_EPSILON,
                                    @"Inherited kerning should match");
         
+        derivedString = inheritedString;
+        
         return inheritedString;
     };
     
     [label setText:@"1.21 GigaWatts!" afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
+    
+    XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
+                  @"Label should ultimately set the derived string as its text");
 }
 
 #pragma mark - FBSnapshotTestCase tests
