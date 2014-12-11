@@ -202,10 +202,24 @@ static inline void TTTSimulateTapOnLabelAtPoint(TTTAttributedLabel *label, CGPoi
 }
 
 - (void)testLinkAttributeLabelView {
-    label.linkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor };
+    label.linkAttributes = @{ NSForegroundColorAttributeName : (id)[UIColor greenColor].CGColor };
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(10, 6)];
     TTTSizeAttributedLabel(label);
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testLinkBackgroundLabelView {
+    label.linkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor };
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(40, 5)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testMultipleLineLinkBackgroundLabelView {
+    label.linkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor };
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(20, 25)];
     FBSnapshotVerifyView(label, nil);
 }
 
