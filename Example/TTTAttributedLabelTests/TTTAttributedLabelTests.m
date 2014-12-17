@@ -263,8 +263,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 #pragma mark - TTTAttributedLabelDelegate tests
 
 - (void)testDefaultLongPressValues {
-    XCTAssertGreaterThan(label.minimumLongPressDuration, 0, @"Should have a default minimum long press duration");
-    XCTAssertGreaterThan(label.allowableLongPressMovement, 0, @"Should have a default allowable long press movement distance");
+    XCTAssertGreaterThan(label.longPressGestureRecognizer.minimumPressDuration, 0, @"Should have a default minimum long press duration");
+    XCTAssertGreaterThan(label.longPressGestureRecognizer.allowableMovement, 0, @"Should have a default allowable long press movement distance");
 }
 
 - (void)testMinimumLongPressDuration {
@@ -272,7 +272,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     
-    label.minimumLongPressDuration = 0.4f;
+    label.longPressGestureRecognizer.minimumPressDuration = 0.4f;
     
     [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
     [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(5, 5)];

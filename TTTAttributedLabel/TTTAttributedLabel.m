@@ -305,7 +305,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
 @property (readwrite, nonatomic, strong) NSArray *accessibilityElements;
-@property (readwrite, nonatomic, strong) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 - (void) longPressGestureDidFire:(UILongPressGestureRecognizer *)sender;
 @end
@@ -415,11 +414,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
-    self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                    action:@selector(longPressGestureDidFire:)];
+    _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                action:@selector(longPressGestureDidFire:)];
     [self addGestureRecognizer:self.longPressGestureRecognizer];
-    _minimumLongPressDuration = self.longPressGestureRecognizer.minimumPressDuration;
-    _allowableLongPressMovement = self.longPressGestureRecognizer.allowableMovement;
 }
 
 - (void)dealloc {
@@ -1513,16 +1510,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 #pragma mark - UILongPressGestureRecognizer
-
-- (void)setMinimumLongPressDuration:(NSTimeInterval)minimumDuration {
-    _minimumLongPressDuration = minimumDuration;
-    self.longPressGestureRecognizer.minimumPressDuration = minimumDuration;
-}
-
-- (void)setAllowableLongPressMovement:(CGFloat)allowableLongPressMovement {
-    _allowableLongPressMovement = allowableLongPressMovement;
-    self.longPressGestureRecognizer.allowableMovement = allowableLongPressMovement;
-}
 
 - (void)longPressGestureDidFire:(UILongPressGestureRecognizer *)sender {
     switch (sender.state) {

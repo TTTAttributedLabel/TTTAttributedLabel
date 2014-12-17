@@ -256,17 +256,9 @@ IB_DESIGNABLE
 ///--------------------------
 
 /**
- *  The minimum press duration required to trigger a long press gesture on the label.
- *  Defaults to 0.5 seconds.
+ *  The long-press gesture recognizer used internally by the label.
  */
-@property (nonatomic, assign) NSTimeInterval minimumLongPressDuration;
-
-/**
- *  The allowable touch distance movement in a long press gesture before the gesture is cancelled.
- *  Defaults to 10.
- */
-@property (nonatomic, assign) CGFloat allowableLongPressMovement;
-
+@property (nonatomic, strong, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 ///--------------------------------------------
 /// @name Calculating Size of Attributed String
