@@ -305,6 +305,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, strong) NSArray *links;
 @property (readwrite, nonatomic, strong) NSTextCheckingResult *activeLink;
 @property (readwrite, nonatomic, strong) NSArray *accessibilityElements;
+
+- (void) longPressGestureDidFire:(UILongPressGestureRecognizer *)sender;
 @end
 
 @implementation TTTAttributedLabel {
@@ -412,6 +414,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
+    _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                action:@selector(longPressGestureDidFire:)];
+    [self addGestureRecognizer:self.longPressGestureRecognizer];
 }
 
 - (void)dealloc {
@@ -421,6 +426,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     if (_highlightFramesetter) {
         CFRelease(_highlightFramesetter);
+    }
+    
+    if (_longPressGestureRecognizer) {
+        [self removeGestureRecognizer:_longPressGestureRecognizer];
     }
 }
 
@@ -1497,6 +1506,64 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         self.activeLink = nil;
     } else {
         [super touchesCancelled:touches withEvent:event];
+    }
+}
+
+#pragma mark - UILongPressGestureRecognizer
+
+- (void)longPressGestureDidFire:(UILongPressGestureRecognizer *)sender {
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan: {
+            CGPoint touchPoint = [sender locationInView:self];
+            NSTextCheckingResult *result = [self linkAtPoint:touchPoint];
+            
+            if (result) {
+                switch (result.resultType) {
+                    case NSTextCheckingTypeLink:
+                        if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithURL:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithURL:result.URL atPoint:touchPoint];
+                            return;
+                        }
+                        break;
+                    case NSTextCheckingTypeAddress:
+                        if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithAddress:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithAddress:result.addressComponents atPoint:touchPoint];
+                            return;
+                        }
+                        break;
+                    case NSTextCheckingTypePhoneNumber:
+                        if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithPhoneNumber:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithPhoneNumber:result.phoneNumber atPoint:touchPoint];
+                            return;
+                        }
+                        break;
+                    case NSTextCheckingTypeDate:
+                        if (result.timeZone && [self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithDate:timeZone:duration:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithDate:result.date timeZone:result.timeZone duration:result.duration atPoint:touchPoint];
+                            return;
+                        } else if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithDate:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithDate:result.date atPoint:touchPoint];
+                            return;
+                        }
+                        break;
+                    case NSTextCheckingTypeTransitInformation:
+                        if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithTransitInformation:atPoint:)]) {
+                            [self.delegate attributedLabel:self didLongPressLinkWithTransitInformation:result.components atPoint:touchPoint];
+                            return;
+                        }
+                    default:
+                        break;
+                }
+                
+                // Fallback to `attributedLabel:didLongPressLinkWithTextCheckingResult:atPoint:` if no other delegate method matched.
+                if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithTextCheckingResult:atPoint:)]) {
+                    [self.delegate attributedLabel:self didLongPressLinkWithTextCheckingResult:result atPoint:touchPoint];
+                }
+            }
+            break;
+        }
+        default:
+            break;
     }
 }
 

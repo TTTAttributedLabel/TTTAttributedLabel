@@ -251,6 +251,14 @@ IB_DESIGNABLE
  */
 @property (nonatomic, strong) IBInspectable NSAttributedString *attributedTruncationToken;
 
+///--------------------------
+/// @name Long press gestures
+///--------------------------
+
+/**
+ *  The long-press gesture recognizer used internally by the label.
+ */
+@property (nonatomic, strong, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 ///--------------------------------------------
 /// @name Calculating Size of Attributed String
@@ -471,5 +479,100 @@ didSelectLinkWithTransitInformation:(NSDictionary *)components;
  */
 - (void)attributedLabel:(TTTAttributedLabel *)label
 didSelectLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
+
+///---------------------------------
+/// @name Responding to Long Presses
+///---------------------------------
+
+/**
+ *  Long-press delegate methods include the CGPoint tapped within the label's coordinate space.
+ *  This may be useful on iPad to present a popover from a specific origin point.
+ */
+
+/**
+ Tells the delegate that the user long-pressed a link to a URL.
+ 
+ @param label The label whose link was long pressed.
+ @param url The URL for the link.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithURL:(NSURL *)url
+                atPoint:(CGPoint)point;
+
+/**
+ Tells the delegate that the user long-pressed a link to an address.
+ 
+ @param label The label whose link was long pressed.
+ @param addressComponents The components of the address for the link.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithAddress:(NSDictionary *)addressComponents
+                atPoint:(CGPoint)point;
+
+/**
+ Tells the delegate that the user long-pressed a link to a phone number.
+ 
+ @param label The label whose link was long pressed.
+ @param phoneNumber The phone number for the link.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithPhoneNumber:(NSString *)phoneNumber
+                atPoint:(CGPoint)point;
+
+
+/**
+ Tells the delegate that the user long-pressed a link to a date.
+ 
+ @param label The label whose link was long pressed.
+ @param date The date for the selected link.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithDate:(NSDate *)date
+                atPoint:(CGPoint)point;
+
+
+/**
+ Tells the delegate that the user long-pressed a link to a date with a time zone and duration.
+ 
+ @param label The label whose link was long pressed.
+ @param date The date for the link.
+ @param timeZone The time zone of the date for the link.
+ @param duration The duration, in seconds from the date for the link.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithDate:(NSDate *)date
+               timeZone:(NSTimeZone *)timeZone
+               duration:(NSTimeInterval)duration
+                atPoint:(CGPoint)point;
+
+
+/**
+ Tells the delegate that the user long-pressed a link to transit information.
+ 
+ @param label The label whose link was long pressed.
+ @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithTransitInformation:(NSDictionary *)components
+                atPoint:(CGPoint)point;
+
+/**
+ Tells the delegate that the user long-pressed a link to a text checking result.
+ 
+ @discussion Similar to `-attributedLabel:didSelectLinkWithTextCheckingResult:`, this method is called if a link is long pressed and the delegate does not implement the method corresponding to this type of link.
+ 
+ @param label The label whose link was long pressed.
+ @param result The custom text checking result.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
+                atPoint:(CGPoint)point;
 
 @end
