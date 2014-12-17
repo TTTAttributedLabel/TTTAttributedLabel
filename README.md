@@ -4,14 +4,16 @@
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
-`TTTAttributedLabel` is a drop-in replacement for `UILabel`, which provides a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
+`TTTAttributedLabel` is a drop-in replacement for `UILabel` providing a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
-Even though `NSAttributedString` support was added for UILabel in iOS 6, `TTTAttributedLabel` has several unique features:
+Even though `UILabel` received support for `NSAttributedString` in iOS 6, `TTTAttributedLabel` has several unique features:
 
 - Compatibility with iOS >= 4.3
 - Automatic data detection
 - Manual link embedding
 - Label style inheritance for attributed strings
+- Custom styling for links within the label
+- Long-press gestures in addition to tap gestures for links
 
 It also includes advanced paragraph style properties:
 
@@ -22,17 +24,19 @@ It also includes advanced paragraph style properties:
 - `highlightedShadowColor`
 - `lineHeightMultiple`
 - `lineSpacing`
+- `minimumLineHeight`
+- `maximumLineHeight`
 - `shadowRadius`
 - `textInsets`
 - `verticalAlignment`
 
 ### Accessibility
 
-As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver, through the  `UIAccessibilityElement` protocol. Each link can be individually selected, with an `accessibilityLabel` equal to its string value, and a corresponding `accessibilityValue` for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
+As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver through the  `UIAccessibilityElement` protocol. Each link can be individually selected, with an `accessibilityLabel` equal to its string value, and a corresponding `accessibilityValue` for URL, phone number, and date links.  Developers who wish to change this behavior or provide custom values should create a subclass and override `accessibilityElements`.
 
 ## Communication
 
-- If you **need help**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/tttattributedlabel). (Tag 'tttattributedlabel')
+- If you **need help**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/tttattributedlabel). (Tag `tttattributedlabel`)
 - If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/tttattributedlabel).
 - If you **found a bug**, open an issue.
 - If you **have a feature request**, open an issue.
@@ -40,7 +44,7 @@ As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver, through the  `UIA
 
 ## Installation
 
-[CocoaPods](http://cocoapods.org) is the recommended method of installing TTTAttributedLabel. Simply add the following line to your `Podfile`:
+[CocoaPods](http://cocoapods.org) is the recommended method of installing `TTTAttributedLabel`. Simply add the following line to your `Podfile`:
 
 #### Podfile
 
@@ -57,9 +61,9 @@ label.textColor = [UIColor darkGrayColor];
 label.lineBreakMode = UILineBreakModeWordWrap;
 label.numberOfLines = 0;
 
-NSString *text = @"Lorem ipsum dolar sit amet";
+NSString *text = @"Lorem ipsum dolor sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
-  NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolar" options:NSCaseInsensitiveSearch];
+  NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolor" options:NSCaseInsensitiveSearch];
   NSRange strikeRange = [[mutableAttributedString string] rangeOfString:@"sit amet" options:NSCaseInsensitiveSearch];
 
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
@@ -67,7 +71,7 @@ NSString *text = @"Lorem ipsum dolar sit amet";
   CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
   if (font) {
     [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
-    [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:[NSNumber numberWithBool:YES] range:strikeRange];
+    [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:@YES range:strikeRange];
     CFRelease(font);
   }
 
@@ -81,7 +85,7 @@ The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; i
 
 ### Links and Data Detection
 
-In addition to supporting rich text, `TTTAttributedLabel` allows you to automatically detect links for dates, addresses, links, phone numbers, transit information, or allow you to embed your own.
+In addition to supporting rich text, `TTTAttributedLabel` can automatically detect links for dates, addresses, URLs, phone numbers, transit information, and allows you to embed your own links.
 
 ``` objective-c
 label.enabledTextCheckingTypes = NSTextCheckingTypeLink; // Automatically detect links when the label text is subsequently changed
@@ -118,4 +122,4 @@ Mattt Thompson
 
 ## License
 
-TTTAttributedLabel is available under the MIT license. See the LICENSE file for more info.
+`TTTAttributedLabel` is available under the MIT license. See the LICENSE file for more info.
