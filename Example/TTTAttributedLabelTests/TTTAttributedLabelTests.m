@@ -199,6 +199,18 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testRightAlignedAttributedText {
+    label.textAlignment = NSTextAlignmentRight;
+    label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testCenterAlignedAttributedText {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testVerticalAlignment {
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
     label.text = TTTAttributedTestString();
