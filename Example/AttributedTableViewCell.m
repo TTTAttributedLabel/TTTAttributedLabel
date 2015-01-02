@@ -137,11 +137,11 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     [self.summaryLabel setNeedsDisplay];
 }
 
-+ (CGFloat)heightForCellWithText:(NSString *)text {
++ (CGFloat)heightForCellWithText:(NSString *)text availableWidth:(CGFloat)availableWidth {
     static CGFloat padding = 10.0;
 
     UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
-    CGSize textSize = CGSizeMake(275.0, CGFLOAT_MAX);
+    CGSize textSize = CGSizeMake(availableWidth - (2 * padding), CGFLOAT_MAX);
     CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
 
 #if defined(__LP64__) && __LP64__

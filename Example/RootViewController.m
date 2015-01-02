@@ -56,16 +56,18 @@
     return (NSInteger)[self.espressos count];
 }
 
-- (CGFloat)tableView:(__unused UITableView *)tableView
+- (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
-    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:(NSUInteger)indexPath.row]];
+    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:(NSUInteger)indexPath.row]
+                                           availableWidth:CGRectGetWidth(tableView.frame) - 26]; // rough accessory size
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     
     AttributedTableViewCell *cell = (AttributedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
     if (cell == nil) {
         cell = [[AttributedTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

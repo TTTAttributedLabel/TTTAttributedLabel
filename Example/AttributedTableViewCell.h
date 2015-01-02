@@ -29,6 +29,6 @@
 @property (nonatomic, copy) NSString *summaryText;
 @property (nonatomic, strong) TTTAttributedLabel *summaryLabel;
 
-+ (CGFloat)heightForCellWithText:(NSString *)text;
++ (CGFloat)heightForCellWithText:(NSString *)text availableWidth:(CGFloat)availableWidth;
 
 @end
