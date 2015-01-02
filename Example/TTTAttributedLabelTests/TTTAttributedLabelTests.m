@@ -187,6 +187,15 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 #pragma mark - FBSnapshotTestCase tests
 
+- (void)testAttributedTruncationToken {
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[DOTDOTDOT]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
+                                                                                    NSForegroundColorAttributeName : [UIColor blueColor] }];
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 120, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testRightAlignedSimpleText {
     label.textAlignment = NSTextAlignmentRight;
     label.text = @"Test text";
