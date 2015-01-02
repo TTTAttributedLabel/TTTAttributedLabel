@@ -863,7 +863,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CFRelease(truncationLine);
                 CFRelease(truncationToken);
             } else {
-                CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
+                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+                CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
                 CTLineDraw(line, c);
             }
         } else {
