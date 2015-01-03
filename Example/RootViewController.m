@@ -60,7 +60,7 @@
 heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
     return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:(NSUInteger)indexPath.row]
-                                           availableWidth:CGRectGetWidth(tableView.frame) - 26]; // rough accessory size
+                                           availableWidth:CGRectGetWidth(tableView.frame)];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

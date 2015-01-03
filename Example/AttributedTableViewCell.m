@@ -141,7 +141,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     static CGFloat padding = 10.0;
 
     UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
-    CGSize textSize = CGSizeMake(availableWidth - (2 * padding), CGFLOAT_MAX);
+    CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
     CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
 
 #if defined(__LP64__) && __LP64__
