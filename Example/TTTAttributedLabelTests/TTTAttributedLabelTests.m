@@ -87,6 +87,33 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertTrue([label.attributedText isEqualToAttributedString:TTTAttributedTestString()], @"Attributed strings should match");
 }
 
+- (void)testDerivedAttributedString {
+    label.font = [UIFont italicSystemFontOfSize:15.f];
+    label.textColor = [UIColor purpleColor];
+    label.kern = 0.f;
+    label.text = kTestLabelText;
+    
+    NSMutableParagraphStyle *style = [NSMutableParagraphStyle new];
+    style.lineHeightMultiple = label.lineHeightMultiple;
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    style.lineSpacing = label.lineSpacing;
+    style.alignment = label.textAlignment;
+    style.minimumLineHeight = label.font.lineHeight * label.lineHeightMultiple;
+    style.maximumLineHeight = label.font.lineHeight * label.lineHeightMultiple;
+    style.firstLineHeadIndent = label.firstLineIndent;
+    
+    NSAttributedString *derivedString = [[NSAttributedString alloc] initWithString:kTestLabelText
+                                                                        attributes:@{
+                                                                            (id)kCTFontAttributeName : label.font,
+                                                                            (id)kCTForegroundColorAttributeName : label.textColor,
+                                                                            (id)kCTKernAttributeName : @(label.kern),
+                                                                            (id)kCTParagraphStyleAttributeName : style
+                                                                        }];
+    
+    XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
+                  @"Should properly derive an attributed string");
+}
+
 - (void)testEmptyAttributedStringSizing {
     XCTAssertTrue(CGSizeEqualToSize(CGSizeZero, [TTTAttributedLabel sizeThatFitsAttributedString:nil
                                                                                  withConstraints:CGSizeMake(10, CGFLOAT_MAX)
