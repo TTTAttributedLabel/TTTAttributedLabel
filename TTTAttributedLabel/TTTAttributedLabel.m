@@ -644,7 +644,25 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)point {
-    return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]];
+    
+    // Search for links within a reasonable radius of the touch point.
+    const CGFloat radius = 11;
+    const CGPoint deltas[] = {
+        CGPointMake(0, 0), // Exact point
+        CGPointMake(0, -radius), CGPointMake(0, radius), // Above and below
+        CGPointMake(-radius, 0), CGPointMake(radius, 0), // Beside
+        CGPointMake(-radius, -radius), CGPointMake(-radius, radius), CGPointMake(radius, radius), CGPointMake(radius, -radius) // Diagonal
+    };
+    const size_t count = sizeof(deltas) / sizeof(CGPoint);
+    
+    NSTextCheckingResult *result = nil;
+    
+    for (NSInteger i = 0; i < count && result == nil; i ++) {
+        CGPoint currentPoint = CGPointMake(point.x + deltas[i].x, point.y + deltas[i].y);
+        result = [self linkAtCharacterIndex:[self characterIndexAtPoint:currentPoint]];
+    }
+    
+    return result;
 }
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
