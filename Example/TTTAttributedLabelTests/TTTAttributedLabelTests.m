@@ -360,7 +360,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     TTTSizeAttributedLabel(label);
     
     [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
-    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(50, 5)];
     
     TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(50, 5), 0.6f);
     
@@ -373,7 +373,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     TTTSizeAttributedLabel(label);
     
     [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
-    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(50, 5)];
     
     [[[UIApplication sharedApplication].windows lastObject] addSubview:label];
     [label dragFromPoint:CGPointMake(0, 1) toPoint:CGPointMake(50, 5) steps:30];
