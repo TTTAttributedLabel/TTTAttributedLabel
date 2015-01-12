@@ -644,14 +644,18 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)point {
+    // Approximates the behavior of UIWebView which will trigger for links on touches within 15pt of the edge.
+    return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]] ?: [self linkAtRadius:7.5 aroundPoint:point] ?: [self linkAtRadius:15 aroundPoint:point];
+}
+
+- (NSTextCheckingResult *)linkAtRadius:(const CGFloat)radius aroundPoint:(CGPoint)point {
     
-    // Search for links within a reasonable radius of the touch point.
-    const CGFloat radius = 11;
+    const CGFloat diagonal = sqrt(2 * radius * radius);
+    
     const CGPoint deltas[] = {
-        CGPointMake(0, 0), // Exact point
         CGPointMake(0, -radius), CGPointMake(0, radius), // Above and below
         CGPointMake(-radius, 0), CGPointMake(radius, 0), // Beside
-        CGPointMake(-radius, -radius), CGPointMake(-radius, radius), CGPointMake(radius, radius), CGPointMake(radius, -radius) // Diagonal
+        CGPointMake(-diagonal, -diagonal), CGPointMake(-diagonal, diagonal), CGPointMake(diagonal, diagonal), CGPointMake(diagonal, -diagonal) // Diagonal
     };
     const size_t count = sizeof(deltas) / sizeof(CGPoint);
     
