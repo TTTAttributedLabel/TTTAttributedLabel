@@ -8,4 +8,3 @@ script:
     - export LANG=en_US.UTF-8
     - set -o pipefail && xcodebuild -workspace 'Example/Espressos.xcworkspace' -scheme 'Espressos' -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 6" clean test | xcpretty -c
     - pod lib lint --quick
-
