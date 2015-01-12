@@ -153,7 +153,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
     XCTAssertTrue([label containslinkAtPoint:CGPointMake(5, 5)], @"Label should contain a link at the start of the string");
-    XCTAssertFalse([label containslinkAtPoint:CGPointMake(30, 5)], @"Label should not contain a link elsewhere in the string");
+    XCTAssertFalse([label containslinkAtPoint:CGPointMake(50, 5)], @"Label should not contain a link elsewhere in the string");
 }
 
 - (void)testLinkDetection {
@@ -360,9 +360,9 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     TTTSizeAttributedLabel(label);
     
     [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
-    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(50, 5)];
     
-    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(30, 5), 0.6f);
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(50, 5), 0.6f);
     
     [TTTDelegateMock verify];
 }
@@ -373,10 +373,10 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     TTTSizeAttributedLabel(label);
     
     [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
-    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(30, 5)];
+    [[TTTDelegateMock reject] attributedLabel:label didLongPressLinkWithURL:testURL atPoint:CGPointMake(50, 5)];
     
     [[[UIApplication sharedApplication].windows lastObject] addSubview:label];
-    [label dragFromPoint:CGPointMake(0, 1) toPoint:CGPointMake(30, 5) steps:30];
+    [label dragFromPoint:CGPointMake(0, 1) toPoint:CGPointMake(50, 5) steps:30];
     
     [TTTDelegateMock verify];
 }
