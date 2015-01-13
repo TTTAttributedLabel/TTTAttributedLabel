@@ -654,7 +654,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)point {
     // Approximates the behavior of UIWebView which will trigger for links on touches within 15pt of the edge.
     return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]]
+        ?: [self linkAtRadius:2.5f aroundPoint:point]
+        ?: [self linkAtRadius:5.f aroundPoint:point]
         ?: [self linkAtRadius:7.5f aroundPoint:point]
+        ?: [self linkAtRadius:12.5f aroundPoint:point]
         ?: [self linkAtRadius:15.f aroundPoint:point];
 }
 
