@@ -147,6 +147,14 @@ static inline CGFLOAT_TYPE CGFloat_round(CGFLOAT_TYPE cgfloat) {
 #endif
 }
 
+static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
+#if CGFLOAT_IS_DOUBLE
+    return sqrt(cgfloat);
+#else
+    return sqrtf(cgfloat);
+#endif
+}
+
 static inline CGFloat TTTFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
     switch (textAlignment) {
         case TTTTextAlignmentCenter:
@@ -644,7 +652,30 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)point {
-    return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]];
+    // Approximates the behavior of UIWebView which will trigger for links on touches within 15pt of the edge.
+    return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]]
+        ?: [self linkAtRadius:7.5f aroundPoint:point]
+        ?: [self linkAtRadius:15.f aroundPoint:point];
+}
+
+- (NSTextCheckingResult *)linkAtRadius:(const CGFloat)radius aroundPoint:(CGPoint)point {
+    const CGFloat diagonal = CGFloat_sqrt(2 * radius * radius);
+    const CGPoint deltas[] = {
+        CGPointMake(0, -radius), CGPointMake(0, radius), // Above and below
+        CGPointMake(-radius, 0), CGPointMake(radius, 0), // Beside
+        CGPointMake(-diagonal, -diagonal), CGPointMake(-diagonal, diagonal),
+        CGPointMake(diagonal, diagonal), CGPointMake(diagonal, -diagonal) // Diagonal
+    };
+    const size_t count = sizeof(deltas) / sizeof(CGPoint);
+    
+    NSTextCheckingResult *result = nil;
+    
+    for (NSInteger i = 0; i < count && result == nil; i ++) {
+        CGPoint currentPoint = CGPointMake(point.x + deltas[i].x, point.y + deltas[i].y);
+        result = [self linkAtCharacterIndex:[self characterIndexAtPoint:currentPoint]];
+    }
+    
+    return result;
 }
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
