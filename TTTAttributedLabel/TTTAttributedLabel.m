@@ -652,6 +652,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (NSTextCheckingResult *)linkAtPoint:(CGPoint)point {
+    
+    // Stop quickly if none of the points to be tested are in the bounds.
+    if (!CGRectContainsPoint(CGRectInset(self.bounds, -15.f, -15.f), point) || self.links.count == 0) {
+        return nil;
+    }
+    
     // Approximates the behavior of UIWebView which will trigger for links on touches within 15pt of the edge.
     return [self linkAtCharacterIndex:[self characterIndexAtPoint:point]]
         ?: [self linkAtRadius:2.5f aroundPoint:point]
@@ -682,6 +688,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (NSTextCheckingResult *)linkAtCharacterIndex:(CFIndex)idx {
+    
+    // Do not enumerate if the index is outside of the bounds of the text.
+    if (!NSLocationInRange((NSUInteger)idx, NSMakeRange(0, self.attributedText.length))) {
+        return nil;
+    }
+    
     NSEnumerator *enumerator = [self.links reverseObjectEnumerator];
     NSTextCheckingResult *result = nil;
     while ((result = [enumerator nextObject])) {
