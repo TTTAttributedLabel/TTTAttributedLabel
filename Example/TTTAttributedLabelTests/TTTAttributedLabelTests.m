@@ -214,6 +214,15 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 #pragma mark - FBSnapshotTestCase tests
 
+- (void)testAdjustsFontSizeToFitWidth {
+    label.adjustsFontSizeToFitWidth = YES;
+    label.minimumScaleFactor = 0.25f;
+    label.numberOfLines = 1;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 150, 50)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testNumberOfLines {
     label.numberOfLines = 1;
     label.text = TTTAttributedTestString();
