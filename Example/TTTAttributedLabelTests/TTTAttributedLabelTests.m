@@ -214,6 +214,12 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 #pragma mark - FBSnapshotTestCase tests
 
+- (void)testNumberOfLines {
+    label.numberOfLines = 1;
+    label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testAttributedTruncationToken {
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[DOTDOTDOT]"
                                                                       attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
