@@ -1,11 +1,11 @@
 PODS:
   - Expecta (0.3.1)
   - FBSnapshotTestCase (1.4)
-  - KIF (3.1.1):
-    - KIF/XCTest (= 3.1.1)
-  - KIF/XCTest (3.1.1)
+  - KIF (3.1.2):
+    - KIF/XCTest (= 3.1.2)
+  - KIF/XCTest (3.1.2)
   - OCMock (3.1.2)
-  - TTTAttributedLabel (1.13.0)
+  - TTTAttributedLabel (1.13.1)
 
 DEPENDENCIES:
   - Expecta
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
   FBSnapshotTestCase: f9f225b5ba11c8d8c09075590490df16314e4d62
-  KIF: 0a3c7440a32612498a114012e822b9d39b6432f1
+  KIF: 068074b24dd455025e7f2a488ba4fb07b9ce047b
   OCMock: ecdd510b73ef397f2f97274785c1e87fd147c49f
-  TTTAttributedLabel: c1672b65a0629f33c284f99c47120a75ff3e92ce
+  TTTAttributedLabel: 4c3516e4abc827aff7151a55c7964796794e11ae
 
 COCOAPODS: 0.35.0

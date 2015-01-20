@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'TTTAttributedLabel'
-  s.version      = '1.13.0'
+  s.version      = '1.13.1'
   s.authors      = { 'Mattt Thompson' => 'm@mattt.me' }
   s.homepage     = 'https://github.com/TTTAttributedLabel/TTTAttributedLabel'
   s.platform     = :ios
