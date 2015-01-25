@@ -99,7 +99,11 @@ NSRange range = [label.text rangeOfString:@"me"];
 
 ## Demo
 
-Build and run/test the `Espressos` project in Xcode to see `TTTAttributedLabel` in action. If you don't have [CocoaPods](http://cocoapods.org) installed, grab it with `[sudo] gem install cocoapods`.
+```bash
+pod try TTTAttributedLabel
+```
+
+...or clone this repo and build and run/test the `Espressos` project in Xcode to see `TTTAttributedLabel` in action. If you don't have [CocoaPods](http://cocoapods.org) installed, grab it with `[sudo] gem install cocoapods`.
 
 ```bash
 cd Example
