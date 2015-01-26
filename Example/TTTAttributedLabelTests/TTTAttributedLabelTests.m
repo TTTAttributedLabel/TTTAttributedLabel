@@ -16,12 +16,14 @@
 static NSString * const kTestLabelText = @"Pallando, Merlyn, and Melisandre were walking one day...";
 static CGSize const kTestLabelSize = (CGSize) { 90, CGFLOAT_MAX };
 
+static inline NSDictionary * TTTAttributedTestAttributesDictionary() {
+    return @{NSForegroundColorAttributeName : [UIColor redColor],
+             NSFontAttributeName : [UIFont boldSystemFontOfSize:16.f]};
+}
+
 static inline NSAttributedString * TTTAttributedTestString() {
     return [[NSAttributedString alloc] initWithString:kTestLabelText
-                                           attributes:@{
-                                                    NSForegroundColorAttributeName : [UIColor redColor],
-                                                    NSFontAttributeName : [UIFont boldSystemFontOfSize:16.f],
-                                           }];
+                                           attributes:TTTAttributedTestAttributesDictionary()];
 }
 
 static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
@@ -42,6 +44,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [window addSubview:label];
     [label longPressAtPoint:point duration:duration];
 };
+
 
 @interface TTTAttributedLabelTests : FBSnapshotTestCase
 
@@ -333,6 +336,47 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = string;
     TTTSizeAttributedLabel(label);
     FBSnapshotVerifyView(label, nil);
+}
+
+#pragma mark - TTTAttributedLabelLink tests
+
+- (void)testDesignatedInitializer {
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributes:TTTAttributedTestAttributesDictionary()
+                                                                     activeAttributes:TTTAttributedTestAttributesDictionary()
+                                                                   inactiveAttributes:TTTAttributedTestAttributesDictionary()
+                                                                   textCheckingResult:textResult];
+    
+    XCTAssertEqualObjects(link.attributes, TTTAttributedTestAttributesDictionary());
+    XCTAssertEqualObjects(link.activeAttributes, TTTAttributedTestAttributesDictionary());
+    XCTAssertEqualObjects(link.inactiveAttributes, TTTAttributedTestAttributesDictionary());
+}
+
+- (void)testLabelInitializer {
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label textCheckingResult:textResult];
+    
+    XCTAssertEqualObjects(link.attributes, label.linkAttributes);
+    XCTAssertEqualObjects(link.activeAttributes, label.activeLinkAttributes);
+    XCTAssertEqualObjects(link.inactiveAttributes, label.inactiveLinkAttributes);
+}
+
+- (void)testTextCheckingResultAttributesAreCorrectlyAssigned {
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    TTTAttributedLabelLink *link = [label addLinkWithTextCheckingResult:textResult attributes:TTTAttributedTestAttributesDictionary()];
+    
+    XCTAssertEqualObjects(link.attributes, TTTAttributedTestAttributesDictionary());
+    XCTAssertEqualObjects(link.activeAttributes, label.activeLinkAttributes);
+    XCTAssertEqualObjects(link.inactiveAttributes, label.inactiveLinkAttributes);
+}
+
+- (void)testTextCheckingResultAttributesAreCorrectlyAssignedWhenAttributesAreNil {
+    NSTextCheckingResult *textResult = [NSTextCheckingResult spellCheckingResultWithRange:NSMakeRange(0, 4)];
+    TTTAttributedLabelLink *link = [label addLinkWithTextCheckingResult:textResult attributes:nil];
+    
+    XCTAssertNil(link.attributes);
+    XCTAssertNil(link.activeAttributes);
+    XCTAssertNil(link.inactiveAttributes);
 }
 
 #pragma mark - TTTAttributedLabelDelegate tests
