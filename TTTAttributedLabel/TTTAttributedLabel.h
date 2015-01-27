@@ -617,22 +617,22 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
 /**
  A dictionary containing the @c NSAttributedString attributes to be applied to the link.
  */
-@property (readonly, nonatomic, strong) NSDictionary *attributes;
+@property (readonly, nonatomic, copy) NSDictionary *attributes;
 
 /**
  A dictionary containing the @c NSAttributedString attributes to be applied to the link when it is in the active state.
  */
-@property (readonly, nonatomic, strong) NSDictionary *activeAttributes;
+@property (readonly, nonatomic, copy) NSDictionary *activeAttributes;
 
 /**
  A dictionary containing the @c NSAttributedString attributes to be applied to the link when it is in the inactive state, which is triggered by a change in `tintColor` in iOS 7 and later.
  */
-@property (readonly, nonatomic, strong) NSDictionary *inactiveAttributes;
+@property (readonly, nonatomic, copy) NSDictionary *inactiveAttributes;
 
 /**
  Additional information about a link for VoiceOver users. Has default values if the link's @c result is @c NSTextCheckingTypeLink, @c NSTextCheckingTypePhoneNumber, or @c NSTextCheckingTypeDate.
  */
-@property (nonatomic, strong) NSString *accessibilityValue;
+@property (nonatomic, copy) NSString *accessibilityValue;
 
 /**
  Initializes a link using the attribute dictionaries specified.
