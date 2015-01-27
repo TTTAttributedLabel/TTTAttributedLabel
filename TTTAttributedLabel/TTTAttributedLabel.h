@@ -311,7 +311,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 /**
  A copy of the label's current attributedText. This returns `nil` if an attributed string has never been set on the label.
  
- @warning Do not set this property directly. Instead, set `text` to an NSAttributedString.
+ @warning Do not set this property directly. Instead, set @c text to an @c NSAttributedString.
  */
 @property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 
@@ -320,26 +320,30 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 ///-------------------
 
 /**
- Adds a link. You can customize an individual link's appearance and accessibility value by creating your own `TTTAttributedLabelLink` and passing it to this method. The other methods for adding links will use the label's default attributes.
+ Adds a link. You can customize an individual link's appearance and accessibility value by creating your own @c TTTAttributedLabelLink and passing it to this method. The other methods for adding links will use the label's default attributes.
  
  @warning Modifying the link's attribute dictionaries must be done before calling this method.
  
- @param link A `TTTAttributedLabelLink` object.
+ @param link A @c TTTAttributedLabelLink object.
  */
 - (void)addLink:(TTTAttributedLabelLink *)link;
 
 /**
- Adds a link to an `NSTextCheckingResult`.
+ Adds a link to an @c NSTextCheckingResult.
  
- @param result An `NSTextCheckingResult` representing the link's location and type.
+ @param result An @c NSTextCheckingResult representing the link's location and type.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result;
 
 /**
- Adds a link to an `NSTextCheckingResult`.
+ Adds a link to an @c NSTextCheckingResult.
  
- @param result An `NSTextCheckingResult` representing the link's location and type.
- @param attributes The attributes to be added to the text in the range of the specified link. If set, the label's activeAttributes and inactiveAttributes will be applied to the link. If `nil`, no attributes are added to the link.
+ @param result An @c NSTextCheckingResult representing the link's location and type.
+ @param attributes The attributes to be added to the text in the range of the specified link. If set, the label's @c activeAttributes and @c inactiveAttributes will be applied to the link. If `nil`, no attributes are added to the link.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkWithTextCheckingResult:(NSTextCheckingResult *)result
                                                attributes:(NSDictionary *)attributes;
@@ -349,6 +353,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param url The url to be linked to
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToURL:(NSURL *)url
                                withRange:(NSRange)range;
@@ -360,6 +366,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
  
  @discussion The address component dictionary keys are described in `NSTextCheckingResult`'s "Keys for Address Components." 
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToAddress:(NSDictionary *)addressComponents
                                    withRange:(NSRange)range;
@@ -369,6 +377,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param phoneNumber The phone number to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToPhoneNumber:(NSString *)phoneNumber
                                        withRange:(NSRange)range;
@@ -378,6 +388,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param date The date to be linked to.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToDate:(NSDate *)date
                                 withRange:(NSRange)range;
@@ -389,6 +401,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  @param timeZone The time zone of the specified date.
  @param duration The duration, in seconds from the specified date.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToDate:(NSDate *)date
                                  timeZone:(NSTimeZone *)timeZone
@@ -400,14 +414,16 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
  @param components A dictionary containing the transit components. The currently supported keys are `NSTextCheckingAirlineKey` and `NSTextCheckingFlightKey`.
  @param range The range in the label text of the link. The range must not exceed the bounds of the receiver.
+ 
+ @return The newly added link object.
  */
 - (TTTAttributedLabelLink *)addLinkToTransitInformation:(NSDictionary *)components
                                               withRange:(NSRange)range;
 
 /**
- Returns whether an `NSTextCheckingResult` is found at the give point.
+ Returns whether an @c NSTextCheckingResult is found at the give point.
  
- @discussion This can be used together with `UITapGestureRecognizer` to tap interactions with overlapping views.
+ @discussion This can be used together with @c UITapGestureRecognizer to tap interactions with overlapping views.
  
  @param point The point inside the label.
  */
@@ -619,7 +635,7 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
 @property (nonatomic, strong) NSString *accessibilityValue;
 
 /**
- Initializes a link using the attribute dictionaries set on a specified label.
+ Initializes a link using the attribute dictionaries specified.
  
  @param attributes         The @c attributes property for the link.
  @param activeAttributes   The @c activeAttributes property for the link.
@@ -628,7 +644,10 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
  
  @return The initialized link object.
  */
-- (instancetype)initWithAttributes:(NSDictionary *)attributes activeAttributes:(NSDictionary *)activeAttributes inactiveAttributes:(NSDictionary *)inactiveAttributes textCheckingResult:(NSTextCheckingResult *)result;
+- (instancetype)initWithAttributes:(NSDictionary *)attributes
+                  activeAttributes:(NSDictionary *)activeAttributes
+                inactiveAttributes:(NSDictionary *)inactiveAttributes
+                textCheckingResult:(NSTextCheckingResult *)result;
 
 /**
  Initializes a link using the attribute dictionaries set on a specified label.
@@ -638,6 +657,7 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
  
  @return The initialized link object.
  */
-- (instancetype)initWithAttributesFromLabel:(TTTAttributedLabel*)label textCheckingResult:(NSTextCheckingResult *)result;
+- (instancetype)initWithAttributesFromLabel:(TTTAttributedLabel*)label
+                         textCheckingResult:(NSTextCheckingResult *)result;
 
 @end

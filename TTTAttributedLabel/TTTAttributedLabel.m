@@ -1758,51 +1758,38 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 @end
 
-@interface TTTAttributedLabelLink ()
-
-@property (nonatomic, strong) NSTextCheckingResult *result;
-@property (nonatomic, strong) NSDictionary *attributes;
-@property (nonatomic, strong) NSDictionary *activeAttributes;
-@property (nonatomic, strong) NSDictionary *inactiveAttributes;
-
-@end
+#pragma mark - TTTAttributedLabelLink
 
 @implementation TTTAttributedLabelLink
 
-- (instancetype)initWithAttributes:(NSDictionary *)attributes activeAttributes:(NSDictionary *)activeAttributes inactiveAttributes:(NSDictionary *)inactiveAttributes textCheckingResult:(NSTextCheckingResult *)result {
-    self = [super init];
-    if (!self) {
-        return nil;
+- (instancetype)initWithAttributes:(NSDictionary *)attributes
+                  activeAttributes:(NSDictionary *)activeAttributes
+                inactiveAttributes:(NSDictionary *)inactiveAttributes
+                textCheckingResult:(NSTextCheckingResult *)result {
+    
+    if ((self = [super init])) {
+        _result = result;
+        _attributes = attributes;
+        _activeAttributes = activeAttributes;
+        _inactiveAttributes = inactiveAttributes;
     }
-    
-    self.result = result;
-    
-    self.attributes = attributes;
-    self.activeAttributes = activeAttributes;
-    self.inactiveAttributes = inactiveAttributes;
     
     return self;
 }
 
-- (instancetype)initWithAttributesFromLabel:(TTTAttributedLabel*)label textCheckingResult:(NSTextCheckingResult *)result {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
+- (instancetype)initWithAttributesFromLabel:(TTTAttributedLabel*)label
+                         textCheckingResult:(NSTextCheckingResult *)result {
     
-    self.result = result;
-    
-    self.attributes = label.linkAttributes;
-    self.activeAttributes = label.activeLinkAttributes;
-    self.inactiveAttributes = label.inactiveLinkAttributes;
-    
-    return self;
+    return [self initWithAttributes:label.linkAttributes
+                   activeAttributes:label.activeLinkAttributes
+                 inactiveAttributes:label.inactiveLinkAttributes
+                 textCheckingResult:result];
 }
 
 #pragma mark - Accessibility
 
 - (NSString *) accessibilityValue {
-    if (!_accessibilityValue) {
+    if ([_accessibilityValue length] == 0) {
         switch (self.result.resultType) {
             case NSTextCheckingTypeLink:
                 _accessibilityValue = self.result.URL.absoluteString;
@@ -1811,7 +1798,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 _accessibilityValue = self.result.phoneNumber;
                 break;
             case NSTextCheckingTypeDate:
-                _accessibilityValue = [NSDateFormatter localizedStringFromDate:self.result.date dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterLongStyle];
+                _accessibilityValue = [NSDateFormatter localizedStringFromDate:self.result.date
+                                                                     dateStyle:NSDateFormatterLongStyle
+                                                                     timeStyle:NSDateFormatterLongStyle];
                 break;
             default:
                 break;
@@ -1832,16 +1821,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super init];
-    if (!self) {
-        return nil;
+    if ((self = [super init])) {
+        _result = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(result))];
+        _attributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(attributes))];
+        _activeAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(activeAttributes))];
+        _inactiveAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(inactiveAttributes))];
+        self.accessibilityValue = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(accessibilityValue))];
     }
-    
-    self.result = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(result))];
-    self.attributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(attributes))];
-    self.activeAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(activeAttributes))];
-    self.inactiveAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(inactiveAttributes))];
-    self.accessibilityValue = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(accessibilityValue))];
     
     return self;
 }
