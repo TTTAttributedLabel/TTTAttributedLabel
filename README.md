@@ -61,6 +61,8 @@ label.textColor = [UIColor darkGrayColor];
 label.lineBreakMode = UILineBreakModeWordWrap;
 label.numberOfLines = 0;
 
+// If you're using a simple `NSString` for your text, 
+// assign to the `text` property last so it can inherit other label properties.
 NSString *text = @"Lorem ipsum dolor sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
   NSRange boldRange = [[mutableAttributedString string] rangeOfString:@"ipsum dolor" options:NSCaseInsensitiveSearch];
