@@ -186,7 +186,7 @@ IB_DESIGNABLE
 ///--------------------------------------------
 
 /**
- The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
+ The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is 0.0 by default. 
  */
 @property (nonatomic, assign) IBInspectable CGFloat firstLineIndent;
 
