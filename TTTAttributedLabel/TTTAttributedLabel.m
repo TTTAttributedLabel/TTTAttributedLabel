@@ -1769,9 +1769,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     
     if ((self = [super init])) {
         _result = result;
-        _attributes = attributes;
-        _activeAttributes = activeAttributes;
-        _inactiveAttributes = inactiveAttributes;
+        _attributes = [attributes copy];
+        _activeAttributes = [activeAttributes copy];
+        _inactiveAttributes = [inactiveAttributes copy];
     }
     
     return self;
