@@ -405,6 +405,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
     _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                 action:@selector(longPressGestureDidFire:)];
+    _longPressGestureRecognizer.delegate = self;
     [self addGestureRecognizer:self.longPressGestureRecognizer];
 }
 
@@ -1556,6 +1557,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 #pragma mark - UILongPressGestureRecognizer
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    CGPoint touchPoint = [touch locationInView:self];
+    NSTextCheckingResult *result = [self linkAtPoint:touchPoint];
+    return result != nil;
+}
 
 - (void)longPressGestureDidFire:(UILongPressGestureRecognizer *)sender {
     switch (sender.state) {
