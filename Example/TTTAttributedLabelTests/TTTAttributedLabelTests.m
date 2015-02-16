@@ -165,7 +165,16 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     // Data detection is performed asynchronously in a background thread
     EXP_expect([label.links count] == 1).will.beTruthy();
-    EXP_expect([((NSTextCheckingResult *)label.links[0]).URL isEqual:testURL]).will.beTruthy();
+    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
+}
+
+- (void)testAttributedStringLinkDetection {
+    label.enabledTextCheckingTypes = NSTextCheckingTypeLink;
+    label.text = [[NSAttributedString alloc] initWithString:[testURL absoluteString]];
+    
+    // Data detection is performed asynchronously in a background thread
+    EXP_expect([label.links count] == 1).will.beTruthy();
+    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
 }
 
 - (void)testLinkArray {
