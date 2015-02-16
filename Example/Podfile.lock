@@ -1,5 +1,5 @@
 PODS:
-  - Expecta (0.3.1)
+  - Expecta (0.3.2)
   - FBSnapshotTestCase (1.5)
   - KIF (3.1.2):
     - KIF/XCTest (= 3.1.2)
@@ -19,7 +19,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
+  Expecta: ee641011fe10aa1855d487b40e4976dac50ec342
   FBSnapshotTestCase: e2914fbaabccea1dcc773d6a16b1c24540642488
   KIF: 068074b24dd455025e7f2a488ba4fb07b9ce047b
   OCMock: ecdd510b73ef397f2f97274785c1e87fd147c49f
