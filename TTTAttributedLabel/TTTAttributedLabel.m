@@ -448,19 +448,26 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if ([text isEqualToAttributedString:_attributedText]) {
         return;
     }
+        
+    [self setText: text];
+}
 
-    _attributedText = [text copy];
-
+- (void) setAttributedTextInternal:(NSAttributedString *)attributedText
+{
+    
+    _attributedText = [attributedText copy];
+    
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
-
+    
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
         [self invalidateIntrinsicContentSize];
     }
 #endif
-
+    
     [super setText:[self.attributedText string]];
+
 }
 
 - (NSAttributedString *)renderedAttributedText {
@@ -1101,8 +1108,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         [self setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:nil];
         return;
     }
+    
+    [self setAttributedTextInternal: text];
 
-    self.attributedText = text;
     self.activeLink = nil;
 
     self.linkModels = [NSArray array];
