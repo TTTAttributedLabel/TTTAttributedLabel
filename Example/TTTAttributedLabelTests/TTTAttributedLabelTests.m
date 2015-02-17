@@ -422,6 +422,32 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [TTTDelegateMock verify];
 }
 
+- (void)testLinkPressCallsDelegateInExtendedTouchArea {
+    label.extendsLinkTouchArea = YES;
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock expect] attributedLabel:label didSelectLinkWithURL:testURL];
+    
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(27, 5));
+    
+    [TTTDelegateMock verify];
+}
+
+- (void)testLinkPressDoesNotCallDelegateInExtendedTouchArea {
+    label.extendsLinkTouchArea = NO;
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithURL:testURL];
+    
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(27, 5));
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testLongPressOffLinkDoesNotCallDelegate {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];

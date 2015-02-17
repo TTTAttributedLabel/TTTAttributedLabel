@@ -155,9 +155,11 @@ IB_DESIGNABLE
 @property (nonatomic, assign) UIEdgeInsets linkBackgroundEdgeInset;
 
 /**
- Indicates if the touches on links will be detected within an extended touch area, to emulate the behaviour of the UIWebView. Default value is YES, can be disabled to improve performance on long texts.
+ Indicates if links will be detected within an extended area around the touch
+ to emulate the link detection behaviour of UIWebView. 
+ Default value is YES. Disable to to improve performance on long labels.
  */
-@property (nonatomic, assign) BOOL extendedLinkTouchArea;
+@property (nonatomic, assign) BOOL extendsLinkTouchArea;
 
 ///---------------------------------------
 /// @name Acccessing Text Style Attributes

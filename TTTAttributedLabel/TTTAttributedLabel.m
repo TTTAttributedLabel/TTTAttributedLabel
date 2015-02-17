@@ -403,7 +403,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
     self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
-    self.extendedLinkTouchArea = YES;
+    _extendsLinkTouchArea = YES;
     _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                 action:@selector(longPressGestureDidFire:)];
     self.longPressGestureRecognizer.delegate = self;
@@ -672,15 +672,16 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         return nil;
     }
     
-    // Approximates the behavior of UIWebView which will trigger for links on touches within 15pt of the edge.
     TTTAttributedLabelLink *result = [self linkAtCharacterIndex:[self characterIndexAtPoint:point]];
-    if(!result && self.extendedLinkTouchArea) {
+    
+    if (!result && self.extendsLinkTouchArea) {
         result = [self linkAtRadius:2.5f aroundPoint:point]
-            ?: [self linkAtRadius:5.f aroundPoint:point]
-            ?: [self linkAtRadius:7.5f aroundPoint:point]
-            ?: [self linkAtRadius:12.5f aroundPoint:point]
-            ?: [self linkAtRadius:15.f aroundPoint:point];
+              ?: [self linkAtRadius:5.f aroundPoint:point]
+              ?: [self linkAtRadius:7.5f aroundPoint:point]
+              ?: [self linkAtRadius:12.5f aroundPoint:point]
+              ?: [self linkAtRadius:15.f aroundPoint:point];
     }
+    
     return result;
 }
 
