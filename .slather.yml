@@ -1,0 +1,3 @@
+coverage_service: coveralls
+xcodeproj: Example/Espressos.xcodeproj
+source_directory: TTTAttributedLabel

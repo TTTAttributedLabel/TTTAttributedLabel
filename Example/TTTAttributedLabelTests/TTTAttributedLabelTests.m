@@ -77,6 +77,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 - (void)tearDown {
     [super tearDown];
+    
+    label = nil;
 }
 
 #pragma mark - Logic tests
@@ -85,9 +87,37 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertNotNil(label, @"Label should be initializable");
 }
 
+- (void)testContentSize {
+    label.text = TTTAttributedTestString();
+    expect([label intrinsicContentSize]).to.equal([label sizeThatFits:CGSizeZero]);
+    label.text = kTestLabelText;
+    expect([label intrinsicContentSize]).to.equal([label sizeThatFits:CGSizeZero]);
+}
+
+- (void)testHighlighting {
+    label.text = TTTAttributedTestString();
+    [label setHighlighted:YES];
+    expect(label.highlighted).to.beTruthy();
+}
+
 - (void)testAttributedTextAccess {
     label.text = TTTAttributedTestString();
     XCTAssertTrue([label.attributedText isEqualToAttributedString:TTTAttributedTestString()], @"Attributed strings should match");
+}
+
+- (void)testLinkTintColor {
+    label.tintColor = [UIColor whiteColor];
+    
+    label.inactiveLinkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor grayColor].CGColor };
+    label.activeLinkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor redColor].CGColor };
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+
+    // Set active
+    label.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+    label.tintColor = [UIColor redColor];
+    
+    expect([label.attributedText attribute:kTTTBackgroundFillColorAttributeName atIndex:0 effectiveRange:NULL]).to.beNil();
 }
 
 - (void)testDerivedAttributedString {
@@ -148,6 +178,13 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                             limitedToNumberOfLines:0];
     
     UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
+    
+    size = [TTTAttributedLabel sizeThatFitsAttributedString:testString
+                                            withConstraints:kTestLabelSize
+                                     limitedToNumberOfLines:2];
+    
+    font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
     XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
@@ -345,6 +382,18 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = string;
     TTTSizeAttributedLabel(label);
     FBSnapshotVerifyView(label, nil);
+}
+
+#pragma mark - UIAccessibility
+
+- (void)testAccessibilityElement {
+    label.text = TTTAttributedTestString();
+    [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
+    
+    expect(label.isAccessibilityElement).to.beFalsy();
+    expect(label.accessibilityElementCount).will.equal(2);
+    expect([label accessibilityElementAtIndex:0]).toNot.beNil();
+    expect([label indexOfAccessibilityElement:nil]).to.equal(NSNotFound);
 }
 
 #pragma mark - TTTAttributedLabelLink tests
@@ -546,6 +595,24 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [TTTDelegateMock verify];
 }
 
+- (void)testLongDateTimeZonePressCallsDelegate {
+    label.text = TTTAttributedTestString();
+    
+    NSDate *date = [NSDate date];
+    [label addLinkToDate:date timeZone:[NSTimeZone defaultTimeZone] duration:1 withRange:NSMakeRange(0, 4)];
+    TTTSizeAttributedLabel(label);
+    
+    [[TTTDelegateMock reject] attributedLabel:label didSelectLinkWithDate:date];
+    [[TTTDelegateMock expect] attributedLabel:label didLongPressLinkWithDate:date
+                                     timeZone:[NSTimeZone defaultTimeZone]
+                                     duration:1
+                                      atPoint:CGPointMake(5, 5)];
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
+    
+    [TTTDelegateMock verify];
+}
+
 - (void)testAddressPressCallsDelegate {
     label.text = TTTAttributedTestString();
     
@@ -647,6 +714,100 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
     
     [TTTDelegateMock verify];
+}
+
+#pragma mark - UIPasteboard
+
+- (void)testCopyingLabelText {
+    label.text = kTestLabelText;
+    
+    [label copy:nil];
+    
+    expect([UIPasteboard generalPasteboard].string).to.equal(label.text);
+}
+
+- (void)testPerformActions {
+    expect([label canPerformAction:@selector(copy:) withSender:nil]).to.beTruthy();
+    expect([label canPerformAction:@selector(paste:) withSender:nil]).to.beFalsy();
+}
+
+#pragma mark - NSCoding
+
+- (void)testEncodingLabel {
+    label.text = TTTAttributedTestString();
+    
+    NSData *encodedLabel = [NSKeyedArchiver archivedDataWithRootObject:label];
+
+    TTTAttributedLabel *newLabel = [NSKeyedUnarchiver unarchiveObjectWithData:encodedLabel];
+    
+    expect(newLabel.text).to.equal(label.text);
+}
+
+#pragma mark - TTTAttributedLabelLink
+
+- (void)testAddSingleLink {
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                                            textCheckingResult:
+                                    [NSTextCheckingResult linkCheckingResultWithRange:NSMakeRange(0, 1) URL:testURL]];
+    
+    [label addLink:link];
+    
+    expect(label.links.count).to.equal(1);
+}
+
+- (void)testEncodingLink {
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                                            textCheckingResult:
+                                    [NSTextCheckingResult linkCheckingResultWithRange:NSMakeRange(0, 1) URL:testURL]];
+    
+    NSData *encodedLink = [NSKeyedArchiver archivedDataWithRootObject:link];
+    
+    TTTAttributedLabelLink *newLink = [NSKeyedUnarchiver unarchiveObjectWithData:encodedLink];
+    
+    expect(newLink.result.URL).to.equal(link.result.URL);
+}
+
+- (void)testLinkAccessibility {
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                                            textCheckingResult:
+                                    [NSTextCheckingResult linkCheckingResultWithRange:NSMakeRange(0, 1) URL:testURL]];
+    
+    expect(link.accessibilityValue).to.equal(testURL.absoluteString);
+    
+    link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                    textCheckingResult:
+                                    [NSTextCheckingResult phoneNumberCheckingResultWithRange:NSMakeRange(0, 1) phoneNumber:@"415-555-1212"]];
+    
+    expect(link.accessibilityValue).to.equal(@"415-555-1212");
+    
+    NSDate *date = [NSDate date];
+    
+    link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                    textCheckingResult:
+            [NSTextCheckingResult dateCheckingResultWithRange:NSMakeRange(0, 1) date:date]];
+    
+    expect(link.accessibilityValue).to.equal([NSDateFormatter localizedStringFromDate:date
+                                                                            dateStyle:NSDateFormatterLongStyle
+                                                                            timeStyle:NSDateFormatterLongStyle]);
+}
+
+#pragma mark - Deprecated Methods
+
+- (void)testLeading {
+    // Deprecated
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [label setLeading:1.f];
+#pragma clang diagnostic pop
+    expect(label.lineSpacing).to.equal(1.f);
+}
+
+- (void)testDataDetectorTypes {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    label.dataDetectorTypes = NSTextCheckingTypeLink;
+    expect(label.dataDetectorTypes).will.equal(NSTextCheckingTypeLink);
+#pragma clang diagnostic pop
 }
 
 @end
