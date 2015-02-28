@@ -716,6 +716,50 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [TTTDelegateMock verify];
 }
 
+- (void)testLinkPressCallsLinkBlock {
+    label.text = TTTAttributedTestString();
+    TTTSizeAttributedLabel(label);
+    
+    __block BOOL didCallTapBlock = NO;
+    __block BOOL didCallLongPressBlock = NO;
+    
+    NSTextCheckingResult *result = [NSTextCheckingResult linkCheckingResultWithRange:NSMakeRange(0, 4) URL:testURL];
+    TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributesFromLabel:label
+                                                                            textCheckingResult:result];
+    
+    __weak typeof (link) weakLink = link;
+    __weak typeof (result) weakResult = result;
+    link.linkTapBlock = ^(TTTAttributedLabel *aLabel, TTTAttributedLabelLink *aLink) {
+        didCallTapBlock = YES;
+        
+        expect(aLabel).to.equal(label);
+        expect(aLink).to.equal(weakLink);
+        expect(aLink.result).to.equal(weakResult);
+    };
+    
+    link.linkLongPressBlock = ^(__unused TTTAttributedLabel *aLabel, __unused TTTAttributedLabelLink *aLink) {
+        didCallLongPressBlock = YES;
+        
+        expect(aLabel).to.equal(label);
+        expect(aLink).to.equal(weakLink);
+        expect(aLink.result).to.equal(weakResult);
+    };
+    
+    [label addLink:link];
+    
+    TTTSimulateTapOnLabelAtPoint(label, CGPointMake(5, 3));
+    
+    expect(didCallTapBlock).will.beTruthy();
+    expect(didCallLongPressBlock).will.beFalsy();
+    
+    didCallTapBlock = NO;
+    
+    TTTSimulateLongPressOnLabelAtPointWithDuration(label, CGPointMake(5, 5), 0.6f);
+    
+    expect(didCallTapBlock).will.beFalsy();
+    expect(didCallLongPressBlock).will.beTruthy();
+}
+
 #pragma mark - UIPasteboard
 
 - (void)testCopyingLabelText {
