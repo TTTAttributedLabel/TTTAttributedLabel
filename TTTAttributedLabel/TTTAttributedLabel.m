@@ -1502,6 +1502,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
            withEvent:(UIEvent *)event
 {
     if (self.activeLink) {
+        if (self.activeLink.linkTapBlock) {
+            self.activeLink.linkTapBlock(self, self.activeLink);
+            self.activeLink = nil;
+            return;
+        }
+        
         NSTextCheckingResult *result = self.activeLink.result;
         self.activeLink = nil;
 
@@ -1573,9 +1579,20 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     switch (sender.state) {
         case UIGestureRecognizerStateBegan: {
             CGPoint touchPoint = [sender locationInView:self];
-            NSTextCheckingResult *result = [self linkAtPoint:touchPoint].result;
+            TTTAttributedLabelLink *link = [self linkAtPoint:touchPoint];
             
-            if (result) {
+            if (link) {
+                if (link.linkLongPressBlock) {
+                    link.linkLongPressBlock(self, link);
+                    return;
+                }
+                
+                NSTextCheckingResult *result = link.result;
+                
+                if (!result) {
+                    return;
+                }
+                
                 switch (result.resultType) {
                     case NSTextCheckingTypeLink:
                         if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithURL:atPoint:)]) {

@@ -616,6 +616,8 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
 
 @interface TTTAttributedLabelLink : NSObject <NSCoding>
 
+typedef void (^TTTAttributedLabelLinkBlock) (TTTAttributedLabel *, TTTAttributedLabelLink *);
+
 /**
  An `NSTextCheckingResult` representing the link's location and type.
  */
@@ -640,6 +642,20 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
  Additional information about a link for VoiceOver users. Has default values if the link's @c result is @c NSTextCheckingTypeLink, @c NSTextCheckingTypePhoneNumber, or @c NSTextCheckingTypeDate.
  */
 @property (nonatomic, copy) NSString *accessibilityValue;
+
+/**
+ A block called when this link is tapped.
+ If non-nil, tapping on this link will call this block instead of the 
+ @c TTTAttributedLabelDelegate tap methods, which will not be called for this link.
+ */
+@property (nonatomic, copy) TTTAttributedLabelLinkBlock linkTapBlock;
+
+/**
+ A block called when this link is long-pressed.
+ If non-nil, long pressing on this link will call this block instead of the
+ @c TTTAttributedLabelDelegate long press methods, which will not be called for this link.
+ */
+@property (nonatomic, copy) TTTAttributedLabelLinkBlock linkLongPressBlock;
 
 /**
  Initializes a link using the attribute dictionaries specified.
