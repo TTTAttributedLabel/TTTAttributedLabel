@@ -282,14 +282,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 static inline BOOL NSAttributedStringParagraphStyleHyphenationEnabled(NSAttributedString *attributedString) {
-    __block NSParagraphStyle *paragraphStyle = nil;
-    [attributedString enumerateAttribute:NSParagraphStyleAttributeName
-                                 inRange:NSMakeRange(0, attributedString.length)
-                                 options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                              usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                  paragraphStyle = value;
-                                  *stop = YES;
-                              }];
+    NSParagraphStyle *paragraphStyle = [attributedString attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
 
     if (paragraphStyle == nil) {
         return NO;
