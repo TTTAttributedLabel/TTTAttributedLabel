@@ -71,6 +71,11 @@ typedef UITextAlignment TTTTextAlignment;
 typedef UILineBreakMode TTTLineBreakMode;
 #endif
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+static const unichar TTTSoftHyphenChar = 0x00AD;
+static NSString *const TTTHardHyphenString = @"-";
+#endif
+
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
@@ -274,6 +279,18 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     return mutableAttributedString;
 }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+static inline BOOL NSAttributedStringParagraphStyleHyphenationEnabled(NSAttributedString *attributedString) {
+    NSParagraphStyle *paragraphStyle = [attributedString attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
+
+    if (paragraphStyle == nil) {
+        return NO;
+    } else {
+        return paragraphStyle.hyphenationFactor > 0;
+    }
+}
+#endif
 
 static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints(CTFramesetterRef framesetter, NSAttributedString *attributedString, CGSize size, NSUInteger numberOfLines) {
     CFRange rangeToSize = CFRangeMake(0, (CFIndex)[attributedString length]);
@@ -931,8 +948,30 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CTLineDraw(line, c);
             }
         } else {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+            BOOL releaseLine = NO;
+            CFRange cfRange = CTLineGetStringRange(line);
+            NSRange lineRange = NSMakeRange(cfRange.location, cfRange.length);
+            NSAttributedString *lineString = [attributedString attributedSubstringFromRange:lineRange];
+            unichar trailingChar = [lineString.string characterAtIndex:lineRange.length - 1];
+
+            if (trailingChar == TTTSoftHyphenChar && NSAttributedStringParagraphStyleHyphenationEnabled(lineString)) {
+                NSMutableAttributedString* lineStringWithHyphen = [lineString mutableCopy];
+                NSRange replaceRange = NSMakeRange(lineRange.length - 1, 1);
+                [lineStringWithHyphen replaceCharactersInRange:replaceRange withString:TTTHardHyphenString];
+
+                line = CTLineCreateWithAttributedString((CFAttributedStringRef) lineStringWithHyphen);
+                releaseLine = YES;
+            }
+#endif
             CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
             CTLineDraw(line, c);
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+            if (releaseLine) {
+                CFRelease(line);
+            }
+#endif
         }
     }
 

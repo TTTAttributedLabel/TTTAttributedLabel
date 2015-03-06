@@ -384,6 +384,22 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testHyphenationFactor {
+    NSString *stringWithHyphens = [@"Pal-lando, Merlyn, and Mel-is-andre were walk-ing one day..." stringByReplacingOccurrencesOfString:@"-" withString:@"\u00AD"];
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.hyphenationFactor = 1;
+
+    NSMutableDictionary *attributes = [TTTAttributedTestAttributesDictionary() mutableCopy];
+    attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+
+    NSAttributedString *string = [[NSAttributedString alloc] initWithString:stringWithHyphens attributes:attributes];
+
+    label.text = string;
+    TTTSizeAttributedLabel(label);
+    FBSnapshotVerifyView(label, nil);
+}
+
 #pragma mark - UIAccessibility
 
 - (void)testAccessibilityElement {
