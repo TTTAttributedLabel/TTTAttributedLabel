@@ -58,7 +58,7 @@ pod 'TTTAttributedLabel'
 TTTAttributedLabel *label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
 label.font = [UIFont systemFontOfSize:14];
 label.textColor = [UIColor darkGrayColor];
-label.lineBreakMode = UILineBreakModeWordWrap;
+label.lineBreakMode = NSLineBreakByCharWrapping;
 label.numberOfLines = 0;
 
 // If you're using a simple `NSString` for your text, 
