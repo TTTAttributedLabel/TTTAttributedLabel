@@ -67,10 +67,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     TTTDelegateMock = OCMProtocolMock(@protocol(TTTAttributedLabelDelegate));
     label.delegate = (id <TTTAttributedLabelDelegate>)TTTDelegateMock;
-    
-    // Compatibility fix for intermittently non-rendering images
-    self.renderAsLayer = YES;
-    
+
     // Enable recording mode to record and save reference images for tests
 //    self.recordMode = YES;
 }
@@ -78,6 +75,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 - (void)tearDown {
     [super tearDown];
     
+    label.delegate = nil;
     label = nil;
 }
 
