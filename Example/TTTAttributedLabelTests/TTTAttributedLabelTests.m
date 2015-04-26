@@ -318,6 +318,15 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testHighlightedLabel {
+    label.highlighted = YES;
+    label.highlightedTextColor = [UIColor greenColor];
+    label.highlightedShadowColor = [UIColor redColor];
+    label.highlightedShadowOffset = CGSizeMake(1, 1);
+    label.text = @"Test text";
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testRightAlignedSimpleText {
     label.textAlignment = NSTextAlignmentRight;
     label.text = @"Test text";
