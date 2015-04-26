@@ -889,9 +889,13 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 #pragma clang diagnostic pop
 
                 // Append truncationToken to the string
-                // because if string isn't too long, CT wont add the truncationToken on it's own
-                // There is no change of a double truncationToken because CT only add the token if it removes characters (and the one we add will go first)
-                NSMutableAttributedString *truncationString = [[attributedString attributedSubstringFromRange:NSMakeRange((NSUInteger)lastLineRange.location, (NSUInteger)lastLineRange.length)] mutableCopy];
+                // because if string isn't too long, CT won't add the truncationToken on its own.
+                // There is no chance of a double truncationToken because CT only adds the
+                // token if it removes characters (and the one we add will go first)
+                NSMutableAttributedString *truncationString = [[NSMutableAttributedString alloc] initWithAttributedString:
+                                                               [attributedString attributedSubstringFromRange:
+                                                                NSMakeRange((NSUInteger)lastLineRange.location,
+                                                                            (NSUInteger)lastLineRange.length)]];
                 if (lastLineRange.length > 0) {
                     // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
                     unichar lastCharacter = [[truncationString string] characterAtIndex:(NSUInteger)(lastLineRange.length - 1)];

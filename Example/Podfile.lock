@@ -16,7 +16,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   TTTAttributedLabel:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
@@ -25,4 +25,4 @@ SPEC CHECKSUMS:
   OCMock: a10ea9f0a6e921651f96f78b6faee95ebc813b92
   TTTAttributedLabel: 6f3174aef8e738f44dff97c2eb7d8184f6ab6277
 
-COCOAPODS: 0.36.3
+COCOAPODS: 0.36.4

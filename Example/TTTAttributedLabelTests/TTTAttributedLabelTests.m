@@ -285,6 +285,39 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testAttributedTruncationTokenLinks {
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
+                                                                                    NSForegroundColorAttributeName : [UIColor blueColor],
+                                                                                    NSLinkAttributeName : [NSURL URLWithString:@"http://ytmnd.com"] }];
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 120, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testAttributedTruncationTokenLinksUnderline {
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
+                                                                                    NSForegroundColorAttributeName : [UIColor blueColor],
+                                                                                    NSLinkAttributeName : [NSURL URLWithString:@"http://ytmnd.com"],
+                                                                                    NSUnderlineStyleAttributeName : @YES }];
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 120, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testAttributedTruncationTokenLinksUnderlineColor {
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:12],
+                                                                                    NSForegroundColorAttributeName : [UIColor blueColor],
+                                                                                    NSLinkAttributeName : [NSURL URLWithString:@"http://ytmnd.com"],
+                                                                                    NSUnderlineStyleAttributeName : @YES,
+                                                                                    NSUnderlineColorAttributeName : [UIColor redColor] }];
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 120, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testRightAlignedSimpleText {
     label.textAlignment = NSTextAlignmentRight;
     label.text = @"Test text";
