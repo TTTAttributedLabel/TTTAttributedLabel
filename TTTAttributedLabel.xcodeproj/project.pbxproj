@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		86029EE61AEED82700ED36D7 /* TTTAttributedLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 86029EE41AEED82700ED36D7 /* TTTAttributedLabel.h */; };
 		86029EE71AEED82700ED36D7 /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 86029EE51AEED82700ED36D7 /* TTTAttributedLabel.m */; };
-		86029EE91AEED93300ED36D7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 86029EE81AEED93300ED36D7 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -123,7 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86029EE91AEED93300ED36D7 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
