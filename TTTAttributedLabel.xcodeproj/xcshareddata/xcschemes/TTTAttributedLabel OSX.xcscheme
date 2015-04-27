@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "86029EBF1AEED69200ED36D7"
-               BuildableName = "TTTAttributedLabel.framework"
-               BlueprintName = "TTTAttributedLabel"
+               BlueprintIdentifier = "86029F0C1AEEE00500ED36D7"
+               BuildableName = "TTTAttributedLabel OSX.framework"
+               BlueprintName = "TTTAttributedLabel OSX"
                ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "86029ECA1AEED69200ED36D7"
-               BuildableName = "TTTAttributedLabelTests.xctest"
-               BlueprintName = "TTTAttributedLabelTests"
+               BlueprintIdentifier = "86029F161AEEE00600ED36D7"
+               BuildableName = "TTTAttributedLabel OS XTests.xctest"
+               BlueprintName = "TTTAttributedLabel OS XTests"
                ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +46,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "86029ECA1AEED69200ED36D7"
-               BuildableName = "TTTAttributedLabelTests.xctest"
-               BlueprintName = "TTTAttributedLabelTests"
+               BlueprintIdentifier = "86029F161AEEE00600ED36D7"
+               BuildableName = "TTTAttributedLabel OS XTests.xctest"
+               BlueprintName = "TTTAttributedLabel OS XTests"
                ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -56,9 +56,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "86029EBF1AEED69200ED36D7"
-            BuildableName = "TTTAttributedLabel.framework"
-            BlueprintName = "TTTAttributedLabel"
+            BlueprintIdentifier = "86029F0C1AEEE00500ED36D7"
+            BuildableName = "TTTAttributedLabel OSX.framework"
+            BlueprintName = "TTTAttributedLabel OSX"
             ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -75,9 +75,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "86029EBF1AEED69200ED36D7"
-            BuildableName = "TTTAttributedLabel.framework"
-            BlueprintName = "TTTAttributedLabel"
+            BlueprintIdentifier = "86029F0C1AEEE00500ED36D7"
+            BuildableName = "TTTAttributedLabel OSX.framework"
+            BlueprintName = "TTTAttributedLabel OSX"
             ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -93,9 +93,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "86029EBF1AEED69200ED36D7"
-            BuildableName = "TTTAttributedLabel.framework"
-            BlueprintName = "TTTAttributedLabel"
+            BlueprintIdentifier = "86029F0C1AEEE00500ED36D7"
+            BuildableName = "TTTAttributedLabel OSX.framework"
+            BlueprintName = "TTTAttributedLabel OSX"
             ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
