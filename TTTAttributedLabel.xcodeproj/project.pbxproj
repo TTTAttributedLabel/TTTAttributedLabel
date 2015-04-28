@@ -12,7 +12,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		86029EC01AEED69200ED36D7 /* TTTAttributedLabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TTTAttributedLabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		86029EC01AEED69200ED36D7 /* TTTAttributedLabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = TTTAttributedLabel.framework; path = TTTAttributedLabel2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86029EE41AEED82700ED36D7 /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTAttributedLabel.h; sourceTree = "<group>"; };
 		86029EE51AEED82700ED36D7 /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
 		86029EE81AEED93300ED36D7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
@@ -69,9 +69,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		86029EBF1AEED69200ED36D7 /* TTTAttributedLabel2 */ = {
+		86029EBF1AEED69200ED36D7 /* TTTAttributedLabel */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 86029ED61AEED69200ED36D7 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel2" */;
+			buildConfigurationList = 86029ED61AEED69200ED36D7 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel" */;
 			buildPhases = (
 				86029EBB1AEED69200ED36D7 /* Sources */,
 				86029EBC1AEED69200ED36D7 /* Frameworks */,
@@ -82,7 +82,7 @@
 			);
 			dependencies = (
 			);
-			name = TTTAttributedLabel2;
+			name = TTTAttributedLabel;
 			productName = TTTAttributedLabel;
 			productReference = 86029EC01AEED69200ED36D7 /* TTTAttributedLabel.framework */;
 			productType = "com.apple.product-type.framework";
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				86029EBF1AEED69200ED36D7 /* TTTAttributedLabel2 */,
+				86029EBF1AEED69200ED36D7 /* TTTAttributedLabel */,
 			);
 		};
 /* End PBXProject section */
@@ -269,7 +269,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		86029ED61AEED69200ED36D7 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel2" */ = {
+		86029ED61AEED69200ED36D7 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				86029ED71AEED69200ED36D7 /* Debug */,
