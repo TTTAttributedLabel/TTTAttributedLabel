@@ -1,6 +1,6 @@
 # TTTAttributedLabel
 
-[![Build Status](https://travis-ci.org/TTTAttributedLabel/TTTAttributedLabel.svg)](https://travis-ci.org/TTTAttributedLabel/TTTAttributedLabel) [![Coverage Status](https://coveralls.io/repos/TTTAttributedLabel/TTTAttributedLabel/badge.svg)](https://coveralls.io/r/TTTAttributedLabel/TTTAttributedLabel)
+[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Coverage Status](https://coveralls.io/repos/TTTAttributedLabel/TTTAttributedLabel/badge.svg)](https://coveralls.io/r/TTTAttributedLabel/TTTAttributedLabel)
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
