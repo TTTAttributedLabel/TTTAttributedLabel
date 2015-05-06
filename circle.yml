@@ -3,12 +3,12 @@ machine:
     LANG: en_US.UTF-8
     LC_CTYPE: en_US.UTF-8
   xcode:
-    version: "6.2"
+    version: "6.3.1"
 dependencies:
   pre:
-    - xcrun instruments -w "iPhone 6 (8.2 Simulator)" || exit 0
+    - xcrun instruments -w "iPhone 6 (8.3 Simulator)" || exit 0
   override:    
-    - sudo gem install cocoapods xcpretty obcd slather -N
+    - sudo gem install cocoapods:0.36.4 xcpretty obcd slather:1.7.0 -N
     - pod install --project-directory=Example
 test:
   override:
