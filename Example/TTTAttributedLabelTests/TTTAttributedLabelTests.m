@@ -424,6 +424,20 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testCenteredTextSizeSmallerThanLabel {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 600, 200)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testRightAlignedTextSizeSmallerThanLabel {
+    label.textAlignment = NSTextAlignmentRight;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 600, 200)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 #pragma mark - UIAccessibility
 
 - (void)testAccessibilityElement {
