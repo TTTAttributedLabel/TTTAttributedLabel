@@ -339,18 +339,6 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
-- (void)testRightAlignedAttributedText {
-    label.textAlignment = NSTextAlignmentRight;
-    label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
-}
-
-- (void)testCenterAlignedAttributedText {
-    label.textAlignment = NSTextAlignmentCenter;
-    label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
-}
-
 - (void)testVerticalAlignment {
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
     label.text = TTTAttributedTestString();
@@ -404,6 +392,22 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.shadowColor = [UIColor greenColor];
     label.shadowOffset = CGSizeMake(1, 3);
     label.text = TTTAttributedTestString();
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testCenteredMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testRightAlignedMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentRight;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
     FBSnapshotVerifyView(label, nil);
 }
 
