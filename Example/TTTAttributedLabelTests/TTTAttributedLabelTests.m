@@ -395,6 +395,22 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testCenteredMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testRightAlignedMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentRight;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testComplexAttributedString {
     NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:kTestLabelText];
     [string addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:16.f] range:NSMakeRange(0, [kTestLabelText length])];
