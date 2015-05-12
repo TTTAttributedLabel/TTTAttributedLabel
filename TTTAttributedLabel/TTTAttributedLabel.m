@@ -1257,6 +1257,24 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         textRect.origin.y += yOffset;
     }
 
+    // Adjust the text to be in the center horizontally, if the text size is smaller than bounds
+    if (textSize.width < bounds.size.width) {
+        CGFloat xOffset = 0.0f;
+        switch (self.textAlignment) {
+            case NSTextAlignmentCenter:
+                xOffset = CGFloat_floor((bounds.size.width - textSize.width) / 2.0f);
+                break;
+            case NSTextAlignmentRight:
+                xOffset = bounds.size.width - textSize.width;
+                break;
+            case NSTextAlignmentLeft:
+            default:
+                break;
+        }
+        
+        textRect.origin.x += xOffset;
+    }
+
     return textRect;
 }
 
