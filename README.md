@@ -1,6 +1,6 @@
 # TTTAttributedLabel
 
-[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Coverage Status](https://coveralls.io/repos/TTTAttributedLabel/TTTAttributedLabel/badge.svg)](https://coveralls.io/r/TTTAttributedLabel/TTTAttributedLabel)
+[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](http://img.shields.io/cocoapods/v/TTTAttributedLabel.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![Documentation](http://img.shields.io/badge/language-unapologetic_objective--c-blue.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![Coverage Status](https://coveralls.io/repos/TTTAttributedLabel/TTTAttributedLabel/badge.svg)](https://coveralls.io/r/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](http://img.shields.io/badge/readme_badge_abuse-nonzero-lightgray.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/)
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
