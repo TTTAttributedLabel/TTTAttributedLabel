@@ -768,6 +768,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGFloat yMin = (CGFloat)floor(lineOrigin.y - descent);
         CGFloat yMax = (CGFloat)ceil(lineOrigin.y + ascent);
 
+        // Apply penOffset using flushFactor for horizontal alignment to set lineOrigin since this is the horizontal offset from drawFramesetter
+        CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
+        CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, textRect.size.width);
+        lineOrigin.x = penOffset;
+
         // Check if we've already passed the line
         if (p.y > yMax) {
             break;
@@ -935,7 +940,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CTLineDraw(line, c);
             }
         } else {
-            CGContextSetTextPosition(c, lineOrigin.x, lineOrigin.y - descent - self.font.descender);
+            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, rect.size.width);
+            CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
             CTLineDraw(line, c);
         }
     }
@@ -1255,24 +1261,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
 
         textRect.origin.y += yOffset;
-    }
-
-    // Adjust the text to be in the center horizontally, if the text size is smaller than bounds
-    if (textSize.width < bounds.size.width) {
-        CGFloat xOffset = 0.0f;
-        switch (self.textAlignment) {
-            case NSTextAlignmentCenter:
-                xOffset = CGFloat_floor((bounds.size.width - textSize.width) / 2.0f);
-                break;
-            case NSTextAlignmentRight:
-                xOffset = bounds.size.width - textSize.width;
-                break;
-            case NSTextAlignmentLeft:
-            default:
-                break;
-        }
-        
-        textRect.origin.x += xOffset;
     }
 
     return textRect;
