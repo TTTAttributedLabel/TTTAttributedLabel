@@ -17,5 +17,8 @@ test:
       GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES clean test | xcpretty -c
       --report junit --output ${CIRCLE_TEST_REPORTS}/junit.xml
     - pod lib lint --quick
-  post:
-    - slather
+deployment:
+  coveralls:
+    branch: /.*/
+    commands:
+      - slather
