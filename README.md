@@ -118,14 +118,6 @@ open Espressos.xcworkspace
 - iOS 4.3+ (iOS 6+ Base SDK)
 - Xcode 6
 
-## Contact
-
-Mattt Thompson
-
-- http://github.com/mattt
-- http://twitter.com/mattt
-- m@mattt.me
-
 ## License
 
 `TTTAttributedLabel` is available under the MIT license. See the LICENSE file for more info.
