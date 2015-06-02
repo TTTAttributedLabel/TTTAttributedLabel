@@ -199,8 +199,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = [testURL absoluteString];
     
     // Data detection is performed asynchronously in a background thread
-    EXP_expect([label.links count]).will.equal(1);
-    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
+    expect([label.links count]).will.equal(1);
+    expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
 }
 
 - (void)testAttributedStringLinkDetection {
@@ -208,8 +208,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = [[NSAttributedString alloc] initWithString:[testURL absoluteString]];
     
     // Data detection is performed asynchronously in a background thread
-    EXP_expect([label.links count]).will.equal(1);
-    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
+    expect([label.links count]).will.equal(1);
+    expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
 }
 
 - (void)testLinkArray {
@@ -257,6 +257,23 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
                   @"Label should ultimately set the derived string as its text");
+}
+
+- (void)testSizeToFitRequiresNumberOfLines {
+    label.numberOfLines = 0;
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
+                                                                                    NSForegroundColorAttributeName : [UIColor greenColor] }];
+    label.text = [[NSAttributedString alloc] initWithString:@"Test\nString\nWith\nLines"
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
+                                                               NSForegroundColorAttributeName : [UIColor redColor] }];
+    
+    [label sizeToFit];
+    expect(label.frame.size).to.equal(CGSizeZero);
+    
+    label.numberOfLines = 2;
+    [label sizeToFit];
+    expect(label.frame.size).notTo.equal(CGSizeZero);
 }
 
 #pragma mark - FBSnapshotTestCase tests
@@ -439,6 +456,19 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.textAlignment = NSTextAlignmentRight;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 600, 200)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testSizeToFitWithTruncationToken {
+    label.numberOfLines = 3;
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
+                                                                                    NSForegroundColorAttributeName : [UIColor greenColor] }];
+    label.text = [[NSAttributedString alloc] initWithString:@"Test\nString\nWith\nLines"
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
+                                                               NSForegroundColorAttributeName : [UIColor redColor] }];
+    
+    [label sizeToFit];
     FBSnapshotVerifyView(label, nil);
 }
 
@@ -825,7 +855,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     [label copy:nil];
     
-    expect([UIPasteboard generalPasteboard].string).to.equal(label.text);
+    expect([UIPasteboard generalPasteboard].string).to.equal(kTestLabelText);
 }
 
 - (void)testPerformActions {
