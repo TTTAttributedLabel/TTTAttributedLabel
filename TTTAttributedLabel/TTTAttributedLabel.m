@@ -1373,6 +1373,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
             NSMutableArray *mutableAccessibilityItems = [NSMutableArray array];
 
             for (TTTAttributedLabelLink *link in self.linkModels) {
+                
+                if (link.result.range.location == NSNotFound) {
+                    continue;
+                }
+                
                 NSString *sourceText = [self.text isKindOfClass:[NSString class]] ? self.text : [(NSAttributedString *)self.text string];
 
                 NSString *accessibilityLabel = [sourceText substringWithRange:link.result.range];
