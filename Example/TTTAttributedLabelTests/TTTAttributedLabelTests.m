@@ -472,6 +472,16 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testOversizedAttributedFontSize {
+    CGFloat fontSize = 13.f;
+    
+    label.font = [UIFont boldSystemFontOfSize:fontSize];
+    label.text = [[NSAttributedString alloc] initWithString:kTestLabelText
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:fontSize + 10] }];
+    [label setFrame:CGRectMake(0, 0, 150, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 #pragma mark - UIAccessibility
 
 - (void)testAccessibilityElement {
