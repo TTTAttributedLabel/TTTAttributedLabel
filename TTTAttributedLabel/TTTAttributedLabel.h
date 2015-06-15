@@ -74,7 +74,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
 @protocol TTTAttributedLabel <NSObject>
-@property (nonatomic, copy) id text;
+@property (nonatomic, copy) IBInspectable id text;
 @end
 
 IB_DESIGNABLE
