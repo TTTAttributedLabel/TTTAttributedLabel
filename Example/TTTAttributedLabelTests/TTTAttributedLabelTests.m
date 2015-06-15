@@ -491,7 +491,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(label.isAccessibilityElement).to.beFalsy();
     expect(label.accessibilityElementCount).will.equal(2);
     expect([label accessibilityElementAtIndex:0]).toNot.beNil();
-    expect([label indexOfAccessibilityElement:nil]).to.equal(NSNotFound);
+    expect([label indexOfAccessibilityElement:(id)[NSNull null]]).to.equal(NSNotFound);
 }
 
 #pragma mark - TTTAttributedLabelLink tests
