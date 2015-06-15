@@ -106,6 +106,12 @@ IB_DESIGNABLE
  */
 @interface TTTAttributedLabel : UILabel <TTTAttributedLabel, UIGestureRecognizerDelegate>
 
+/**
+ * The designated initializers are @c initWithFrame: and @c initWithCoder:.
+ * init will not properly initialize many required properties and other configuration.
+ */
+- (instancetype) init NS_UNAVAILABLE;
+
 ///-----------------------------
 /// @name Accessing the Delegate
 ///-----------------------------
