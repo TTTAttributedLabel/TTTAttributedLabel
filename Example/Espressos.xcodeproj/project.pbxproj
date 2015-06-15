@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B6EDD905BC31B7CDBC772A6E /* libPods-Espressos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5AA1C6D161D3700C394B3E8 /* libPods-Espressos.a */; };
 		CBB8BA972A3E9E100E5BEC20 /* libPods-TTTAttributedLabelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5661A15C6EB332A5F384694 /* libPods-TTTAttributedLabelTests.a */; };
+		E957D6671B2F9A1800090F1E /* AppTestDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E957D6661B2F9A1800090F1E /* AppTestDelegate.m */; };
 		E9B3C6EC1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B3C6EB1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m */; };
 		E9B3C6F61A32C5B100D43DF9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9B3C6F51A32C5B100D43DF9 /* Images.xcassets */; };
 		F83BDEAA18A5C2DF003893B2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83BDEA918A5C2DF003893B2 /* QuartzCore.framework */; };
@@ -42,6 +43,8 @@
 		ABD98C20CBB3ED458920107F /* Pods-Espressos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Espressos.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Espressos/Pods-Espressos.debug.xcconfig"; sourceTree = "<group>"; };
 		D21F16D2D49068B84D92B071 /* Pods-TTTAttributedLabelTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTTAttributedLabelTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TTTAttributedLabelTests/Pods-TTTAttributedLabelTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E5AA1C6D161D3700C394B3E8 /* libPods-Espressos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Espressos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E957D6651B2F9A1800090F1E /* AppTestDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppTestDelegate.h; sourceTree = SOURCE_ROOT; };
+		E957D6661B2F9A1800090F1E /* AppTestDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppTestDelegate.m; sourceTree = SOURCE_ROOT; };
 		E9B3C6E71A32C2DB00D43DF9 /* TTTAttributedLabelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TTTAttributedLabelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9B3C6EA1A32C2DB00D43DF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9B3C6EB1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabelTests.m; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 			children = (
 				F8C05AA1165716EF00B0ACDD /* AppDelegate.h */,
 				F8C05AA2165716EF00B0ACDD /* AppDelegate.m */,
+				E957D6651B2F9A1800090F1E /* AppTestDelegate.h */,
+				E957D6661B2F9A1800090F1E /* AppTestDelegate.m */,
 				F877A39013782E870022A8AB /* Controllers */,
 				F877A39113782E9C0022A8AB /* Views */,
 				F877A36713782AF10022A8AB /* Supporting Files */,
@@ -373,6 +378,7 @@
 			files = (
 				F8C05AA4165716EF00B0ACDD /* AppDelegate.m in Sources */,
 				F8C05AA5165716EF00B0ACDD /* main.m in Sources */,
+				E957D6671B2F9A1800090F1E /* AppTestDelegate.m in Sources */,
 				F8C05AA81657170A00B0ACDD /* AttributedTableViewCell.m in Sources */,
 				F8C05AAD1657171400B0ACDD /* DetailViewController.m in Sources */,
 				F8C05AAE1657171400B0ACDD /* RootViewController.m in Sources */,
