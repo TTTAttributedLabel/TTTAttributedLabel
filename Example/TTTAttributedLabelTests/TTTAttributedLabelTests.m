@@ -482,6 +482,26 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testLabelTruncationVaryingWidthSizing {
+    UIView *containerView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    NSString *text = @"The NSString class declares the programmatic interface for an object that manages immutable strings. An immutable string is a text string that is defined when it is created and subsequently cannot be changed. NSString is implemented to represent an array of Unicode characters, in other words, a text string.";
+    
+    for (NSUInteger i = 0; i < 10; i++) {
+        TTTAttributedLabel *l = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(10, 10*(i+1) + (i * 50) + 10, containerView.bounds.size.width - (i +1) * 20, 50)];
+        l.userInteractionEnabled = YES;
+        l.numberOfLines = 2;
+        l.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"...more" attributes:@{NSForegroundColorAttributeName : [UIColor blueColor],
+                                                                                                         NSLinkAttributeName : [NSURL URLWithString:@"http://more.com"]}];
+        l.text = text;
+        [containerView addSubview:l];
+        l.layer.borderColor = [UIColor redColor].CGColor;
+        l.layer.borderWidth = 2;
+    }
+    
+    FBSnapshotVerifyView(containerView, nil);
+}
+
 #pragma mark - UIAccessibility
 
 - (void)testAccessibilityElement {
