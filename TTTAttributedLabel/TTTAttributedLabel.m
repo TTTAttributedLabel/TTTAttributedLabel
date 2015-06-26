@@ -306,6 +306,23 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return CGSizeMake(CGFloat_ceil(suggestedSize.width), CGFloat_ceil(suggestedSize.height));
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
+@interface TTTAccessibilityElement : UIAccessibilityElement
+@property (nonatomic, weak) UIView *superview;
+@property (nonatomic, assign) CGRect boundingRect;
+@end
+
+@implementation TTTAccessibilityElement
+
+- (CGRect)accessibilityFrame {
+    return UIAccessibilityConvertFrameToScreenCoordinates(self.boundingRect, self.superview);
+}
+
+@end
+
+#endif
+
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
 @property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
@@ -1384,9 +1401,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 NSString *accessibilityValue = link.accessibilityValue;
 
                 if (accessibilityLabel) {
-                    UIAccessibilityElement *linkElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
+                    TTTAccessibilityElement *linkElement = [[TTTAccessibilityElement alloc] initWithAccessibilityContainer:self];
                     linkElement.accessibilityTraits = UIAccessibilityTraitLink;
-                    linkElement.accessibilityFrame = [self convertRect:[self boundingRectForCharacterRange:link.result.range] toView:self.window];
+                    linkElement.boundingRect = [self boundingRectForCharacterRange:link.result.range];
+                    linkElement.superview = self;
                     linkElement.accessibilityLabel = accessibilityLabel;
 
                     if (![accessibilityLabel isEqualToString:accessibilityValue]) {
@@ -1397,11 +1415,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 }
             }
 
-            UIAccessibilityElement *baseElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
+            TTTAccessibilityElement *baseElement = [[TTTAccessibilityElement alloc] initWithAccessibilityContainer:self];
             baseElement.accessibilityLabel = [super accessibilityLabel];
             baseElement.accessibilityHint = [super accessibilityHint];
             baseElement.accessibilityValue = [super accessibilityValue];
-            baseElement.accessibilityFrame = [self convertRect:self.bounds toView:self.window];
+            baseElement.boundingRect = self.bounds;
+            baseElement.superview = self;
             baseElement.accessibilityTraits = [super accessibilityTraits];
 
             [mutableAccessibilityItems addObject:baseElement];
