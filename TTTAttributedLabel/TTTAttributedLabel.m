@@ -298,7 +298,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         }
 
         CFRelease(frame);
-        CFRelease(path);
+        CGPathRelease(path);
     }
 
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, rangeToSize, NULL, constraints, NULL);
@@ -758,7 +758,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CGPathAddRect(path, NULL, textRect);
     CTFrameRef frame = CTFramesetterCreateFrame([self framesetter], CFRangeMake(0, (CFIndex)[self.attributedText length]), path, NULL);
     if (frame == NULL) {
-        CFRelease(path);
+        CGPathRelease(path);
         return NSNotFound;
     }
 
@@ -766,7 +766,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     if (numberOfLines == 0) {
         CFRelease(frame);
-        CFRelease(path);
+        CGPathRelease(path);
         return NSNotFound;
     }
 
@@ -807,7 +807,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
 
     CFRelease(frame);
-    CFRelease(path);
+    CGPathRelease(path);
 
     return idx;
 }
@@ -966,7 +966,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     [self drawStrike:frame inRect:rect context:c];
 
     CFRelease(frame);
-    CFRelease(path);
+    CGPathRelease(path);
 }
 
 - (void)drawBackground:(CTFrameRef)frame
