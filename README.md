@@ -72,7 +72,7 @@ NSString *text = @"Lorem ipsum dolor sit amet";
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
   CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
   if (font) {
-    [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+    [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)font range:boldRange];
     [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:@YES range:strikeRange];
     CFRelease(font);
   }
