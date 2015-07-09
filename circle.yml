@@ -8,7 +8,7 @@ dependencies:
   pre:
     - xcrun instruments -w "iPhone 6 (8.3 Simulator)" || exit 0
   override:    
-    - sudo gem install cocoapods xcpretty obcd slather -N
+    - sudo gem install cocoapods xcpretty obcd slather:1.7.1 -N
     - pod install --project-directory=Example
 test:
   override:
