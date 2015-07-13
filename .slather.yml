@@ -1,5 +1,0 @@
-ci_service: circleci
-coverage_service: coveralls
-xcodeproj: Example/Espressos.xcodeproj
-source_directory: TTTAttributedLabel
-ci_access_token: vWxUqCecGsKGrh0rP0Dr1XFmS8fIMGasf
