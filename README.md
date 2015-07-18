@@ -46,15 +46,37 @@ As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver through the  `UIAc
 
 [CocoaPods](http://cocoapods.org) is the recommended method of installing `TTTAttributedLabel`. Simply add the following line to your `Podfile`:
 
-#### Podfile
-
 ```ruby
+# Podfile
+
 pod 'TTTAttributedLabel'
 ```
 
 ## Usage
 
-``` objective-c
+`TTTAttributedLabel` can display both plain and attributed text: just pass an `NSString` or `NSAttributedString` to the `setText:` setter. Never assign to the `attributedText` property.
+
+```objc
+// NSAttributedString
+
+TTTAttributedLabel *attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+
+NSAttributedString *attString = [[NSAttributedString alloc] initWithString:@"Tom Bombadil"
+                                                                attributes:@{
+        (id)kCTForegroundColorAttributeName : (id)[UIColor redColor].CGColor,
+        NSFontAttributeName : [UIFont boldSystemFontOfSize:16],
+        NSKernAttributeName : [NSNull null],
+        (id)kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor
+}];
+
+// The attributed string is directly set, without inheriting any other text
+// properties of the label.
+attributedLabel.text = attString;
+```
+
+```objc
+// NSString
+
 TTTAttributedLabel *label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
 label.font = [UIFont systemFontOfSize:14];
 label.textColor = [UIColor darkGrayColor];
@@ -83,7 +105,19 @@ NSString *text = @"Lorem ipsum dolor sit amet";
 
 First, we create and configure the label, the same way you would instantiate `UILabel`. Any text properties that are set on the label are inherited as the base attributes when using the `-setText:afterInheritingLabelAttributesAndConfiguringWithBlock:` method. In this example, the substring "ipsum dolar", would appear in bold, such that the label would read "Lorem **ipsum dolar** sit amet", in size 14 Helvetica, with a dark gray color.
 
-The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; in the latter case, the attributed string is directly set, without inheriting the base style of the label.
+## `IBDesignable`
+
+`TTTAttributedLabel` includes `IBInspectable` and `IB_DESIGNABLE` annotations to enable configuring the label inside Interface Builder. However, if you see these warnings when building...
+
+```
+IB Designables: Failed to update auto layout status: Failed to load designables from path (null)
+IB Designables: Failed to render instance of TTTAttributedLabel: Failed to load designables from path (null)
+```
+
+...then you are likely using `TTTAttributedLabel` as a static library, which does not support IB annotations. Some workarounds include:
+
+- Install `TTTAttributedLabel` as a dynamic framework using CocoaPods with `use_frameworks!` in your `Podfile`, or with Carthage
+- Install `TTTAttributedLabel` by dragging its source files to your project
 
 ### Links and Data Detection
 
