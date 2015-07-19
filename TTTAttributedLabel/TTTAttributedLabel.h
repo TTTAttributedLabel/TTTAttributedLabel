@@ -205,7 +205,9 @@ IB_DESIGNABLE
 ///--------------------------------------------
 
 /**
- The distance, in points, from the leading margin of a frame to the beginning of the paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
+ The distance, in points, from the leading margin of a frame to the beginning of the 
+ paragraph's first line. This value is always nonnegative, and is 0.0 by default. 
+ This applies to the full text, rather than any specific paragraph metrics.
  */
 @property (nonatomic, assign) IBInspectable CGFloat firstLineIndent;
 
@@ -236,16 +238,8 @@ IB_DESIGNABLE
 
 /**
  The distance, in points, from the margin to the text container. This value is `UIEdgeInsetsZero` by default.
- 
- @discussion The `UIEdgeInset` members correspond to paragraph style properties rather than a particular geometry, and can change depending on the writing direction. 
- 
- ## `UIEdgeInset` Member Correspondence With `CTParagraphStyleSpecifier` Values:
- 
- - `top`: `kCTParagraphStyleSpecifierParagraphSpacingBefore`
- - `left`: `kCTParagraphStyleSpecifierHeadIndent`
- - `bottom`: `kCTParagraphStyleSpecifierParagraphSpacing`
- - `right`: `kCTParagraphStyleSpecifierTailIndent`
- 
+ sizeThatFits: will have its returned size increased by these margins.
+ drawTextInRect: will inset all drawn text by these margins.
  */
 @property (nonatomic, assign) IBInspectable UIEdgeInsets textInsets;
 
