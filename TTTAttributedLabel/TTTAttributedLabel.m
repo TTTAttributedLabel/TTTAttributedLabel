@@ -1126,7 +1126,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 #pragma mark - TTTAttributedLabel
 
-- (void)setText:(id)text {
+- (void)setText:(nullable id)text {
     NSParameterAssert(!text || [text isKindOfClass:[NSAttributedString class]] || [text isKindOfClass:[NSString class]]);
 
     if ([text isKindOfClass:[NSString class]]) {
@@ -1174,7 +1174,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (void)setText:(id)text
-afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString * (^)(NSMutableAttributedString *mutableAttributedString))block
+afterInheritingLabelAttributesAndConfiguringWithBlock:(TTTInheritAndConfigureBlock)block
 {
     NSMutableAttributedString *mutableAttributedString = nil;
     if ([text isKindOfClass:[NSString class]]) {
