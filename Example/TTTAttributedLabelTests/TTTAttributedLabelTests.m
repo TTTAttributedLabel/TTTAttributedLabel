@@ -199,8 +199,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = [testURL absoluteString];
     
     // Data detection is performed asynchronously in a background thread
-    EXP_expect([label.links count]).will.equal(1);
-    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
+    expect([label.links count]).will.equal(1);
+    expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
 }
 
 - (void)testAttributedStringLinkDetection {
@@ -208,8 +208,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = [[NSAttributedString alloc] initWithString:[testURL absoluteString]];
     
     // Data detection is performed asynchronously in a background thread
-    EXP_expect([label.links count]).will.equal(1);
-    EXP_expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
+    expect([label.links count]).will.equal(1);
+    expect(((NSTextCheckingResult *)label.links[0]).URL).will.equal(testURL);
 }
 
 - (void)testLinkArray {
@@ -257,6 +257,23 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
                   @"Label should ultimately set the derived string as its text");
+}
+
+- (void)testSizeToFitRequiresNumberOfLines {
+    label.numberOfLines = 0;
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
+                                                                                    NSForegroundColorAttributeName : [UIColor greenColor] }];
+    label.text = [[NSAttributedString alloc] initWithString:@"Test\nString\nWith\nLines"
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
+                                                               NSForegroundColorAttributeName : [UIColor redColor] }];
+    
+    [label sizeToFit];
+    expect(label.frame.size).to.equal(CGSizeZero);
+    
+    label.numberOfLines = 2;
+    [label sizeToFit];
+    expect(label.frame.size).notTo.equal(CGSizeZero);
 }
 
 #pragma mark - FBSnapshotTestCase tests
@@ -339,18 +356,6 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
-- (void)testRightAlignedAttributedText {
-    label.textAlignment = NSTextAlignmentRight;
-    label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
-}
-
-- (void)testCenterAlignedAttributedText {
-    label.textAlignment = NSTextAlignmentCenter;
-    label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
-}
-
 - (void)testVerticalAlignment {
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
     label.text = TTTAttributedTestString();
@@ -407,6 +412,22 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testCenteredMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testRightAlignedMultilineAttributedString {
+    label.textAlignment = NSTextAlignmentRight;
+    label.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 200, 400)];
+    FBSnapshotVerifyView(label, nil);
+}
+
 - (void)testComplexAttributedString {
     NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:kTestLabelText];
     [string addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:16.f] range:NSMakeRange(0, [kTestLabelText length])];
@@ -424,6 +445,63 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     FBSnapshotVerifyView(label, nil);
 }
 
+- (void)testCenteredTextSizeSmallerThanLabel {
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 600, 200)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testRightAlignedTextSizeSmallerThanLabel {
+    label.textAlignment = NSTextAlignmentRight;
+    label.text = TTTAttributedTestString();
+    [label setFrame:CGRectMake(0, 0, 600, 200)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testSizeToFitWithTruncationToken {
+    label.numberOfLines = 3;
+    label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
+                                                                      attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
+                                                                                    NSForegroundColorAttributeName : [UIColor greenColor] }];
+    label.text = [[NSAttributedString alloc] initWithString:@"Test\nString\nWith\nLines"
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
+                                                               NSForegroundColorAttributeName : [UIColor redColor] }];
+    
+    [label sizeToFit];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testOversizedAttributedFontSize {
+    CGFloat fontSize = 13.f;
+    
+    label.font = [UIFont boldSystemFontOfSize:fontSize];
+    label.text = [[NSAttributedString alloc] initWithString:kTestLabelText
+                                                 attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:fontSize + 10] }];
+    [label setFrame:CGRectMake(0, 0, 150, 60)];
+    FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testLabelTruncationVaryingWidthSizing {
+    UIView *containerView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    NSString *text = @"The NSString class declares the programmatic interface for an object that manages immutable strings. An immutable string is a text string that is defined when it is created and subsequently cannot be changed. NSString is implemented to represent an array of Unicode characters, in other words, a text string.";
+    
+    for (NSUInteger i = 0; i < 10; i++) {
+        TTTAttributedLabel *l = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(10, 10*(i+1) + (i * 50) + 10, containerView.bounds.size.width - (i +1) * 20, 50)];
+        l.userInteractionEnabled = YES;
+        l.numberOfLines = 2;
+        l.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"...more" attributes:@{NSForegroundColorAttributeName : [UIColor blueColor],
+                                                                                                         NSLinkAttributeName : [NSURL URLWithString:@"http://more.com"]}];
+        l.text = text;
+        [containerView addSubview:l];
+        l.layer.borderColor = [UIColor redColor].CGColor;
+        l.layer.borderWidth = 2;
+    }
+    
+    FBSnapshotVerifyView(containerView, nil);
+}
+
 #pragma mark - UIAccessibility
 
 - (void)testAccessibilityElement {
@@ -433,7 +511,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(label.isAccessibilityElement).to.beFalsy();
     expect(label.accessibilityElementCount).will.equal(2);
     expect([label accessibilityElementAtIndex:0]).toNot.beNil();
-    expect([label indexOfAccessibilityElement:nil]).to.equal(NSNotFound);
+    expect([label indexOfAccessibilityElement:(id)[NSNull null]]).to.equal(NSNotFound);
 }
 
 #pragma mark - TTTAttributedLabelLink tests
@@ -807,7 +885,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     [label copy:nil];
     
-    expect([UIPasteboard generalPasteboard].string).to.equal(label.text);
+    expect([UIPasteboard generalPasteboard].string).to.equal(kTestLabelText);
 }
 
 - (void)testPerformActions {

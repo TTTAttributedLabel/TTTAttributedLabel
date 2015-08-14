@@ -1,6 +1,6 @@
 # TTTAttributedLabel
 
-[![Build Status](https://travis-ci.org/TTTAttributedLabel/TTTAttributedLabel.svg)](https://travis-ci.org/TTTAttributedLabel/TTTAttributedLabel) [![Coverage Status](https://coveralls.io/repos/TTTAttributedLabel/TTTAttributedLabel/badge.svg)](https://coveralls.io/r/TTTAttributedLabel/TTTAttributedLabel)
+[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](http://img.shields.io/cocoapods/v/TTTAttributedLabel.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![codecov.io](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel/coverage.svg?branch=master)](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel?branch=master) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
@@ -46,15 +46,37 @@ As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver through the  `UIAc
 
 [CocoaPods](http://cocoapods.org) is the recommended method of installing `TTTAttributedLabel`. Simply add the following line to your `Podfile`:
 
-#### Podfile
-
 ```ruby
+# Podfile
+
 pod 'TTTAttributedLabel'
 ```
 
 ## Usage
 
-``` objective-c
+`TTTAttributedLabel` can display both plain and attributed text: just pass an `NSString` or `NSAttributedString` to the `setText:` setter. Never assign to the `attributedText` property.
+
+```objc
+// NSAttributedString
+
+TTTAttributedLabel *attributedLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+
+NSAttributedString *attString = [[NSAttributedString alloc] initWithString:@"Tom Bombadil"
+                                                                attributes:@{
+        (id)kCTForegroundColorAttributeName : (id)[UIColor redColor].CGColor,
+        NSFontAttributeName : [UIFont boldSystemFontOfSize:16],
+        NSKernAttributeName : [NSNull null],
+        (id)kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor
+}];
+
+// The attributed string is directly set, without inheriting any other text
+// properties of the label.
+attributedLabel.text = attString;
+```
+
+```objc
+// NSString
+
 TTTAttributedLabel *label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
 label.font = [UIFont systemFontOfSize:14];
 label.textColor = [UIColor darkGrayColor];
@@ -72,7 +94,7 @@ NSString *text = @"Lorem ipsum dolor sit amet";
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
   CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
   if (font) {
-    [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(id)font range:boldRange];
+    [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)font range:boldRange];
     [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:@YES range:strikeRange];
     CFRelease(font);
   }
@@ -83,7 +105,19 @@ NSString *text = @"Lorem ipsum dolor sit amet";
 
 First, we create and configure the label, the same way you would instantiate `UILabel`. Any text properties that are set on the label are inherited as the base attributes when using the `-setText:afterInheritingLabelAttributesAndConfiguringWithBlock:` method. In this example, the substring "ipsum dolar", would appear in bold, such that the label would read "Lorem **ipsum dolar** sit amet", in size 14 Helvetica, with a dark gray color.
 
-The normal `setText:` setter accepts both `NSString` and `NSAttributedString`; in the latter case, the attributed string is directly set, without inheriting the base style of the label.
+## `IBDesignable`
+
+`TTTAttributedLabel` includes `IBInspectable` and `IB_DESIGNABLE` annotations to enable configuring the label inside Interface Builder. However, if you see these warnings when building...
+
+```
+IB Designables: Failed to update auto layout status: Failed to load designables from path (null)
+IB Designables: Failed to render instance of TTTAttributedLabel: Failed to load designables from path (null)
+```
+
+...then you are likely using `TTTAttributedLabel` as a static library, which does not support IB annotations. Some workarounds include:
+
+- Install `TTTAttributedLabel` as a dynamic framework using CocoaPods with `use_frameworks!` in your `Podfile`, or with Carthage
+- Install `TTTAttributedLabel` by dragging its source files to your project
 
 ### Links and Data Detection
 
@@ -117,14 +151,6 @@ open Espressos.xcworkspace
 
 - iOS 4.3+ (iOS 6+ Base SDK)
 - Xcode 6
-
-## Contact
-
-Mattt Thompson
-
-- http://github.com/mattt
-- http://twitter.com/mattt
-- m@mattt.me
 
 ## License
 
