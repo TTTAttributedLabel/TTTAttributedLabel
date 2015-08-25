@@ -769,6 +769,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         CGPathRelease(path);
         return NSNotFound;
     }
+    BOOL truncateLastLine = (self.lineBreakMode == TTTLineBreakByTruncatingHead || self.lineBreakMode == TTTLineBreakByTruncatingMiddle || self.lineBreakMode == TTTLineBreakByTruncatingTail);
 
     CFIndex idx = NSNotFound;
 
@@ -778,6 +779,87 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
         CGPoint lineOrigin = lineOrigins[lineIndex];
         CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+
+        // Stores an adjustment to the final index, neccessary if the line is changed to one whose string range is no longer correct within the whole text
+        CFIndex indexAdjustment = 0;
+        if (lineIndex == numberOfLines - 1 && truncateLastLine) {
+            // Check if the range of text in the last line reaches the end of the full attributed string
+            CFRange lastLineRange = CTLineGetStringRange(line);
+            indexAdjustment = lastLineRange.location;
+
+            if (!(lastLineRange.length == 0 && lastLineRange.location == 0) && lastLineRange.location + lastLineRange.length < self.attributedText.length) {
+                // Get correct truncationType and attribute position
+                CTLineTruncationType truncationType;
+                CFIndex truncationAttributePosition = lastLineRange.location;
+                TTTLineBreakMode lineBreakMode = self.lineBreakMode;
+
+                // Multiple lines, only use UILineBreakModeTailTruncation
+                if (numberOfLines != 1) {
+                    lineBreakMode = TTTLineBreakByTruncatingTail;
+                }
+
+                switch (lineBreakMode) {
+                    case TTTLineBreakByTruncatingHead:
+                        truncationType = kCTLineTruncationStart;
+                        break;
+                    case TTTLineBreakByTruncatingMiddle:
+                        truncationType = kCTLineTruncationMiddle;
+                        truncationAttributePosition += (lastLineRange.length / 2);
+                        break;
+                    case TTTLineBreakByTruncatingTail:
+                    default:
+                        truncationType = kCTLineTruncationEnd;
+                        truncationAttributePosition += (lastLineRange.length - 1);
+                        break;
+                }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                NSAttributedString *attributedTruncationString = self.attributedTruncationToken;
+                if (!attributedTruncationString) {
+                    NSString *truncationTokenString = self.truncationTokenString;
+                    if (!truncationTokenString) {
+                        truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
+                    }
+
+                    NSDictionary *truncationTokenStringAttributes = self.truncationTokenStringAttributes;
+                    if (!truncationTokenStringAttributes) {
+                        truncationTokenStringAttributes = [self.attributedText attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
+                    }
+
+                    attributedTruncationString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
+                }
+                CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTruncationString);
+#pragma clang diagnostic pop
+
+                // Append truncationToken to the string
+                // because if string isn't too long, CT won't add the truncationToken on its own.
+                // There is no chance of a double truncationToken because CT only adds the
+                // token if it removes characters (and the one we add will go first)
+                NSMutableAttributedString *truncationString = [[NSMutableAttributedString alloc] initWithAttributedString:
+                                                               [self.attributedText attributedSubstringFromRange:
+                                                                NSMakeRange((NSUInteger)lastLineRange.location,
+                                                                            (NSUInteger)lastLineRange.length)]];
+                if (lastLineRange.length > 0) {
+                    // Remove any newline at the end (we don't want newline space between the text and the truncation token). There can only be one, because the second would be on the next line.
+                    unichar lastCharacter = [[truncationString string] characterAtIndex:(NSUInteger)(lastLineRange.length - 1)];
+                    if ([[NSCharacterSet newlineCharacterSet] characterIsMember:lastCharacter]) {
+                        [truncationString deleteCharactersInRange:NSMakeRange((NSUInteger)(lastLineRange.length - 1), 1)];
+                    }
+                }
+                [truncationString appendAttributedString:attributedTruncationString];
+                CTLineRef truncationLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)truncationString);
+
+                // Truncate the line in case it is too long.
+                CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine, textRect.size.width, truncationType, truncationToken);
+                if (!truncatedLine) {
+                    // If the line is not as wide as the truncationToken, truncatedLine is NULL
+                    truncatedLine = CFRetain(truncationToken);
+                }
+
+                line = truncatedLine;
+            }
+        }
 
         // Get bounding information of line
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
@@ -800,7 +882,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
                 // Convert CT coordinates to line-relative coordinates
                 CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-                idx = CTLineGetStringIndexForPosition(line, relativePoint);
+                idx = indexAdjustment + CTLineGetStringIndexForPosition(line, relativePoint);
                 break;
             }
         }
@@ -943,7 +1025,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 NSRange linkRange;
                 if ([attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
                     NSRange tokenRange = [truncationString.string rangeOfString:attributedTruncationString.string];
-                    NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+lastLineRange.length)-tokenRange.length, (NSUInteger)tokenRange.length);
+                    NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+tokenRange.location), (NSUInteger)tokenRange.length);
                     
                     [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
                 }
