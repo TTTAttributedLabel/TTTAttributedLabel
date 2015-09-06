@@ -288,6 +288,11 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [self testInheritsAttributesFromLabel:label text:string];
 }
 
+- (void)testTextRectWithoutAttributedText {
+    CGRect rect = [label textRectForBounds:CGRectMake(0, 0, 10, 10) limitedToNumberOfLines:0];
+    XCTAssertTrue(CGRectEqualToRect(rect, CGRectMake(0, 0, 0, 0)));
+}
+
 - (void)testSizeToFitRequiresNumberOfLines {
     label.numberOfLines = 0;
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
