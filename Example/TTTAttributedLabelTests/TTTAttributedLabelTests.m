@@ -274,6 +274,11 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
 }
 
+- (void)testInheritsAttributesFromOneLineLabelWithString {
+    label.numberOfLines = 1;
+    [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
+}
+
 - (void)testSizeToFitRequiresNumberOfLines {
     label.numberOfLines = 0;
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
