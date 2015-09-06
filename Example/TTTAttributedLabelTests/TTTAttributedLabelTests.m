@@ -278,19 +278,31 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 #pragma mark - FBSnapshotTestCase tests
 
+NS_INLINE NSOrderedSet *FBSnapshotTestCaseCustomSuffixes(void)
+{
+    NSMutableOrderedSet *suffixesSet = [[NSMutableOrderedSet alloc] init];
+    [suffixesSet addObject:@"_64"];
+    return [suffixesSet copy];
+}
+
+#define FBSnapshotCustomVerifyView(view__, identifier__) \
+{ \
+FBSnapshotVerifyViewWithOptions(view__, identifier__, FBSnapshotTestCaseCustomSuffixes()); \
+}
+
 - (void)testAdjustsFontSizeToFitWidth {
     label.adjustsFontSizeToFitWidth = YES;
     label.minimumScaleFactor = 0.25f;
     label.numberOfLines = 1;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 150, 50)];
-    FBSnapshotVerifyView(label, nil);
+    FBSnapshotCustomVerifyView(label, nil);
 }
 
 - (void)testNumberOfLines {
     label.numberOfLines = 1;
     label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
+    FBSnapshotCustomVerifyView(label, nil);
 }
 
 - (void)testAttributedTruncationToken {
@@ -299,7 +311,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                                     NSForegroundColorAttributeName : [UIColor blueColor] }];
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 120, 60)];
-    FBSnapshotVerifyView(label, nil);
+    FBSnapshotCustomVerifyView(label, nil);
 }
 
 - (void)testAttributedTruncationTokenLinks {
