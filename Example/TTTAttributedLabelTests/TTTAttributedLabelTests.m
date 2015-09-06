@@ -235,14 +235,14 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertEqualObjects(result.URL, testURL, @"Should set and retrieve test URL");
 }
 
-- (void)testInheritsAttributesFromLabel {
+- (void)testInheritsAttributesFromLabel:(TTTAttributedLabel *)labelInstance text:(id)text {
     UIFont *testFont = [UIFont boldSystemFontOfSize:16.f];
     UIColor *testColor = [UIColor greenColor];
     CGFloat testKern = 3.f;
     
-    label.font = testFont;
-    label.textColor = testColor;
-    label.kern = testKern;
+    labelInstance.font = testFont;
+    labelInstance.textColor = testColor;
+    labelInstance.kern = testKern;
     
     __block NSMutableAttributedString *derivedString;
     
@@ -264,10 +264,14 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
         return inheritedString;
     };
     
-    [label setText:@"1.21 GigaWatts!" afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
+    [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
     
     XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
                   @"Label should ultimately set the derived string as its text");
+}
+
+- (void)testInheritsAttributesFromLabelWithString {
+    [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
 }
 
 - (void)testSizeToFitRequiresNumberOfLines {
