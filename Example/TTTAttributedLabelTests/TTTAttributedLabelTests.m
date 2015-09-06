@@ -279,6 +279,15 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
 }
 
+- (void)testInheritsAttributesFromLabelWithAttributedString {
+    NSDictionary *attributes = @{NSFontAttributeName : [UIFont italicSystemFontOfSize:12.f],
+                                 (NSString *)kCTForegroundColorAttributeName : [UIColor purpleColor],
+                                 (NSString *)kCTKernAttributeName : @(2.f)};
+    NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"1.21 GigaWatts!" attributes:attributes];
+
+    [self testInheritsAttributesFromLabel:label text:string];
+}
+
 - (void)testSizeToFitRequiresNumberOfLines {
     label.numberOfLines = 0;
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
