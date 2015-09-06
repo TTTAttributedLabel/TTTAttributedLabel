@@ -118,6 +118,17 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect([label.attributedText attribute:kTTTBackgroundFillColorAttributeName atIndex:0 effectiveRange:NULL]).to.beNil();
 }
 
+- (void)testLinkTintColorDoesNotChangeWithoutInactiveLinkAttributes {
+    label.tintColor = [UIColor whiteColor];
+
+    label.text = TTTAttributedTestString();
+    NSAttributedString *originalString = label.text;
+    label.tintColor = [UIColor redColor];
+    NSAttributedString *currentString = label.text;
+    
+    XCTAssertEqualObjects(originalString, currentString);
+}
+
 - (void)testDerivedAttributedString {
     label.font = [UIFont italicSystemFontOfSize:15.f];
     label.textColor = [UIColor purpleColor];
