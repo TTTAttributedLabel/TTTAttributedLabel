@@ -1319,6 +1319,18 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     // Adjust the font size to fit width, if necessarry
     if (self.adjustsFontSizeToFitWidth && self.numberOfLines > 0) {
+        // Framesetter could still be working with a resized version of the text;
+        // need to reset so we start from the original font size.
+        // See #393.
+        [self setNeedsFramesetter];
+        [self setNeedsDisplay];
+        
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+        if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
+            [self invalidateIntrinsicContentSize];
+        }
+#endif
+        
         // Use infinite width to find the max width, which will be compared to availableWidth if needed.
         CGSize maxSize = (self.numberOfLines > 1) ? CGSizeMake(TTTFLOAT_MAX, TTTFLOAT_MAX) : CGSizeZero;
 
