@@ -310,6 +310,34 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(label.frame.size).notTo.equal(CGSizeZero);
 }
 
+- (void) testLinkAttributeConversion {
+    NSDictionary *sourceDict = @{
+                                 NSUnderlineStyleAttributeName           : @NO,
+                                 kTTTBackgroundLineWidthAttributeName    : @1,
+                                 kTTTBackgroundCornerRadiusAttributeName : @4,
+                                 NSStrokeWidthAttributeName              : @1.2
+                                 };
+    
+    NSDictionary *expectedDict = @{
+                                   (NSString *)kCTUnderlineStyleAttributeName:
+                                       @NO,
+                                   kTTTBackgroundLineWidthAttributeName:
+                                       @1,
+                                   kTTTBackgroundCornerRadiusAttributeName:
+                                       @4,
+                                   (NSString *)kCTStrokeWidthAttributeName: @1.2
+                                   };
+    
+    [label setLinkAttributes:sourceDict];
+    
+    XCTAssertEqualObjects(expectedDict, label.linkAttributes);
+}
+
+- (void) testLinkAttributeConversionNilCase {
+    [label setLinkAttributes:nil];
+    XCTAssertNil(label.linkAttributes);
+}
+
 #pragma mark - Performance tests
 
 - (void) testPerformanceOfTextCheckingTypes {
