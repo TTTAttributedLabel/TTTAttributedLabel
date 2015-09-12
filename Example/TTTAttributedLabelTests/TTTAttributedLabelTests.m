@@ -118,6 +118,17 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect([label.attributedText attribute:kTTTBackgroundFillColorAttributeName atIndex:0 effectiveRange:NULL]).to.beNil();
 }
 
+- (void)testLinkTintColorDoesNotChangeWithoutInactiveLinkAttributes {
+    label.tintColor = [UIColor whiteColor];
+
+    label.text = TTTAttributedTestString();
+    NSAttributedString *originalString = label.text;
+    label.tintColor = [UIColor redColor];
+    NSAttributedString *currentString = label.text;
+    
+    XCTAssertEqualObjects(originalString, currentString);
+}
+
 - (void)testDerivedAttributedString {
     label.font = [UIFont italicSystemFontOfSize:15.f];
     label.textColor = [UIColor purpleColor];
@@ -224,14 +235,14 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertEqualObjects(result.URL, testURL, @"Should set and retrieve test URL");
 }
 
-- (void)testInheritsAttributesFromLabel {
+- (void)testInheritsAttributesFromLabel:(TTTAttributedLabel *)labelInstance text:(id)text {
     UIFont *testFont = [UIFont boldSystemFontOfSize:16.f];
     UIColor *testColor = [UIColor greenColor];
     CGFloat testKern = 3.f;
     
-    label.font = testFont;
-    label.textColor = testColor;
-    label.kern = testKern;
+    labelInstance.font = testFont;
+    labelInstance.textColor = testColor;
+    labelInstance.kern = testKern;
     
     __block NSMutableAttributedString *derivedString;
     
@@ -253,10 +264,33 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
         return inheritedString;
     };
     
-    [label setText:@"1.21 GigaWatts!" afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
+    [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:configureBlock];
     
     XCTAssertTrue([label.attributedText isEqualToAttributedString:derivedString],
                   @"Label should ultimately set the derived string as its text");
+}
+
+- (void)testInheritsAttributesFromLabelWithString {
+    [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
+}
+
+- (void)testInheritsAttributesFromOneLineLabelWithString {
+    label.numberOfLines = 1;
+    [self testInheritsAttributesFromLabel:label text:@"1.21 GigaWatts!"];
+}
+
+- (void)testInheritsAttributesFromLabelWithAttributedString {
+    NSDictionary *attributes = @{NSFontAttributeName : [UIFont italicSystemFontOfSize:12.f],
+                                 (NSString *)kCTForegroundColorAttributeName : [UIColor purpleColor],
+                                 (NSString *)kCTKernAttributeName : @(2.f)};
+    NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"1.21 GigaWatts!" attributes:attributes];
+
+    [self testInheritsAttributesFromLabel:label text:string];
+}
+
+- (void)testTextRectWithoutAttributedText {
+    CGRect rect = [label textRectForBounds:CGRectMake(0, 0, 10, 10) limitedToNumberOfLines:0];
+    XCTAssertTrue(CGRectEqualToRect(rect, CGRectMake(0, 0, 0, 0)));
 }
 
 - (void)testSizeToFitRequiresNumberOfLines {
@@ -274,6 +308,45 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.numberOfLines = 2;
     [label sizeToFit];
     expect(label.frame.size).notTo.equal(CGSizeZero);
+}
+
+- (void) testLinkAttributeConversion {
+    NSDictionary *sourceDict = @{
+                                 NSUnderlineStyleAttributeName           : @NO,
+                                 kTTTBackgroundLineWidthAttributeName    : @1,
+                                 kTTTBackgroundCornerRadiusAttributeName : @4,
+                                 NSStrokeWidthAttributeName              : @1.2
+                                 };
+    
+    NSDictionary *expectedDict = @{
+                                   (NSString *)kCTUnderlineStyleAttributeName:
+                                       @NO,
+                                   kTTTBackgroundLineWidthAttributeName:
+                                       @1,
+                                   kTTTBackgroundCornerRadiusAttributeName:
+                                       @4,
+                                   (NSString *)kCTStrokeWidthAttributeName: @1.2
+                                   };
+    
+    [label setLinkAttributes:sourceDict];
+    
+    XCTAssertEqualObjects(expectedDict, label.linkAttributes);
+}
+
+- (void) testLinkAttributeConversionNilCase {
+    [label setLinkAttributes:nil];
+    XCTAssertNil(label.linkAttributes);
+}
+
+#pragma mark - Performance tests
+
+- (void) testPerformanceOfTextCheckingTypes {
+    [self measureBlock:^{
+        for (int i = 500; i--;) {
+            TTTAttributedLabel *measureLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+            measureLabel.enabledTextCheckingTypes = NSTextCheckingTypePhoneNumber | NSTextCheckingTypeTransitInformation;
+        }
+    }];
 }
 
 #pragma mark - FBSnapshotTestCase tests
