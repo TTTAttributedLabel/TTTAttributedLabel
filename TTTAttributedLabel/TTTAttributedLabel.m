@@ -570,6 +570,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)enabledTextCheckingTypes {
+    if (self.enabledTextCheckingTypes == enabledTextCheckingTypes) {
+        return;
+    }
+    
+    _enabledTextCheckingTypes = enabledTextCheckingTypes;
+
     // one detector instance per type (combination), fast reuse e.g. in cells
     static NSMutableDictionary *dataDetectorsByType = nil;
 
@@ -577,19 +583,15 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         dataDetectorsByType = [NSMutableDictionary dictionary];
     }
     
-    if (self.enabledTextCheckingTypes == enabledTextCheckingTypes) {
-        return;
-    }
-    
-    _enabledTextCheckingTypes = enabledTextCheckingTypes;
-    
     if (enabledTextCheckingTypes) {
-        if (!dataDetectorsByType[@(enabledTextCheckingTypes)]) {
-            dataDetectorsByType[@(enabledTextCheckingTypes)] =
-                [NSDataDetector dataDetectorWithTypes:enabledTextCheckingTypes
-                                                error:nil];
+        if (![dataDetectorsByType objectForKey:@(enabledTextCheckingTypes)]) {
+            NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:enabledTextCheckingTypes
+                                                                       error:nil];
+            if (detector) {
+                [dataDetectorsByType setObject:detector forKey:@(enabledTextCheckingTypes)];
+            }
         }
-        self.dataDetector = dataDetectorsByType[@(enabledTextCheckingTypes)];
+        self.dataDetector = [dataDetectorsByType objectForKey:@(enabledTextCheckingTypes)];
     } else {
         self.dataDetector = nil;
     }
