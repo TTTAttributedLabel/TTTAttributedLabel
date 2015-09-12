@@ -310,6 +310,17 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(label.frame.size).notTo.equal(CGSizeZero);
 }
 
+#pragma mark - Performance tests
+
+- (void) testPerformanceOfTextCheckingTypes {
+    [self measureBlock:^{
+        for (int i = 500; i--;) {
+            TTTAttributedLabel *measureLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+            measureLabel.enabledTextCheckingTypes = NSTextCheckingTypePhoneNumber | NSTextCheckingTypeTransitInformation;
+        }
+    }];
+}
+
 #pragma mark - FBSnapshotTestCase tests
 
 - (void)testAdjustsFontSizeToFitWidth {
