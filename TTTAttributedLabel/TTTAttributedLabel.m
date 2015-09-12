@@ -232,6 +232,9 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     return [NSDictionary dictionaryWithDictionary:mutableAttributes];
 }
 
+static inline CGColorRef CGColorRefFromColor(id color);
+static inline NSDictionary * convertNSAttributedStringAttributesToCTAttributes(NSDictionary *attributes);
+
 static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttributedString *attributedString, CGFloat scale) {
     NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];
     [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL * __unused stop) {
@@ -998,8 +1001,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
         for (id glyphRun in (__bridge NSArray *)CTLineGetGlyphRuns((__bridge CTLineRef)line)) {
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
-            CGColorRef strokeColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundStrokeColorAttributeName];
-            CGColorRef fillColor = (__bridge CGColorRef)[attributes objectForKey:kTTTBackgroundFillColorAttributeName];
+            CGColorRef strokeColor = CGColorRefFromColor([attributes objectForKey:kTTTBackgroundStrokeColorAttributeName]);
+            CGColorRef fillColor = CGColorRefFromColor([attributes objectForKey:kTTTBackgroundFillColorAttributeName]);
             UIEdgeInsets fillPadding = [[attributes objectForKey:kTTTBackgroundFillPaddingAttributeName] UIEdgeInsetsValue];
             CGFloat cornerRadius = [[attributes objectForKey:kTTTBackgroundCornerRadiusAttributeName] floatValue];
             CGFloat lineWidth = [[attributes objectForKey:kTTTBackgroundLineWidthAttributeName] floatValue];
@@ -1113,11 +1116,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 // Use text color, or default to black
                 id color = [attributes objectForKey:(id)kCTForegroundColorAttributeName];
                 if (color) {
-                    if ([color isKindOfClass:[UIColor class]]) {
-                        CGContextSetStrokeColorWithColor(c, [color CGColor]);
-                    } else {
-                        CGContextSetStrokeColorWithColor(c, (__bridge CGColorRef)color);
-                    }
+                    CGContextSetStrokeColorWithColor(c, CGColorRefFromColor(color));
                 } else {
                     CGContextSetGrayStrokeColor(c, 0.0f, 1.0);
                 }
@@ -1230,6 +1229,18 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
         [self setNeedsDisplay];
     }
+}
+
+- (void)setLinkAttributes:(NSDictionary *)linkAttributes {
+    _linkAttributes = convertNSAttributedStringAttributesToCTAttributes(linkAttributes);
+}
+
+- (void)setActiveLinkAttributes:(NSDictionary *)activeLinkAttributes {
+    _activeLinkAttributes = convertNSAttributedStringAttributesToCTAttributes(activeLinkAttributes);
+}
+
+- (void)setInactiveLinkAttributes:(NSDictionary *)inactiveLinkAttributes {
+    _inactiveLinkAttributes = convertNSAttributedStringAttributesToCTAttributes(inactiveLinkAttributes);
 }
 
 #pragma mark - UILabel
@@ -1918,3 +1929,48 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 }
 
 @end
+
+#pragma mark - 
+
+static inline CGColorRef CGColorRefFromColor(id color) {
+    return [color isKindOfClass:[UIColor class]] ? [color CGColor] : (__bridge CGColorRef)color;
+}
+
+static inline CTFontRef CTFontRefFromUIFont(UIFont * font) {
+    CTFontRef ctfont = CTFontCreateWithName((__bridge CFStringRef)font.fontName, font.pointSize, NULL);
+    return CFAutorelease(ctfont);
+}
+
+static inline NSDictionary * convertNSAttributedStringAttributesToCTAttributes(NSDictionary *attributes) {
+    if (!attributes) return nil;
+    
+    NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary];
+    
+    NSDictionary *NSToCTAttributeNamesMap = @{
+        NSFontAttributeName:            (NSString *)kCTFontAttributeName,
+        NSBackgroundColorAttributeName: (NSString *)kTTTBackgroundFillColorAttributeName,
+        NSForegroundColorAttributeName: (NSString *)kCTForegroundColorAttributeName,
+        NSUnderlineColorAttributeName:  (NSString *)kCTUnderlineColorAttributeName,
+        NSUnderlineStyleAttributeName:  (NSString *)kCTUnderlineStyleAttributeName,
+        NSStrokeWidthAttributeName:     (NSString *)kCTStrokeWidthAttributeName,
+        NSStrokeColorAttributeName:     (NSString *)kCTStrokeWidthAttributeName,
+        NSKernAttributeName:            (NSString *)kCTKernAttributeName,
+        NSLigatureAttributeName:        (NSString *)kCTLigatureAttributeName
+    };
+    
+    [attributes enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+        key = [NSToCTAttributeNamesMap objectForKey:key] ? : key;
+        
+        if (![NSMutableParagraphStyle class]) {
+            if ([value isKindOfClass:[UIFont class]]) {
+                value = (__bridge id)CTFontRefFromUIFont(value);
+            } else if ([value isKindOfClass:[UIColor class]]) {
+                value = (__bridge id)((UIColor *)value).CGColor;
+            }
+        }
+        
+        [mutableAttributes setObject:value forKey:key];
+    }];
+    
+    return [NSDictionary dictionaryWithDictionary:mutableAttributes];
+}
