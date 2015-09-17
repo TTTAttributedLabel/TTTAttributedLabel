@@ -1164,9 +1164,16 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             if (dataDetector && [dataDetector respondsToSelector:@selector(matchesInString:options:range:)]) {
                 NSArray *results = [dataDetector matchesInString:[(NSAttributedString *)text string] options:0 range:NSMakeRange(0, [(NSAttributedString *)text length])];
                 if ([results count] > 0) {
-                    dispatch_sync(dispatch_get_main_queue(), ^{
-                        if ([[strongSelf.attributedText string] isEqualToString:[(NSAttributedString *)text string]]) {
-                            [strongSelf addLinksWithTextCheckingResults:results attributes:strongSelf.linkAttributes];
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 50000
+                    __unsafe_unretained __typeof(self)innerWeakSelf = strongSelf;
+#else
+                    __weak __typeof(self)innerWeakSelf = strongSelf;
+#endif
+
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                         __strong __typeof(innerWeakSelf)innerStrongSelf = innerWeakSelf;
+                        if ([[innerStrongSelf.attributedText string] isEqualToString:[(NSAttributedString *)text string]]) {
+                            [innerStrongSelf addLinksWithTextCheckingResults:results attributes:innerStrongSelf.linkAttributes];
                         }
                     });
                 }
