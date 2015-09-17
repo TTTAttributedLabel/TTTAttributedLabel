@@ -349,6 +349,26 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     }];
 }
 
+- (void)testSetTextAsyncWorkHang {
+    // See the fix in commit 284a1b656204652b27625cbf1402116cdb36883b.
+    // The previous dispatch_sync to main queue would seemingly deadlock an iPhone 5. (Possible exhaustion of OS handles/resources?)
+    // The fix results in a mesaurable performance impact even in simulator, so we are encoding that test here.
+    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:@"See https://www.yahoo.com/ for more information."];
+    [self measureBlock:^{
+        NSMutableArray *measureLabels = [[NSMutableArray alloc] init];
+        for (int i = 2000; i--;) {
+            TTTAttributedLabel *measureLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+            measureLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+            measureLabel.text = attributedText;
+            [measureLabels addObject:measureLabel];
+        }
+        
+        for (TTTAttributedLabel *measureLabel in measureLabels) {
+            expect(measureLabel.links.count).will.equal(1);
+        }
+    }];
+}
+
 #pragma mark - FBSnapshotTestCase tests
 
 - (void)testAdjustsFontSizeToFitWidth {
