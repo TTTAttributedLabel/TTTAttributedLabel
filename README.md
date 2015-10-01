@@ -6,6 +6,8 @@
 
 `TTTAttributedLabel` is a drop-in replacement for `UILabel` providing a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
+> Already using this library? Please comment on [this issue](https://github.com/TTTAttributedLabel/TTTAttributedLabel/issues/586) to let us know which versions of iOS your app supports.
+
 Even though `UILabel` received support for `NSAttributedString` in iOS 6, `TTTAttributedLabel` has several unique features:
 
 - Compatibility with iOS >= 4.3
