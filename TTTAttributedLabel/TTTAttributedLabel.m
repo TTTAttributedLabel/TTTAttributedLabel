@@ -1440,15 +1440,23 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 if (accessibilityLabel) {
                     TTTAccessibilityElement *linkElement = [[TTTAccessibilityElement alloc] initWithAccessibilityContainer:self];
                     linkElement.accessibilityTraits = UIAccessibilityTraitLink;
-                    linkElement.boundingRect = [self boundingRectForCharacterRange:link.result.range];
-                    linkElement.superview = self;
-                    linkElement.accessibilityLabel = accessibilityLabel;
-
-                    if (![accessibilityLabel isEqualToString:accessibilityValue]) {
-                        linkElement.accessibilityValue = accessibilityValue;
-                    }
-
-                    [mutableAccessibilityItems addObject:linkElement];
+					
+					@try {
+						linkElement.boundingRect = [self boundingRectForCharacterRange:link.result.range];
+					} @catch (NSException *exception) {
+						linkElement = nil;
+					} @finally {
+						if (linkElement) {
+							linkElement.superview = self;
+							linkElement.accessibilityLabel = accessibilityLabel;
+							
+							if (![accessibilityLabel isEqualToString:accessibilityValue]) {
+								linkElement.accessibilityValue = accessibilityValue;
+							}
+							
+							[mutableAccessibilityItems addObject:linkElement];
+						}
+					}
                 }
             }
 
