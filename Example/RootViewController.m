@@ -27,7 +27,7 @@
 
 @implementation RootViewController
 
-- (id)init {
+- (instancetype)init {
     self = [super initWithStyle:UITableViewStylePlain];
     if (!self) {
         return nil;
@@ -45,7 +45,7 @@
     [super viewDidLoad];
     
     self.title = NSLocalizedString(@"Espressos", nil);
-    [self.navigationController.navigationBar setTintColor:[UIColor darkGrayColor]];
+    self.navigationController.navigationBar.tintColor = [UIColor darkGrayColor];
 }
 
 #pragma mark - UITableViewDataSource
@@ -53,13 +53,13 @@
 - (NSInteger)tableView:(__unused UITableView *)tableView
  numberOfRowsInSection:(__unused NSInteger)section
 {
-    return (NSInteger)[self.espressos count];
+    return (NSInteger)(self.espressos).count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
-    return [AttributedTableViewCell heightForCellWithText:[self.espressos objectAtIndex:(NSUInteger)indexPath.row]
+    return [AttributedTableViewCell heightForCellWithText:(self.espressos)[(NSUInteger)indexPath.row]
                                            availableWidth:CGRectGetWidth(tableView.frame)];
 }
 
@@ -73,10 +73,9 @@ heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
-    NSString *description = [self.espressos objectAtIndex:(NSUInteger)indexPath.row];
+    NSString *description = (self.espressos)[(NSUInteger)indexPath.row];
     cell.summaryText = description;
     cell.summaryLabel.delegate = self;
-    cell.summaryLabel.userInteractionEnabled = YES;
 
     return cell;
 }
@@ -86,7 +85,7 @@ heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *description = [self.espressos objectAtIndex:(NSUInteger)indexPath.row];
+    NSString *description = (self.espressos)[(NSUInteger)indexPath.row];
     DetailViewController *viewController = [[DetailViewController alloc] initWithEspressoDescription:description];
     [self.navigationController pushViewController:viewController animated:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -96,7 +95,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
-    [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
+    [[[UIActionSheet alloc] initWithTitle:url.absoluteString delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open Link in Safari", nil), nil] showInView:self.view];
 }
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label didLongPressLinkWithURL:(__unused NSURL *)url atPoint:(__unused CGPoint)point {

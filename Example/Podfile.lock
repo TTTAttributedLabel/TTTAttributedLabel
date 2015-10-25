@@ -1,10 +1,5 @@
 PODS:
   - Expecta (1.0.3)
-  - FBSnapshotTestCase (2.0.5):
-    - FBSnapshotTestCase/SwiftSupport (= 2.0.5)
-  - FBSnapshotTestCase/Core (2.0.5)
-  - FBSnapshotTestCase/SwiftSupport (2.0.5):
-    - FBSnapshotTestCase/Core
   - KIF (3.3.0):
     - KIF/Core (= 3.3.0)
   - KIF/Core (3.3.0)
@@ -13,7 +8,6 @@ PODS:
 
 DEPENDENCIES:
   - Expecta
-  - FBSnapshotTestCase
   - KIF
   - OCMock
   - TTTAttributedLabel (from `../`)
@@ -24,7 +18,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Expecta: 9d1bff6c8b0eeee73a166a2ee898892478927a15
-  FBSnapshotTestCase: 6917deb01d0556dd544536f9eb34e0cf26f904d5
   KIF: 0a82046d06f3648799cac522d2d0f7934214caac
   OCMock: 28def049ef47f996b515a8eeea958be7ccab2dbb
   TTTAttributedLabel: 92aaa37822677380b7ec0baff50bd8010eef08f8

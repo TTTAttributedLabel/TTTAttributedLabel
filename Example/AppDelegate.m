@@ -32,7 +32,7 @@ didFinishLaunchingWithOptions:(__unused NSDictionary *)launchOptions
     RootViewController *viewController = [[RootViewController alloc] init];    
     self.navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];

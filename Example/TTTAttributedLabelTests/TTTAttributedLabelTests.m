@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import <TTTAttributedLabel.h>
-#import <FBSnapshotTestCase.h>
+//#import <FBSnapshotTestCase.h>
 #import <Expecta.h>
 #import <OCMock.h>
 #import <KIF.h>
@@ -46,7 +46,8 @@
 //};
 //
 //
-@interface TTTAttributedLabelTests : FBSnapshotTestCase
+@interface TTTAttributedLabelTests : XCTestCase
+//@interface TTTAttributedLabelTests : FBSnapshotTestCase
 
 @end
 
