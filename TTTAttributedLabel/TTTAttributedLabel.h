@@ -31,45 +31,6 @@ FOUNDATION_EXPORT const unsigned char TTTAttributedLabelVersionString[];
 
 @class TTTAttributedLabelLink;
 
-///**
-// Vertical alignment for text in a label whose bounds are larger than its text bounds
-// */
-//typedef NS_ENUM(NSInteger, TTTAttributedLabelVerticalAlignment) {
-//    TTTAttributedLabelVerticalAlignmentCenter   = 0,
-//    TTTAttributedLabelVerticalAlignmentTop      = 1,
-//    TTTAttributedLabelVerticalAlignmentBottom   = 2,
-//};
-//
-///**
-// Determines whether the text to which this attribute applies has a strikeout drawn through itself.
-// */
-//extern NSString * const kTTTStrikeOutAttributeName;
-//
-///**
-// The background fill color. Value must be a `CGColorRef`. Default value is `nil` (no fill).
-// */
-//extern NSString * const kTTTBackgroundFillColorAttributeName;
-//
-///**
-// The padding for the background fill. Value must be a `UIEdgeInsets`. Default value is `UIEdgeInsetsZero` (no padding).
-// */
-//extern NSString * const kTTTBackgroundFillPaddingAttributeName;
-//
-///**
-// The background stroke color. Value must be a `CGColorRef`. Default value is `nil` (no stroke).
-// */
-//extern NSString * const kTTTBackgroundStrokeColorAttributeName;
-//
-///**
-// The background stroke line width. Value must be an `NSNumber`. Default value is `1.0f`.
-// */
-//extern NSString * const kTTTBackgroundLineWidthAttributeName;
-//
-///**
-// The background corner radius. Value must be an `NSNumber`. Default value is `5.0f`.
-// */
-//extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
-
 @protocol TTTAttributedLabelDelegate;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
@@ -162,11 +123,6 @@ IB_DESIGNABLE
 @property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
 
 /**
- The edge inset for the background of a link. The default value is `{0, -1, 0, -1}`.
- */
-@property (nonatomic, assign) UIEdgeInsets linkBackgroundEdgeInset;
-
-/**
  Indicates if links will be detected within an extended area around the touch
  to emulate the link detection behaviour of UIWebView. 
  Default value is NO. Enabling this may adversely impact performance.
@@ -200,58 +156,6 @@ IB_DESIGNABLE
  *  The long-press gesture recognizer used internally by the label.
  */
 @property (nonatomic, strong, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
-
-/////--------------------------------------------
-///// @name Calculating Size of Attributed String
-/////--------------------------------------------
-//
-///**
-// Calculate and return the size that best fits an attributed string, given the specified constraints on size and number of lines.
-//
-// @param attributedString The attributed string.
-// @param size The maximum dimensions used to calculate size.
-// @param numberOfLines The maximum number of lines in the text to draw, if the constraining size cannot accomodate the full attributed string.
-// 
-// @return The size that fits the attributed string within the specified constraints.
-// */
-//+ (CGSize)sizeThatFitsAttributedString:(NSAttributedString *)attributedString
-//                       withConstraints:(CGSize)size
-//                limitedToNumberOfLines:(NSUInteger)numberOfLines;
-
-/////----------------------------------
-///// @name Setting the Text Attributes
-/////----------------------------------
-//
-///**
-// Sets the text displayed by the label.
-// 
-// @param text An `NSString` or `NSAttributedString` object to be displayed by the label. If the specified text is an `NSString`, the label will display the text like a `UILabel`, inheriting the text styles of the label. If the specified text is an `NSAttributedString`, the label text styles will be overridden by the styles specified in the attributed string.
-//  
-// @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects. This string is `nil` by default.
-// */
-//- (void)setText:(id)text;
-//
-///**
-// Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.
-// 
-// @param text An `NSString` or `NSAttributedString` object to be displayed by the label.
-// @param block A block object that returns an `NSMutableAttributedString` object and takes a single argument, which is an `NSMutableAttributedString` object with the text from the first parameter, and the text attributes inherited from the label text styles. For example, if you specified the `font` of the label to be `[UIFont boldSystemFontOfSize:14]` and `textColor` to be `[UIColor redColor]`, the `NSAttributedString` argument of the block would be contain the `NSAttributedString` attribute equivalents of those properties. In this block, you can set further attributes on particular ranges.
-// 
-// @discussion This string is `nil` by default.
-// */
-//- (void)setText:(id)text
-//afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
-//
-///------------------------------------
-/// @name Accessing the Text Attributes
-///------------------------------------
-
-/**
- A copy of the label's current attributedText. This returns `nil` if an attributed string has never been set on the label.
- 
- @warning Do not set this property directly. Instead, set @c text to an @c NSAttributedString.
- */
-@property (readwrite, nonatomic, copy) NSAttributedString *attributedText;
 
 ///-------------------
 /// @name Adding Links

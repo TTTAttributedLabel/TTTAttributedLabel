@@ -29,7 +29,7 @@
 - (BOOL)application:(__unused UIApplication *)application
 didFinishLaunchingWithOptions:(__unused NSDictionary *)launchOptions
 {
-    RootViewController *viewController = [[RootViewController alloc] init];    
+    RootViewController *viewController = [[RootViewController alloc] init];
     self.navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

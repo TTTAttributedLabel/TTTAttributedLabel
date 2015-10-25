@@ -36,27 +36,6 @@ static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
 #endif
 }
 
-static inline NSDictionary * convertNSAttributedStringAttributesToCTAttributes(NSDictionary *attributes);
-
-static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(NSAttributedString *attributedString, UIColor *color) {
-    if (!color) {
-        return attributedString;
-    }
-
-    NSMutableAttributedString *mutableAttributedString = [attributedString mutableCopy];
-    [mutableAttributedString enumerateAttribute:(NSString *)kCTForegroundColorFromContextAttributeName inRange:NSMakeRange(0, mutableAttributedString.length) options:0 usingBlock:^(id value, NSRange range, __unused BOOL *stop) {
-        BOOL usesColorFromContext = (BOOL)value;
-        if (usesColorFromContext) {
-            [mutableAttributedString setAttributes:@{(NSString *)kCTForegroundColorAttributeName: color} range:range];
-            [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorFromContextAttributeName range:range];
-        }
-    }];
-
-    return mutableAttributedString;
-}
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-
 @interface TTTAccessibilityElement : UIAccessibilityElement
 @property (nonatomic, weak) UIView *superview;
 @property (nonatomic, assign) CGRect boundingRect;
@@ -70,60 +49,21 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
 @end
 
-#endif
-
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
-@property (readwrite, nonatomic, copy) NSAttributedString *renderedAttributedText;
 @property (readwrite, atomic, strong) NSDataDetector *dataDetector;
 @property (readwrite, nonatomic, strong) NSArray *linkModels;
 @property (readwrite, nonatomic, strong) TTTAttributedLabelLink *activeLink;
 @property (readwrite, nonatomic, strong) NSArray *accessibilityElements;
 
+@property (nonatomic, strong) NSTextStorage *textStorage;
+@property (nonatomic, strong) NSLayoutManager *layoutManager;
+@property (nonatomic, strong) NSTextContainer *textContainer;
+
 - (void) longPressGestureDidFire:(UILongPressGestureRecognizer *)sender;
 @end
 
-@implementation TTTAttributedLabel {
-@private
-    BOOL _needsFramesetter;
-    CTFramesetterRef _framesetter;
-    CTFramesetterRef _highlightFramesetter;
-}
-
-@dynamic text;
-@synthesize attributedText = _attributedText;
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-
-#ifndef kCFCoreFoundationVersionNumber_iOS_7_0
-#define kCFCoreFoundationVersionNumber_iOS_7_0 847.2
-#endif
-
-+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0) {
-            Class class = [self class];
-            Class superclass = class_getSuperclass(class);
-
-            NSArray *strings = @[
-                                 NSStringFromSelector(@selector(isAccessibilityElement)),
-                                 NSStringFromSelector(@selector(accessibilityElementCount)),
-                                 NSStringFromSelector(@selector(accessibilityElementAtIndex:)),
-                                 NSStringFromSelector(@selector(indexOfAccessibilityElement:)),
-                                 ];
-
-            for (NSString *string in strings) {
-                SEL selector = NSSelectorFromString(string);
-                IMP superImplementation = class_getMethodImplementation(superclass, selector);
-                Method method = class_getInstanceMethod(class, selector);
-                const char *types = method_getTypeEncoding(method);
-                class_replaceMethod(class, selector, superImplementation, types);
-            }
-        }
-    });
-}
-#endif
+@implementation TTTAttributedLabel
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -142,60 +82,27 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     self.linkModels = @[];
 
-    self.linkBackgroundEdgeInset = UIEdgeInsetsMake(0.0f, -1.0f, 0.0f, -1.0f);
+    self.textStorage = [[NSTextStorage alloc] init];
+    self.layoutManager = [[NSLayoutManager alloc] init];
+    [self.textStorage addLayoutManager:self.layoutManager];
+    self.textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
+    self.textContainer.lineFragmentPadding  = 0;
+    self.textContainer.maximumNumberOfLines = self.numberOfLines;
+    self.textContainer.lineBreakMode = self.lineBreakMode;
 
-    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-    mutableLinkAttributes[(NSString *)kCTUnderlineStyleAttributeName] = @YES;
+    [self.layoutManager addTextContainer:self.textContainer];
 
-    NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
-    mutableActiveLinkAttributes[(NSString *)kCTUnderlineStyleAttributeName] = @NO;
-
-    NSMutableDictionary *mutableInactiveLinkAttributes = [NSMutableDictionary dictionary];
-    mutableInactiveLinkAttributes[(NSString *)kCTUnderlineStyleAttributeName] = @NO;
-
-    if ([NSMutableParagraphStyle class]) {
-        mutableLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = [UIColor blueColor];
-        mutableActiveLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = [UIColor redColor];
-        mutableInactiveLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = [UIColor grayColor];
-    } else {
-        mutableLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = (__bridge id)[UIColor blueColor].CGColor;
-        mutableActiveLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = (__bridge id)[UIColor redColor].CGColor;
-        mutableInactiveLinkAttributes[(NSString *)kCTForegroundColorAttributeName] = (__bridge id)[UIColor grayColor].CGColor;
-    }
-
-    self.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
-    self.activeLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableActiveLinkAttributes];
-    self.inactiveLinkAttributes = [NSDictionary dictionaryWithDictionary:mutableInactiveLinkAttributes];
-    _extendsLinkTouchArea = NO;
+    self.linkAttributes = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle), NSForegroundColorAttributeName : [UIColor blueColor]};
+    self.activeLinkAttributes = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone), NSForegroundColorAttributeName : [UIColor redColor]};
+    self.inactiveLinkAttributes = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone), NSForegroundColorAttributeName : [UIColor purpleColor]};
+    
     _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                 action:@selector(longPressGestureDidFire:)];
     self.longPressGestureRecognizer.delegate = self;
     [self addGestureRecognizer:self.longPressGestureRecognizer];
 }
 
-- (void)dealloc {
-    if (_framesetter) {
-        CFRelease(_framesetter);
-    }
-
-    if (_highlightFramesetter) {
-        CFRelease(_highlightFramesetter);
-    }
-    
-    if (_longPressGestureRecognizer) {
-        [self removeGestureRecognizer:_longPressGestureRecognizer];
-    }
-}
-
 #pragma mark -
-
-- (NSAttributedString *)renderedAttributedText {
-    if (!_renderedAttributedText) {
-        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
-    }
-
-    return _renderedAttributedText;
-}
 
 - (NSArray *) links {
     return [_linkModels valueForKey:@"result"];
@@ -401,84 +308,28 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     return nil;
 }
 
-- (CFIndex)characterIndexAtPoint:(CGPoint)p {
-    return 0;
+- (NSUInteger)characterIndexAtPoint:(CGPoint)p {
+    CGSize boundingSize = [self sizeThatFits:CGRectIntegral([self.textStorage boundingRectWithSize:CGSizeMake(self.textContainer.size.width, CGFLOAT_MAX) options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) context:NULL]).size];
+    
+    if (boundingSize.height < CGRectGetHeight(self.bounds)) {
+        CGFloat topMargin = (CGRectGetHeight(self.bounds) - boundingSize.height) / 2;
+        
+        if (p.y - topMargin < 0) {
+            return NSNotFound;
+        }
+        
+        p = CGPointMake(p.x, p.y - topMargin);
+    }
+    
+    NSUInteger index = [self.layoutManager characterIndexForPoint:p
+                                                  inTextContainer:self.textContainer
+                         fractionOfDistanceBetweenInsertionPoints:NULL];
+    
+    
+    
+    return index;
 }
 
-//- (CFIndex)characterIndexAtPoint:(CGPoint)p {
-//    if (!CGRectContainsPoint(self.bounds, p)) {
-//        return NSNotFound;
-//    }
-//
-//    CGRect textRect = [self textRectForBounds:self.bounds limitedToNumberOfLines:self.numberOfLines];
-//    if (!CGRectContainsPoint(textRect, p)) {
-//        return NSNotFound;
-//    }
-//
-//    // Offset tap coordinates by textRect origin to make them relative to the origin of frame
-//    p = CGPointMake(p.x - textRect.origin.x, p.y - textRect.origin.y);
-//    // Convert tap coordinates (start at top left) to CT coordinates (start at bottom left)
-//    p = CGPointMake(p.x, textRect.size.height - p.y);
-//
-//    CGMutablePathRef path = CGPathCreateMutable();
-//    CGPathAddRect(path, NULL, textRect);
-//    CTFrameRef frame = CTFramesetterCreateFrame([self framesetter], CFRangeMake(0, (CFIndex)(self.attributedText).length), path, NULL);
-//    if (frame == NULL) {
-//        CGPathRelease(path);
-//        return NSNotFound;
-//    }
-//
-//    CFArrayRef lines = CTFrameGetLines(frame);
-//    NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
-//    if (numberOfLines == 0) {
-//        CFRelease(frame);
-//        CGPathRelease(path);
-//        return NSNotFound;
-//    }
-//
-//    CFIndex idx = NSNotFound;
-//
-//    CGPoint lineOrigins[numberOfLines];
-//    CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
-//
-//    for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-//        CGPoint lineOrigin = lineOrigins[lineIndex];
-//        CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-//
-//        // Get bounding information of line
-//        CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
-//        CGFloat width = (CGFloat)CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-//        CGFloat yMin = (CGFloat)floor(lineOrigin.y - descent);
-//        CGFloat yMax = (CGFloat)ceil(lineOrigin.y + ascent);
-//
-//        // Apply penOffset using flushFactor for horizontal alignment to set lineOrigin since this is the horizontal offset from drawFramesetter
-//        CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
-//        CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, flushFactor, textRect.size.width);
-//        lineOrigin.x = penOffset;
-//
-//        // Check if we've already passed the line
-//        if (p.y > yMax) {
-//            break;
-//        }
-//        // Check if the point is within this line vertically
-//        if (p.y >= yMin) {
-//            // Check if the point is within this line horizontally
-//            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
-//                // Convert CT coordinates to line-relative coordinates
-//                CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
-//                idx = CTLineGetStringIndexForPosition(line, relativePoint);
-//                break;
-//            }
-//        }
-//    }
-//
-//    CFRelease(frame);
-//    CGPathRelease(path);
-//
-//    return idx;
-//}
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (CGRect)boundingRectForCharacterRange:(NSRange)range {
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
 
@@ -495,7 +346,45 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
 }
-#endif
+
+#pragma mark - UILabel
+
+- (void) setAttributedText:(NSAttributedString *)attributedText {
+    [super setAttributedText:attributedText];
+    [self updateTextStorageFont];
+}
+
+- (void) setFont:(UIFont *)font {
+    [super setFont:font];
+    [self updateTextStorageFont];
+}
+
+- (void) updateTextStorageFont {
+    if (self.attributedText) {
+        NSMutableAttributedString *attributedTextWithFont = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+
+        if (self.font) {
+            [attributedTextWithFont addAttributes:@{NSFontAttributeName: self.font} range:NSMakeRange(0, self.attributedText.string.length)];
+        }
+        
+        [self.textStorage setAttributedString:attributedTextWithFont];
+    }
+}
+
+- (void) layoutSubviews {
+    [super layoutSubviews];
+    self.textContainer.size = self.bounds.size;
+}
+
+- (void) setNumberOfLines:(NSInteger)numberOfLines {
+    [super setNumberOfLines:numberOfLines];
+    self.textContainer.maximumNumberOfLines = numberOfLines;
+}
+
+- (void) setLineBreakMode:(NSLineBreakMode)lineBreakMode {
+    [super setLineBreakMode:lineBreakMode];
+    self.textContainer.lineBreakMode = lineBreakMode;
+}
 
 #pragma mark - TTTAttributedLabel
 
@@ -526,21 +415,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 }
 
-- (void)setLinkAttributes:(NSDictionary *)linkAttributes {
-    _linkAttributes = convertNSAttributedStringAttributesToCTAttributes(linkAttributes);
-}
-
-- (void)setActiveLinkAttributes:(NSDictionary *)activeLinkAttributes {
-    _activeLinkAttributes = convertNSAttributedStringAttributesToCTAttributes(activeLinkAttributes);
-}
-
-- (void)setInactiveLinkAttributes:(NSDictionary *)inactiveLinkAttributes {
-    _inactiveLinkAttributes = convertNSAttributedStringAttributesToCTAttributes(inactiveLinkAttributes);
-}
-
 #pragma mark - UIAccessibilityElement
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 
 - (BOOL)isAccessibilityElement {
     return NO;
@@ -605,9 +480,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 
     return _accessibilityElements;
 }
-#endif
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
     if (!self.inactiveLinkAttributes || (self.inactiveLinkAttributes).count == 0) {
         return;
@@ -634,10 +507,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 
     self.attributedText = mutableAttributedString;
-
-    [self setNeedsDisplay];
 }
-#endif
 
 - (UIView *)hitTest:(CGPoint)point
           withEvent:(UIEvent *)event
@@ -866,7 +736,7 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
 #pragma clang diagnostic pop
 
-    [coder encodeObject:NSStringFromUIEdgeInsets(self.linkBackgroundEdgeInset) forKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))];
+//    [coder encodeObject:NSStringFromUIEdgeInsets(self.linkBackgroundEdgeInset) forKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))];
     [coder encodeObject:self.attributedText forKey:NSStringFromSelector(@selector(attributedText))];
     [coder encodeObject:self.text forKey:NSStringFromSelector(@selector(text))];
 }
@@ -961,9 +831,9 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
     }
 #pragma clang diagnostic pop
 
-    if ([coder containsValueForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]) {
-        self.linkBackgroundEdgeInset = UIEdgeInsetsFromString([coder decodeObjectForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]);
-    }
+//    if ([coder containsValueForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]) {
+//        self.linkBackgroundEdgeInset = UIEdgeInsetsFromString([coder decodeObjectForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]);
+//    }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedText))]) {
         self.attributedText = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedText))];
@@ -1051,43 +921,3 @@ static inline NSAttributedString * NSAttributedStringBySettingColorFromContext(N
 }
 
 @end
-
-#pragma mark - 
-
-static inline CTFontRef CTFontRefFromUIFont(UIFont * font) {
-    CTFontRef ctfont = CTFontCreateWithName((__bridge CFStringRef)font.fontName, font.pointSize, NULL);
-    return CFAutorelease(ctfont);
-}
-
-static inline NSDictionary * convertNSAttributedStringAttributesToCTAttributes(NSDictionary *attributes) {
-    if (!attributes) return nil;
-    
-    NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionary];
-    
-    NSDictionary *NSToCTAttributeNamesMap = @{
-        NSFontAttributeName:            (NSString *)kCTFontAttributeName,
-        NSForegroundColorAttributeName: (NSString *)kCTForegroundColorAttributeName,
-        NSUnderlineColorAttributeName:  (NSString *)kCTUnderlineColorAttributeName,
-        NSUnderlineStyleAttributeName:  (NSString *)kCTUnderlineStyleAttributeName,
-        NSStrokeWidthAttributeName:     (NSString *)kCTStrokeWidthAttributeName,
-        NSStrokeColorAttributeName:     (NSString *)kCTStrokeWidthAttributeName,
-        NSKernAttributeName:            (NSString *)kCTKernAttributeName,
-        NSLigatureAttributeName:        (NSString *)kCTLigatureAttributeName
-    };
-    
-    [attributes enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-        key = NSToCTAttributeNamesMap[key] ? : key;
-        
-        if (![NSMutableParagraphStyle class]) {
-            if ([value isKindOfClass:[UIFont class]]) {
-                value = (__bridge id)CTFontRefFromUIFont(value);
-            } else if ([value isKindOfClass:[UIColor class]]) {
-                value = (__bridge id)((UIColor *)value).CGColor;
-            }
-        }
-        
-        mutableAttributes[key] = value;
-    }];
-    
-    return [NSDictionary dictionaryWithDictionary:mutableAttributes];
-}

@@ -99,11 +99,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label didLongPressLinkWithURL:(__unused NSURL *)url atPoint:(__unused CGPoint)point {
-    [[[UIAlertView alloc] initWithTitle:@"URL Long Pressed"
-                                message:@"You long-pressed a URL. Well done!"
-                               delegate:nil
-                      cancelButtonTitle:@"Woohoo!"
-                      otherButtonTitles:nil] show];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"URL Long Pressed" message:@"You long-pressed a URL. Well done!" preferredStyle:UIAlertControllerStyleAlert];
+    [controller addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - UIActionSheetDelegate
