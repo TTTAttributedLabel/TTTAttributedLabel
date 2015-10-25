@@ -23,9 +23,6 @@
 #import "DetailViewController.h"
 #import "TTTAttributedLabel.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 static CGFloat const kEspressoDescriptionTextFontSize = 17.0f;
 
 static inline NSRegularExpression * NameRegularExpression() {
@@ -101,39 +98,39 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.attributedLabel.highlightedTextColor = [UIColor whiteColor];
     self.attributedLabel.shadowColor = [UIColor colorWithWhite:0.87f alpha:1.0f];
     self.attributedLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
-    self.attributedLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
+//    self.attributedLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
     
-    [self.attributedLabel setText:self.espressoDescription afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
-        NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
-        
-        NSRegularExpression *regexp = NameRegularExpression();
-        NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
-        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize]; 
-        CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
-        if (boldFont) {
-            [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
-            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)boldFont range:nameRange];
-            CFRelease(boldFont);
-        }
-        
-        [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
-        
-        regexp = ParenthesisRegularExpression();
-        [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL * stop) {
-            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
-            CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
-            if (italicFont) {
-                [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
-                [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)italicFont range:result.range];
-                CFRelease(italicFont);
-                
-                [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:result.range];
-                [mutableAttributedString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[[UIColor grayColor] CGColor] range:result.range];
-            }
-        }];
-        
-        return mutableAttributedString;
-    }];
+//    [self.attributedLabel setText:self.espressoDescription afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
+//        NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
+//        
+//        NSRegularExpression *regexp = NameRegularExpression();
+//        NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
+//        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize]; 
+//        CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+//        if (boldFont) {
+//            [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
+//            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)boldFont range:nameRange];
+//            CFRelease(boldFont);
+//        }
+//        
+//        [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
+//        
+//        regexp = ParenthesisRegularExpression();
+//        [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL * stop) {
+//            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
+//            CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
+//            if (italicFont) {
+//                [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
+//                [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)italicFont range:result.range];
+//                CFRelease(italicFont);
+//                
+//                [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:result.range];
+//                [mutableAttributedString addAttribute:(NSString*)kCTForegroundColorAttributeName value:(id)[[UIColor grayColor] CGColor] range:result.range];
+//            }
+//        }];
+//        
+//        return mutableAttributedString;
+//    }];
     
     NSRegularExpression *regexp = NameRegularExpression();
     NSRange linkRange = [regexp rangeOfFirstMatchInString:self.espressoDescription options:0 range:NSMakeRange(0, [self.espressoDescription length])];
@@ -162,5 +159,3 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 @end
-
-#pragma clang diagnostic pop
