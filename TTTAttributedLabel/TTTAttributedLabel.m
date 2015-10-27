@@ -392,7 +392,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 - (void)commonInit {
     self.userInteractionEnabled = YES;
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = NO;
+#endif
 
     self.textInsets = UIEdgeInsetsZero;
     self.lineHeightMultiple = 1.0f;
@@ -1724,7 +1726,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIResponderStandardEditActions
 
 - (void)copy:(__unused id)sender {
+#if !TARGET_OS_TV
     [[UIPasteboard generalPasteboard] setString:self.text];
+#endif
 }
 
 #pragma mark - NSCoding
