@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "65C249A01BDFF9A60014AB94"
-               BuildableName = "TTTAttributedLabel tvOS.framework"
+               BuildableName = "TTTAttributedLabel.framework"
                BlueprintName = "TTTAttributedLabel tvOS"
                ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "65C249A01BDFF9A60014AB94"
-            BuildableName = "TTTAttributedLabel tvOS.framework"
+            BuildableName = "TTTAttributedLabel.framework"
             BlueprintName = "TTTAttributedLabel tvOS"
             ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "65C249A01BDFF9A60014AB94"
-            BuildableName = "TTTAttributedLabel tvOS.framework"
+            BuildableName = "TTTAttributedLabel.framework"
             BlueprintName = "TTTAttributedLabel tvOS"
             ReferencedContainer = "container:TTTAttributedLabel.xcodeproj">
          </BuildableReference>
