@@ -1557,7 +1557,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (BOOL)canPerformAction:(SEL)action
               withSender:(__unused id)sender
 {
+#if !TARGET_OS_TV
     return (action == @selector(copy:));
+#else
+    return NO;
+#endif
 }
 
 - (void)touchesBegan:(NSSet *)touches
@@ -1730,13 +1734,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
+#if !TARGET_OS_TV
 #pragma mark - UIResponderStandardEditActions
 
 - (void)copy:(__unused id)sender {
-#if !TARGET_OS_TV
     [[UIPasteboard generalPasteboard] setString:self.text];
-#endif
 }
+#endif
 
 #pragma mark - NSCoding
 
