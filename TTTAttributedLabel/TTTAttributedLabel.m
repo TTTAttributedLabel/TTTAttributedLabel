@@ -1649,7 +1649,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    return [self containslinkAtPoint:[touch locationInView:self]];
+    return YES;
 }
 
 #pragma mark - UILongPressGestureRecognizer
@@ -1712,6 +1712,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 // Fallback to `attributedLabel:didLongPressLinkWithTextCheckingResult:atPoint:` if no other delegate method matched.
                 if ([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressLinkWithTextCheckingResult:atPoint:)]) {
                     [self.delegate attributedLabel:self didLongPressLinkWithTextCheckingResult:result atPoint:touchPoint];
+                }
+            }
+            else
+            {
+                if([self.delegate respondsToSelector:@selector(attributedLabel:didLongPressCommonAreaAtPoint:)]){
+                    [self.delegate attributedLabel:self didLongPressCommonAreaAtPoint:touchPoint];
                 }
             }
             break;

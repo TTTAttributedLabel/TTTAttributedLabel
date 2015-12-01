@@ -633,6 +633,15 @@ didLongPressLinkWithTransitInformation:(NSDictionary *)components
 didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
                 atPoint:(CGPoint)point;
 
+/**
+ Tells the delegate that the user long-pressed on common area.
+ 
+ @param label The label whose link was long pressed.
+ @param point the point pressed, in the label's coordinate space
+ */
+- (void)attributedLabel:(TTTAttributedLabel *)label
+didLongPressCommonAreaAtPoint:(CGPoint)point;
+
 @end
 
 @interface TTTAttributedLabelLink : NSObject <NSCoding>
