@@ -75,10 +75,10 @@ typedef UILineBreakMode TTTLineBreakMode;
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     switch (alignment) {
-		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
-		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
-		case NSTextAlignmentRight: return kCTRightTextAlignment;
-		default: return kCTNaturalTextAlignment;
+        case NSTextAlignmentLeft: return kCTTextAlignmentLeft;
+        case NSTextAlignmentCenter: return kCTTextAlignmentCenter;
+        case NSTextAlignmentRight: return kCTTextAlignmentRight;
+        default: return kCTTextAlignmentNatural;
 	}
 #else
     switch (alignment) {
@@ -731,7 +731,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     
     TTTAttributedLabelLink *link = nil;
     
-    for (NSInteger i = 0; i < count && link.result == nil; i ++) {
+    for (NSUInteger i = 0; i < count && link.result == nil; i ++) {
         CGPoint currentPoint = CGPointMake(point.x + deltas[i].x, point.y + deltas[i].y);
         link = [self linkAtCharacterIndex:[self characterIndexAtPoint:currentPoint]];
     }
