@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65C249A21BDFF9A60014AB94 /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = A52E64F01B14C1E9002709D4 /* TTTAttributedLabel.m */; };
+		65C249A51BDFF9A60014AB94 /* TTTAttributedLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = A52E64EF1B14C1E9002709D4 /* TTTAttributedLabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A52E64F11B14C1E9002709D4 /* TTTAttributedLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = A52E64EF1B14C1E9002709D4 /* TTTAttributedLabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A52E64F21B14C1E9002709D4 /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = A52E64F01B14C1E9002709D4 /* TTTAttributedLabel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		65C249AA1BDFF9A60014AB94 /* TTTAttributedLabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TTTAttributedLabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A52E64271B14C0BF002709D4 /* TTTAttributedLabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TTTAttributedLabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A52E642B1B14C0BF002709D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A52E64EF1B14C1E9002709D4 /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTTAttributedLabel.h; path = ../../TTTAttributedLabel/TTTAttributedLabel.h; sourceTree = "<group>"; };
@@ -19,6 +22,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		65C249A31BDFF9A60014AB94 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A52E64231B14C0BF002709D4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -41,6 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				A52E64271B14C0BF002709D4 /* TTTAttributedLabel.framework */,
+				65C249AA1BDFF9A60014AB94 /* TTTAttributedLabel.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,6 +77,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		65C249A41BDFF9A60014AB94 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65C249A51BDFF9A60014AB94 /* TTTAttributedLabel.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A52E64241B14C0BF002709D4 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -77,6 +96,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		65C249A01BDFF9A60014AB94 /* TTTAttributedLabel tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65C249A71BDFF9A60014AB94 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel tvOS" */;
+			buildPhases = (
+				65C249A11BDFF9A60014AB94 /* Sources */,
+				65C249A31BDFF9A60014AB94 /* Frameworks */,
+				65C249A41BDFF9A60014AB94 /* Headers */,
+				65C249A61BDFF9A60014AB94 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "TTTAttributedLabel tvOS";
+			productName = TTTAttributedLabel;
+			productReference = 65C249AA1BDFF9A60014AB94 /* TTTAttributedLabel.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		A52E64261B14C0BF002709D4 /* TTTAttributedLabel */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A52E643D1B14C0BF002709D4 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel" */;
@@ -121,11 +158,19 @@
 			projectRoot = "";
 			targets = (
 				A52E64261B14C0BF002709D4 /* TTTAttributedLabel */,
+				65C249A01BDFF9A60014AB94 /* TTTAttributedLabel tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		65C249A61BDFF9A60014AB94 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A52E64251B14C0BF002709D4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -136,6 +181,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		65C249A11BDFF9A60014AB94 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65C249A21BDFF9A60014AB94 /* TTTAttributedLabel.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A52E64221B14C0BF002709D4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -147,6 +200,42 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		65C249A81BDFF9A60014AB94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				INFOPLIST_FILE = TTTAttributedLabel/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = TTTAttributedLabel;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Debug;
+		};
+		65C249A91BDFF9A60014AB94 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				INFOPLIST_FILE = TTTAttributedLabel/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = TTTAttributedLabel;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Release;
+		};
 		A52E643B1B14C0BF002709D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -189,6 +278,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -229,6 +319,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -268,6 +359,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		65C249A71BDFF9A60014AB94 /* Build configuration list for PBXNativeTarget "TTTAttributedLabel tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65C249A81BDFF9A60014AB94 /* Debug */,
+				65C249A91BDFF9A60014AB94 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A52E64211B14C0BF002709D4 /* Build configuration list for PBXProject "TTTAttributedLabel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

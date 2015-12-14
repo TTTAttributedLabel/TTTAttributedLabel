@@ -75,10 +75,17 @@ typedef UILineBreakMode TTTLineBreakMode;
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     switch (alignment) {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 90000
+        case NSTextAlignmentLeft: return kCTTextAlignmentLeft;
+        case NSTextAlignmentCenter: return kCTTextAlignmentCenter;
+        case NSTextAlignmentRight: return kCTTextAlignmentRight;
+        default: return kCTTextAlignmentNatural;
+#else
 		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
 		case NSTextAlignmentCenter: return kCTCenterTextAlignment;
 		case NSTextAlignmentRight: return kCTRightTextAlignment;
 		default: return kCTNaturalTextAlignment;
+#endif
 	}
 #else
     switch (alignment) {
@@ -392,7 +399,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 - (void)commonInit {
     self.userInteractionEnabled = YES;
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = NO;
+#endif
 
     self.textInsets = UIEdgeInsetsZero;
     self.lineHeightMultiple = 1.0f;
@@ -1548,7 +1557,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (BOOL)canPerformAction:(SEL)action
               withSender:(__unused id)sender
 {
+#if !TARGET_OS_TV
     return (action == @selector(copy:));
+#else
+    return NO;
+#endif
 }
 
 - (void)touchesBegan:(NSSet *)touches
@@ -1721,11 +1734,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     }
 }
 
+#if !TARGET_OS_TV
 #pragma mark - UIResponderStandardEditActions
 
 - (void)copy:(__unused id)sender {
     [[UIPasteboard generalPasteboard] setString:self.text];
 }
+#endif
 
 #pragma mark - NSCoding
 
