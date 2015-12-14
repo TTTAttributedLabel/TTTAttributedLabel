@@ -23,6 +23,8 @@
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 //! Project version number for TTTAttributedLabel.
 FOUNDATION_EXPORT double TTTAttributedLabelVersionNumber;
 
@@ -74,7 +76,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
 @protocol TTTAttributedLabel <NSObject>
-@property (nonatomic, copy) IBInspectable id text;
+@property (nonatomic, copy, nullable) IBInspectable id text;
 @end
 
 IB_DESIGNABLE
@@ -121,7 +123,7 @@ IB_DESIGNABLE
  
  @discussion A `TTTAttributedLabel` delegate responds to messages sent by tapping on links in the label. You can use the delegate to respond to links referencing a URL, address, phone number, date, or date with a specified time zone and duration.
  */
-@property (nonatomic, unsafe_unretained) IBOutlet id <TTTAttributedLabelDelegate> delegate;
+@property (nonatomic, unsafe_unretained, nullable) IBOutlet id <TTTAttributedLabelDelegate> delegate;
 
 ///--------------------------------------------
 /// @name Detecting, Accessing, & Styling Links
@@ -261,17 +263,17 @@ IB_DESIGNABLE
 /**
  @deprecated Use `attributedTruncationToken` instead.
  */
-@property (nonatomic, strong) NSString *truncationTokenString DEPRECATED_ATTRIBUTE;
+@property (nonatomic, strong, nullable) NSString *truncationTokenString DEPRECATED_ATTRIBUTE;
 
 /**
  @deprecated Use `attributedTruncationToken` instead.
  */
-@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes DEPRECATED_ATTRIBUTE;
+@property (nonatomic, strong, nullable) NSDictionary *truncationTokenStringAttributes DEPRECATED_ATTRIBUTE;
 
 /**
  The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
  */
-@property (nonatomic, strong) IBInspectable NSAttributedString *attributedTruncationToken;
+@property (nonatomic, strong, nullable) IBInspectable NSAttributedString *attributedTruncationToken;
 
 ///--------------------------
 /// @name Long press gestures
@@ -310,8 +312,9 @@ IB_DESIGNABLE
   
  @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects. This string is `nil` by default.
  */
-- (void)setText:(id)text;
+- (void)setText:(nullable id)text;
 
+typedef NSMutableAttributedString * __nullable (^TTTInheritAndConfigureBlock) (NSMutableAttributedString *);
 /**
  Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.
  
@@ -321,7 +324,7 @@ IB_DESIGNABLE
  @discussion This string is `nil` by default.
  */
 - (void)setText:(id)text
-afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
+afterInheritingLabelAttributesAndConfiguringWithBlock:(nullable TTTInheritAndConfigureBlock)block;
 
 ///------------------------------------
 /// @name Accessing the Text Attributes
@@ -705,3 +708,5 @@ typedef void (^TTTAttributedLabelLinkBlock) (TTTAttributedLabel *, TTTAttributed
                          textCheckingResult:(NSTextCheckingResult *)result;
 
 @end
+
+NS_ASSUME_NONNULL_END
