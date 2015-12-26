@@ -599,17 +599,33 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                                   attributes:(NSDictionary *)attributes
 {
     NSMutableArray *links = [NSMutableArray array];
+    NSArray *oldLinks = self.links;
     
     for (NSTextCheckingResult *result in results) {
         NSDictionary *activeAttributes = attributes ? self.activeLinkAttributes : nil;
         NSDictionary *inactiveAttributes = attributes ? self.inactiveLinkAttributes : nil;
         
-        TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributes:attributes
-                                                                         activeAttributes:activeAttributes
-                                                                       inactiveAttributes:inactiveAttributes
-                                                                       textCheckingResult:result];
+        __block BOOL shouldAdd = YES;
         
-        [links addObject:link];
+        [oldLinks enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isKindOfClass:[NSTextCheckingResult class]]) {
+                NSTextCheckingResult *oldResult = obj;
+                
+                if (NSIntersectionRange(oldResult.range, result.range).length != 0) {
+                    shouldAdd = NO;
+                    *stop = YES;
+                }
+            }
+        }];
+        
+        if (shouldAdd) {
+            TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributes:attributes
+                                                                             activeAttributes:activeAttributes
+                                                                           inactiveAttributes:inactiveAttributes
+                                                                           textCheckingResult:result];
+            
+            [links addObject:link];
+        }
     }
     
     [self addLinks:links];
