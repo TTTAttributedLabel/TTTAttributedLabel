@@ -611,7 +611,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             if ([obj isKindOfClass:[NSTextCheckingResult class]]) {
                 NSTextCheckingResult *oldResult = obj;
                 
-                if (NSIntersectionRange(oldResult.range, result.range).length != 0) {
+                if (result.range.location >= oldResult.range.location && NSMaxRange(result.range) < NSMaxRange(oldResult.range)) {
                     shouldAdd = NO;
                     *stop = YES;
                 }
