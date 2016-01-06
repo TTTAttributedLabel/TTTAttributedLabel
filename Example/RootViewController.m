@@ -48,6 +48,11 @@
     self.navigationController.navigationBar.tintColor = [UIColor darkGrayColor];
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    self.tableView.layoutMargins = self.tableView.separatorInset = UIEdgeInsetsMake(0, 13, 0, 0);
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(__unused UITableView *)tableView

@@ -122,17 +122,22 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 }
 
 + (CGFloat)heightForCellWithText:(NSString *)text availableWidth:(CGFloat)availableWidth {
-    static CGFloat padding = 10.0;
-
     UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
-    CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
-    CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
 
-#if defined(__LP64__) && __LP64__
-    return ceil(sizeWithFont.height) + padding;
-#else
-    return ceilf(sizeWithFont.height) + padding;
-#endif
+    static CGFloat padding = 10.0;
+    CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
+
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSParagraphStyleAttributeName:paragraphStyle, NSFontAttributeName:systemFont}];
+
+    CGRect boundingRect = [attributedString boundingRectWithSize:textSize
+                                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                                         context:nil];
+
+    return ceilf((float)CGRectGetHeight(boundingRect)) + 2 * padding;
 }
 
 #pragma mark - UIView
@@ -142,7 +147,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.textLabel.hidden = YES;
     self.detailTextLabel.hidden = YES;
         
-    self.summaryLabel.frame = CGRectOffset(CGRectInset(self.bounds, 20.0f, 5.0f), -10.0f, 0.0f);
+    self.summaryLabel.frame = CGRectOffset(CGRectInset(self.bounds, 23.0f, 10.0f), -10.0f, 0.0f);
     
     [self setNeedsDisplay];
 }
