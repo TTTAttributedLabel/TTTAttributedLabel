@@ -59,7 +59,12 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.summaryLabel.textColor = [UIColor darkGrayColor];
     self.summaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.summaryLabel.numberOfLines = 0;
-    self.summaryLabel.linkAttributes = @{NSUnderlineStyleAttributeName: @(NSUnderlineStyleDouble)};
+    
+    NSMutableDictionary *linkAttributes = [NSMutableDictionary dictionary];
+    linkAttributes[NSUnderlineStyleAttributeName] = @(NSUnderlineStyleDouble);
+    linkAttributes[NSForegroundColorAttributeName] = [UIColor redColor];
+    linkAttributes[NSBackgroundColorAttributeName] = [UIColor lightGrayColor];
+    self.summaryLabel.linkAttributes = linkAttributes;
     
     NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
     mutableActiveLinkAttributes[NSUnderlineStyleAttributeName] = @(NSUnderlineStyleThick);
