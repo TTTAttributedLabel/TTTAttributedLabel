@@ -78,7 +78,9 @@ static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
 
 - (void)commonInit {
     self.userInteractionEnabled = YES;
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = NO;
+#endif
 
     self.linkModels = @[];
 
@@ -528,7 +530,11 @@ static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
 - (BOOL)canPerformAction:(SEL)action
               withSender:(__unused id)sender
 {
+#if !TARGET_OS_TV
     return (action == @selector(copy:));
+#else
+    return NO;
+#endif
 }
 
 - (void)touchesBegan:(NSSet *)touches
@@ -701,11 +707,13 @@ static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
     }
 }
 
+#if !TARGET_OS_TV
 #pragma mark - UIResponderStandardEditActions
 
 - (void)copy:(__unused id)sender {
     [UIPasteboard generalPasteboard].string = self.text;
 }
+#endif
 
 #pragma mark - NSCoding
 
