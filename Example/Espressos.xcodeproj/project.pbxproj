@@ -218,6 +218,7 @@
 				E9B3C6E41A32C2DB00D43DF9 /* Frameworks */,
 				E9B3C6E51A32C2DB00D43DF9 /* Resources */,
 				D864B42A8ED05D61B246E908 /* Copy Pods Resources */,
+				578781DB7177E1E4B3845CEC /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -238,6 +239,7 @@
 				F877A35913782AF10022A8AB /* Frameworks */,
 				F877A35A13782AF10022A8AB /* Resources */,
 				042203FAF8DD572FA1E9C16A /* Copy Pods Resources */,
+				A7E7E4ECF55DB3B924AA0DA3 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -331,6 +333,21 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
+		578781DB7177E1E4B3845CEC /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TTTAttributedLabelTests/Pods-TTTAttributedLabelTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		85E8C50BE5E0B13000A896E1 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -344,6 +361,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A7E7E4ECF55DB3B924AA0DA3 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Espressos/Pods-Espressos-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D864B42A8ED05D61B246E908 /* Copy Pods Resources */ = {
@@ -418,7 +450,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					"FB_REFERENCE_IMAGE_DIR=\\\"$(SOURCE_ROOT)/TTTAttributedLabelTests/ReferenceImages\\\"",
+					"FB_REFERENCE_IMAGE_DIR=\\\"\"$(SOURCE_ROOT)/TTTAttributedLabelTests/ReferenceImages\\\"\"",
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
