@@ -47,42 +47,35 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 }
 
 @implementation AttributedTableViewCell
-@synthesize summaryText = _summaryText;
-@synthesize summaryLabel = _summaryLabel;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (!self) {
         return nil;
     }
     
-    self.layer.shouldRasterize = YES;
-    self.layer.rasterizationScale = [[UIScreen mainScreen] scale];
-    
     self.summaryLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
     self.summaryLabel.font = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     self.summaryLabel.textColor = [UIColor darkGrayColor];
-    self.summaryLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.summaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.summaryLabel.numberOfLines = 0;
-    self.summaryLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(__bridge NSString *)kCTUnderlineStyleAttributeName];
+    
+    NSMutableDictionary *linkAttributes = [NSMutableDictionary dictionary];
+    linkAttributes[NSUnderlineStyleAttributeName] = @(NSUnderlineStyleDouble);
+    linkAttributes[NSForegroundColorAttributeName] = [UIColor redColor];
+    linkAttributes[NSBackgroundColorAttributeName] = [UIColor lightGrayColor];
+    self.summaryLabel.linkAttributes = linkAttributes;
     
     NSMutableDictionary *mutableActiveLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableActiveLinkAttributes setValue:[NSNumber numberWithBool:NO] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-    [mutableActiveLinkAttributes setValue:(__bridge id)[[UIColor redColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-    [mutableActiveLinkAttributes setValue:(__bridge id)[[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.1f] CGColor] forKey:(NSString *)kTTTBackgroundFillColorAttributeName];
-    [mutableActiveLinkAttributes setValue:(__bridge id)[[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.25f] CGColor] forKey:(NSString *)kTTTBackgroundStrokeColorAttributeName];
-    [mutableActiveLinkAttributes setValue:[NSNumber numberWithFloat:1.0f] forKey:(NSString *)kTTTBackgroundLineWidthAttributeName];
-    [mutableActiveLinkAttributes setValue:[NSNumber numberWithFloat:5.0f] forKey:(NSString *)kTTTBackgroundCornerRadiusAttributeName];
+    mutableActiveLinkAttributes[NSUnderlineStyleAttributeName] = @(NSUnderlineStyleThick);
+    mutableActiveLinkAttributes[NSForegroundColorAttributeName] = [UIColor blueColor];
+    mutableActiveLinkAttributes[NSBackgroundColorAttributeName] = [UIColor yellowColor];
     self.summaryLabel.activeLinkAttributes = mutableActiveLinkAttributes;
     
     self.summaryLabel.highlightedTextColor = [UIColor whiteColor];
     self.summaryLabel.shadowColor = [UIColor colorWithWhite:0.87f alpha:1.0f];
-    self.summaryLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
-    self.summaryLabel.highlightedShadowColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
-    self.summaryLabel.highlightedShadowOffset = CGSizeMake(0.0f, -1.0f);
-    self.summaryLabel.highlightedShadowRadius = 1;
-    self.summaryLabel.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
-
+    self.summaryLabel.shadowOffset = CGSizeMake(0.5f, 1.0f);
+    
     [self.contentView addSubview:self.summaryLabel];
     
     self.isAccessibilityElement = NO;
@@ -92,63 +85,59 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
 - (void)setSummaryText:(NSString *)text {
     _summaryText = [text copy];
-}
-
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
     
-    [self.summaryLabel setText:self.summaryText afterInheritingLabelAttributesAndConfiguringWithBlock:^NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
-        NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
-        
-        NSRegularExpression *regexp = NameRegularExpression();
-        NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
-        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize];
-        CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
-        if (boldFont) {
-            [mutableAttributedString removeAttribute:(__bridge NSString *)kCTFontAttributeName range:nameRange];
-            [mutableAttributedString addAttribute:(__bridge NSString *)kCTFontAttributeName value:(__bridge id)boldFont range:nameRange];
-            CFRelease(boldFont);
-        }
-        
-        [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
-        
-        regexp = ParenthesisRegularExpression();
-        [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-            UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
-            CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
-            if (italicFont) {
-                [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
-                [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)italicFont range:result.range];
-                CFRelease(italicFont);
-                
-                [mutableAttributedString removeAttribute:(NSString *)kCTForegroundColorAttributeName range:result.range];
-                [mutableAttributedString addAttribute:(NSString *)kCTForegroundColorAttributeName value:(__bridge id)[[UIColor grayColor] CGColor] range:result.range];
-            }
-        }];
-        
-        return mutableAttributedString;
-    }];
+    self.summaryLabel.attributedText = [self attributedSummaryText];
     
     NSRegularExpression *regexp = NameRegularExpression();
-    NSRange linkRange = [regexp rangeOfFirstMatchInString:self.summaryText options:0 range:NSMakeRange(0, [self.summaryText length])];
+    NSRange linkRange = [regexp rangeOfFirstMatchInString:_summaryText options:0 range:NSMakeRange(0, self.summaryText.length)];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://en.wikipedia.org/wiki/%@", [self.summaryText substringWithRange:linkRange]]];
     [self.summaryLabel addLinkToURL:url withRange:linkRange];
+}
+
+- (NSAttributedString *) attributedSummaryText {
+    NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:_summaryText];
     
-    [self.summaryLabel setNeedsDisplay];
+    NSRange stringRange = NSMakeRange(0, [mutableAttributedString length]);
+
+    NSRegularExpression *regexp = NameRegularExpression();
+    NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
+    UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize];
+
+    [mutableAttributedString removeAttribute:NSFontAttributeName range:nameRange];
+    [mutableAttributedString addAttribute:NSFontAttributeName value:boldSystemFont range:nameRange];
+
+    [mutableAttributedString replaceCharactersInRange:nameRange withString:[[[mutableAttributedString string] substringWithRange:nameRange] uppercaseString]];
+
+    regexp = ParenthesisRegularExpression();
+    [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+        UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
+        [mutableAttributedString removeAttribute:NSFontAttributeName range:result.range];
+        [mutableAttributedString addAttribute:NSFontAttributeName value:italicSystemFont range:result.range];
+
+        [mutableAttributedString removeAttribute:(NSString *)NSForegroundColorAttributeName range:result.range];
+        [mutableAttributedString addAttribute:(NSString *)NSForegroundColorAttributeName value:[UIColor grayColor] range:result.range];
+    }];
+
+    return mutableAttributedString;
 }
 
 + (CGFloat)heightForCellWithText:(NSString *)text availableWidth:(CGFloat)availableWidth {
-    static CGFloat padding = 10.0;
-
     UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
-    CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
-    CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
 
-#if defined(__LP64__) && __LP64__
-    return ceil(sizeWithFont.height) + padding;
-#else
-    return ceilf(sizeWithFont.height) + padding;
-#endif
+    static CGFloat padding = 10.0;
+    CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
+
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSParagraphStyleAttributeName:paragraphStyle, NSFontAttributeName:systemFont}];
+
+    CGRect boundingRect = [attributedString boundingRectWithSize:textSize
+                                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                                         context:nil];
+
+    return ceilf((float)CGRectGetHeight(boundingRect)) + 2 * padding;
 }
 
 #pragma mark - UIView
@@ -158,7 +147,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.textLabel.hidden = YES;
     self.detailTextLabel.hidden = YES;
         
-    self.summaryLabel.frame = CGRectOffset(CGRectInset(self.bounds, 20.0f, 5.0f), -10.0f, 0.0f);
+    self.summaryLabel.frame = CGRectOffset(CGRectInset(self.bounds, 23.0f, 10.0f), -10.0f, 0.0f);
     
     [self setNeedsDisplay];
 }

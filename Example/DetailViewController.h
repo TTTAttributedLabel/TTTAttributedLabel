@@ -24,6 +24,6 @@
 
 @interface DetailViewController : UIViewController
 
-- (id)initWithEspressoDescription:(NSString *)espresso;
+- (instancetype)initWithEspressoDescription:(NSString *)espresso;
 
 @end

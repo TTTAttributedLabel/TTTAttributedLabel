@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65DC9AB3EE474498E4D21B7D /* libPods-TTTAttributedLabelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04270F1647211FB470BCC84A /* libPods-TTTAttributedLabelTests.a */; };
 		B6EDD905BC31B7CDBC772A6E /* libPods-Espressos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5AA1C6D161D3700C394B3E8 /* libPods-Espressos.a */; };
-		CBB8BA972A3E9E100E5BEC20 /* libPods-TTTAttributedLabelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5661A15C6EB332A5F384694 /* libPods-TTTAttributedLabelTests.a */; };
 		E957D6671B2F9A1800090F1E /* AppTestDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E957D6661B2F9A1800090F1E /* AppTestDelegate.m */; };
 		E9B3C6EC1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B3C6EB1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m */; };
 		E9B3C6F61A32C5B100D43DF9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9B3C6F51A32C5B100D43DF9 /* Images.xcassets */; };
@@ -36,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04270F1647211FB470BCC84A /* libPods-TTTAttributedLabelTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TTTAttributedLabelTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		243B6281D87C3C8A26DE726F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		2E90FFBC1DDA1DE490C5256A /* Pods-TTTAttributedLabelTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTTAttributedLabelTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TTTAttributedLabelTests/Pods-TTTAttributedLabelTests.release.xcconfig"; sourceTree = "<group>"; };
 		660187FBA08BD9C0FFBEAE6D /* Pods-Espressos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Espressos.release.xcconfig"; path = "Pods/Target Support Files/Pods-Espressos/Pods-Espressos.release.xcconfig"; sourceTree = "<group>"; };
@@ -49,7 +50,6 @@
 		E9B3C6EA1A32C2DB00D43DF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9B3C6EB1A32C2DB00D43DF9 /* TTTAttributedLabelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabelTests.m; sourceTree = "<group>"; };
 		E9B3C6F51A32C5B100D43DF9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Espressos/Images.xcassets; sourceTree = "<group>"; };
-		F5661A15C6EB332A5F384694 /* libPods-TTTAttributedLabelTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TTTAttributedLabelTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F83BDEA918A5C2DF003893B2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F877A35C13782AF10022A8AB /* Espressos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Espressos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F877A36013782AF10022A8AB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -75,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBB8BA972A3E9E100E5BEC20 /* libPods-TTTAttributedLabelTests.a in Frameworks */,
+				65DC9AB3EE474498E4D21B7D /* libPods-TTTAttributedLabelTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,8 +154,8 @@
 				F877A36213782AF10022A8AB /* Foundation.framework */,
 				F877A36413782AF10022A8AB /* CoreGraphics.framework */,
 				F877A39413782FC10022A8AB /* CoreText.framework */,
-				F5661A15C6EB332A5F384694 /* libPods-TTTAttributedLabelTests.a */,
 				E5AA1C6D161D3700C394B3E8 /* libPods-Espressos.a */,
+				04270F1647211FB470BCC84A /* libPods-TTTAttributedLabelTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -218,6 +218,7 @@
 				E9B3C6E41A32C2DB00D43DF9 /* Frameworks */,
 				E9B3C6E51A32C2DB00D43DF9 /* Resources */,
 				D864B42A8ED05D61B246E908 /* Copy Pods Resources */,
+				57DB23695A5BA7AA737BBD78 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -238,6 +239,7 @@
 				F877A35913782AF10022A8AB /* Frameworks */,
 				F877A35A13782AF10022A8AB /* Resources */,
 				042203FAF8DD572FA1E9C16A /* Copy Pods Resources */,
+				6ABB5F4FB7836D77C433046E /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -254,7 +256,7 @@
 		F877A35313782AF10022A8AB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = Gowalla;
 				TargetAttributes = {
 					E9B3C6E61A32C2DB00D43DF9 = {
@@ -329,6 +331,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		57DB23695A5BA7AA737BBD78 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TTTAttributedLabelTests/Pods-TTTAttributedLabelTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6ABB5F4FB7836D77C433046E /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Espressos/Pods-Espressos-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		85E8C50BE5E0B13000A896E1 /* Check Pods Manifest.lock */ = {
@@ -426,6 +458,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "TTTAttributedLabel.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Espressos.app/Espressos";
 			};
@@ -456,6 +489,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "TTTAttributedLabel.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Espressos.app/Espressos";
 				VALIDATE_PRODUCT = YES;
@@ -465,6 +499,7 @@
 		F877A37B13782AF10022A8AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -478,6 +513,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
@@ -514,6 +550,7 @@
 		F877A37C13782AF10022A8AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -573,6 +610,8 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattt.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -594,6 +633,8 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattt.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
