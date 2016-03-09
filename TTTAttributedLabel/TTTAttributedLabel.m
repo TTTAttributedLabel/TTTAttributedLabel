@@ -25,16 +25,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <Availability.h>
 #import <objc/runtime.h>
+#import <tgmath.h>
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
-
-static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
-#if CGFLOAT_IS_DOUBLE
-    return sqrt(cgfloat);
-#else
-    return sqrtf(cgfloat);
-#endif
-}
 
 @interface TTTAccessibilityElement : UIAccessibilityElement
 @property (nonatomic, weak) UIView *superview;
@@ -274,7 +267,7 @@ static inline CGFLOAT_TYPE CGFloat_sqrt(CGFLOAT_TYPE cgfloat) {
 }
 
 - (TTTAttributedLabelLink *)linkAtRadius:(const CGFloat)radius aroundPoint:(CGPoint)point {
-    const CGFloat diagonal = CGFloat_sqrt(2 * radius * radius);
+    const CGFloat diagonal = sqrt(2 * radius * radius);
     const CGPoint deltas[] = {
         CGPointMake(0, -radius), CGPointMake(0, radius), // Above and below
         CGPointMake(-radius, 0), CGPointMake(radius, 0), // Beside
