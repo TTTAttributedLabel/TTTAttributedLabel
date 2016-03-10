@@ -1184,7 +1184,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored"-Wpointer-bool-conversion"
     if (&NSLinkAttributeName) {
+#pragma clang diagnostic pop
+        
         [self.attributedText enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(id value, __unused NSRange range, __unused BOOL *stop) {
             if (value) {
                 NSURL *URL = [value isKindOfClass:[NSString class]] ? [NSURL URLWithString:value] : value;
