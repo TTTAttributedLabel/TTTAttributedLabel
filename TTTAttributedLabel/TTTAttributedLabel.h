@@ -635,9 +635,10 @@ didLongPressLinkWithTextCheckingResult:(NSTextCheckingResult *)result
 
 @end
 
-@interface TTTAttributedLabelLink : NSObject <NSCoding>
 
 typedef void (^TTTAttributedLabelLinkBlock) (TTTAttributedLabel *, TTTAttributedLabelLink *);
+
+@interface TTTAttributedLabelLink : NSObject <NSCoding>
 
 /**
  An `NSTextCheckingResult` representing the link's location and type.
