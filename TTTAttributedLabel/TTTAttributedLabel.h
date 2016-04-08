@@ -140,6 +140,12 @@ IB_DESIGNABLE
 @property (nonatomic, assign) NSTextCheckingTypes enabledTextCheckingTypes;
 
 /**
+ Indicates whether to include email addresses when `Link` is included in `enabledTextCheckingTypes`.
+ Default value is YES.
+ */
+@property (nonatomic, assign) BOOL emailLinksEnabled;
+
+/**
  An array of `NSTextCheckingResult` objects for links detected or manually added to the label text.
  */
 @property (readonly, nonatomic, strong) NSArray *links;

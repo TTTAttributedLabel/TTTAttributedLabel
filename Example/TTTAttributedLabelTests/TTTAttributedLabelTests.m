@@ -235,6 +235,22 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertEqualObjects(result.URL, testURL, @"Should set and retrieve test URL");
 }
 
+- (void)testEmailEnabledByDefault {
+    label.enabledTextCheckingTypes = NSTextCheckingTypeLink;
+    label.text = @"test@example.com";
+    
+    expect([label.links count]).will.equal(1);
+    expect(((NSTextCheckingResult *)label.links[0]).URL.absoluteString).will.equal(@"mailto:test@example.com");
+}
+
+- (void)testEmailDisabled {
+    label.enabledTextCheckingTypes = NSTextCheckingTypeLink;
+    label.emailLinksEnabled = NO;
+    label.text = @"test@example.com";
+    
+    expect([label.links count]).will.equal(0);
+}
+
 - (void)testInheritsAttributesFromLabel:(TTTAttributedLabel *)labelInstance text:(id)text {
     UIFont *testFont = [UIFont boldSystemFontOfSize:16.f];
     UIColor *testColor = [UIColor greenColor];
