@@ -319,7 +319,11 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 
 @interface TTTAccessibilityElement : UIAccessibilityElement
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 50000
+@property (nonatomic, unsafe_unretained) UIView *superview;
+#else
 @property (nonatomic, weak) UIView *superview;
+#endif
 @property (nonatomic, assign) CGRect boundingRect;
 @end
 
