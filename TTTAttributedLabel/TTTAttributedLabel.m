@@ -1096,7 +1096,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 				}
 
                 // Use text color, or default to black
-                id color = [attributes objectForKey:(id)kCTForegroundColorAttributeName];
+                id color = [attributes objectForKey:(id)NSForegroundColorAttributeName];
                 if (color) {
                     if ([color isKindOfClass:[UIColor class]]) {
                         CGContextSetStrokeColorWithColor(c, [color CGColor]);
@@ -1111,7 +1111,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
-                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.0f);
+                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.2f);
                 CGContextMoveToPoint(c, runBounds.origin.x, y);
                 CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
 
