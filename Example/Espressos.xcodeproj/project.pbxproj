@@ -218,6 +218,7 @@
 				E9B3C6E41A32C2DB00D43DF9 /* Frameworks */,
 				E9B3C6E51A32C2DB00D43DF9 /* Resources */,
 				D864B42A8ED05D61B246E908 /* Copy Pods Resources */,
+				24DB63522955B1E4CE17AB6F /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -238,6 +239,7 @@
 				F877A35913782AF10022A8AB /* Frameworks */,
 				F877A35A13782AF10022A8AB /* Resources */,
 				042203FAF8DD572FA1E9C16A /* Copy Pods Resources */,
+				0CF66B7E90C5EF719FE09527 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -254,7 +256,7 @@
 		F877A35313782AF10022A8AB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Gowalla;
 				TargetAttributes = {
 					E9B3C6E61A32C2DB00D43DF9 = {
@@ -314,6 +316,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Espressos/Pods-Espressos-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		0CF66B7E90C5EF719FE09527 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Espressos/Pods-Espressos-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		24DB63522955B1E4CE17AB6F /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TTTAttributedLabelTests/Pods-TTTAttributedLabelTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3CD1DD63CE5A05DF88839E86 /* Check Pods Manifest.lock */ = {
@@ -426,6 +458,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "TTTAttributedLabel.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Espressos.app/Espressos";
 			};
@@ -456,6 +489,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "TTTAttributedLabel.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Espressos.app/Espressos";
 				VALIDATE_PRODUCT = YES;
@@ -478,6 +512,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
@@ -573,6 +608,7 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattt.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -594,6 +630,7 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattt.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
