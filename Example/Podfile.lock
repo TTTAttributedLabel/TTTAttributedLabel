@@ -16,13 +16,13 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   TTTAttributedLabel:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
   FBSnapshotTestCase: 366ecd378511d7716c79991cd8067d1eed23578d
   KIF: b518c9831453abea5afdbbde3908ec47832d6d56
   OCMock: d68685bde31f69cb61d518dcb39269080c78b5ed
-  TTTAttributedLabel: ab01c5db9274830e28e7ac26d8ab69c576602a32
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
 COCOAPODS: 0.39.0

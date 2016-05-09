@@ -4,8 +4,6 @@ platform :ios, '8.0'
 
 xcodeproj 'Espressos'
 
-deployment_target = '6.0'
-
 def install_pods
     pod 'TTTAttributedLabel', :path => '../'
 end
