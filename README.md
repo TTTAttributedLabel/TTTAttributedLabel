@@ -1,10 +1,10 @@
 # TTTAttributedLabel
 
-[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](http://img.shields.io/cocoapods/v/TTTAttributedLabel.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![codecov.io](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel/coverage.svg?branch=master)](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel?branch=master) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](https://img.shields.io/cocoapods/v/TTTAttributedLabel.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![codecov.io](https://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel/coverage.svg?branch=master)](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel?branch=master) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
-`TTTAttributedLabel` is a drop-in replacement for `UILabel` providing a simple way to performantly render [attributed strings](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
+`TTTAttributedLabel` is a drop-in replacement for `UILabel` providing a simple way to performantly render [attributed strings](https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
 > Already using this library? Please comment on [this issue](https://github.com/TTTAttributedLabel/TTTAttributedLabel/issues/586) to let us know which versions of iOS your app supports.
 
@@ -46,7 +46,7 @@ As of version 1.10.0, `TTTAttributedLabel` supports VoiceOver through the  `UIAc
 
 ## Installation
 
-[CocoaPods](http://cocoapods.org) is the recommended method of installing `TTTAttributedLabel`. Simply add the following line to your `Podfile`:
+[CocoaPods](https://cocoapods.org/) is the recommended method of installing `TTTAttributedLabel`. Simply add the following line to your `Podfile`:
 
 ```ruby
 # Podfile
@@ -85,7 +85,7 @@ label.textColor = [UIColor darkGrayColor];
 label.lineBreakMode = NSLineBreakByWordWrapping;
 label.numberOfLines = 0;
 
-// If you're using a simple `NSString` for your text, 
+// If you're using a simple `NSString` for your text,
 // assign to the `text` property last so it can inherit other label properties.
 NSString *text = @"Lorem ipsum dolor sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
@@ -129,7 +129,7 @@ In addition to supporting rich text, `TTTAttributedLabel` can automatically dete
 label.enabledTextCheckingTypes = NSTextCheckingTypeLink; // Automatically detect links when the label text is subsequently changed
 label.delegate = self; // Delegate methods are called when the user taps on a link (see `TTTAttributedLabelDelegate` protocol)
 
-label.text = @"Fork me on GitHub! (http://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
+label.text = @"Fork me on GitHub! (https://github.com/mattt/TTTAttributedLabel/)"; // Repository URL will be automatically detected and linked
 
 NSRange range = [label.text rangeOfString:@"me"];
 [label addLinkToURL:[NSURL URLWithString:@"http://github.com/mattt/"] withRange:range]; // Embedding a custom link in a substring
@@ -151,8 +151,8 @@ open Espressos.xcworkspace
 
 ## Requirements
 
-- iOS 4.3+ (iOS 6+ Base SDK)
-- Xcode 6
+- iOS 8+ / tvOS 9+
+- Xcode 6+
 
 ## License
 
