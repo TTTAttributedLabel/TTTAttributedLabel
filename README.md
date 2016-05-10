@@ -85,7 +85,7 @@ label.textColor = [UIColor darkGrayColor];
 label.lineBreakMode = NSLineBreakByWordWrapping;
 label.numberOfLines = 0;
 
-// If you're using a simple `NSString` for your text, 
+// If you're using a simple `NSString` for your text,
 // assign to the `text` property last so it can inherit other label properties.
 NSString *text = @"Lorem ipsum dolor sit amet";
 [label setText:text afterInheritingLabelAttributesAndConfiguringWithBlock:^ NSMutableAttributedString *(NSMutableAttributedString *mutableAttributedString) {
@@ -151,8 +151,8 @@ open Espressos.xcworkspace
 
 ## Requirements
 
-- iOS 4.3+ (iOS 6+ Base SDK)
-- Xcode 6
+- iOS 8+ / tvOS 9+
+- Xcode 6+
 
 ## License
 
