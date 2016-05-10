@@ -37,7 +37,6 @@ NSString * const kTTTBackgroundStrokeColorAttributeName = @"TTTBackgroundStrokeC
 NSString * const kTTTBackgroundLineWidthAttributeName = @"TTTBackgroundLineWidth";
 NSString * const kTTTBackgroundCornerRadiusAttributeName = @"TTTBackgroundCornerRadius";
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 const NSTextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
 const NSTextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
 const NSTextAlignment TTTTextAlignmentRight = NSTextAlignmentRight;
@@ -53,27 +52,9 @@ const NSLineBreakMode TTTLineBreakByTruncatingTail = NSLineBreakByTruncatingTail
 
 typedef NSTextAlignment TTTTextAlignment;
 typedef NSLineBreakMode TTTLineBreakMode;
-#else
-const UITextAlignment TTTTextAlignmentLeft = NSTextAlignmentLeft;
-const UITextAlignment TTTTextAlignmentCenter = NSTextAlignmentCenter;
-const UITextAlignment TTTTextAlignmentRight = NSTextAlignmentRight;
-const UITextAlignment TTTTextAlignmentJustified = NSTextAlignmentJustified;
-const UITextAlignment TTTTextAlignmentNatural = NSTextAlignmentNatural;
-
-const UITextAlignment TTTLineBreakByWordWrapping = NSLineBreakByWordWrapping;
-const UITextAlignment TTTLineBreakByCharWrapping = NSLineBreakByCharWrapping;
-const UITextAlignment TTTLineBreakByClipping = NSLineBreakByClipping;
-const UITextAlignment TTTLineBreakByTruncatingHead = NSLineBreakByTruncatingHead;
-const UITextAlignment TTTLineBreakByTruncatingMiddle = NSLineBreakByTruncatingMiddle;
-const UITextAlignment TTTLineBreakByTruncatingTail = NSLineBreakByTruncatingTail;
-
-typedef UITextAlignment TTTTextAlignment;
-typedef UILineBreakMode TTTLineBreakMode;
-#endif
 
 
 static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignment alignment) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     switch (alignment) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 90000
         case NSTextAlignmentLeft: return kCTTextAlignmentLeft;
@@ -87,18 +68,9 @@ static inline CTTextAlignment CTTextAlignmentFromTTTTextAlignment(TTTTextAlignme
 		default: return kCTNaturalTextAlignment;
 #endif
 	}
-#else
-    switch (alignment) {
-		case UITextAlignmentLeft: return kCTLeftTextAlignment;
-		case UITextAlignmentCenter: return kCTCenterTextAlignment;
-		case UITextAlignmentRight: return kCTRightTextAlignment;
-		default: return kCTNaturalTextAlignment;
-	}
-#endif
 }
 
 static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMode lineBreakMode) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 	switch (lineBreakMode) {
 		case NSLineBreakByWordWrapping: return kCTLineBreakByWordWrapping;
 		case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
@@ -108,27 +80,7 @@ static inline CTLineBreakMode CTLineBreakModeFromTTTLineBreakMode(TTTLineBreakMo
 		case NSLineBreakByTruncatingMiddle: return kCTLineBreakByTruncatingMiddle;
 		default: return 0;
 	}
-#else
-    return CTLineBreakModeFromUILineBreakMode(lineBreakMode);
-#endif
 }
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < 60000
-static inline CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    switch (lineBreakMode) {
-        case UILineBreakModeWordWrap: return kCTLineBreakByWordWrapping;
-        case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
-        case UILineBreakModeClip: return kCTLineBreakByClipping;
-        case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-        case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
-        case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
-        default: return 0;
-    }
-#pragma clang diagnostic pop
-}
-#endif
 
 static inline CGFLOAT_TYPE CGFloat_ceil(CGFLOAT_TYPE cgfloat) {
 #if CGFLOAT_IS_DOUBLE
@@ -316,8 +268,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return CGSizeMake(CGFloat_ceil(suggestedSize.width), CGFloat_ceil(suggestedSize.height));
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-
 @interface TTTAccessibilityElement : UIAccessibilityElement
 @property (nonatomic, weak) UIView *superview;
 @property (nonatomic, assign) CGRect boundingRect;
@@ -330,8 +280,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 @end
-
-#endif
 
 @interface TTTAttributedLabel ()
 @property (readwrite, nonatomic, copy) NSAttributedString *inactiveAttributedText;
@@ -353,8 +301,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 
 #ifndef kCFCoreFoundationVersionNumber_iOS_7_0
 #define kCFCoreFoundationVersionNumber_iOS_7_0 847.2
@@ -384,7 +330,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         }
     });
 }
-#endif
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -484,11 +429,9 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     [self setNeedsFramesetter];
     [self setNeedsDisplay];
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
         [self invalidateIntrinsicContentSize];
     }
-#endif
 
     [super setText:[self.attributedText string]];
 }
@@ -563,23 +506,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     _highlightFramesetter = highlightFramesetter;
 }
 
-- (CGFloat)leading {
-    return self.lineSpacing;
-}
-
-- (void)setLeading:(CGFloat)leading {
-    self.lineSpacing = leading;
-}
-
 #pragma mark -
-
-- (NSTextCheckingTypes)dataDetectorTypes {
-    return self.enabledTextCheckingTypes;
-}
-
-- (void)setDataDetectorTypes:(NSTextCheckingTypes)dataDetectorTypes {
-    self.enabledTextCheckingTypes = dataDetectorTypes;
-}
 
 - (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)enabledTextCheckingTypes {
     if (self.enabledTextCheckingTypes == enabledTextCheckingTypes) {
@@ -838,7 +765,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     return idx;
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (CGRect)boundingRectForCharacterRange:(NSRange)range {
     NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
 
@@ -855,7 +781,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
 }
-#endif
 
 - (void)drawFramesetter:(CTFramesetterRef)framesetter
        attributedString:(NSAttributedString *)attributedString
@@ -917,24 +842,15 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         break;
                 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 NSAttributedString *attributedTruncationString = self.attributedTruncationToken;
                 if (!attributedTruncationString) {
-                    NSString *truncationTokenString = self.truncationTokenString;
-                    if (!truncationTokenString) {
-                        truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
-                    }
+                    NSString *truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
                     
-                    NSDictionary *truncationTokenStringAttributes = self.truncationTokenStringAttributes;
-                    if (!truncationTokenStringAttributes) {
-                        truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
-                    }
+                    NSDictionary *truncationTokenStringAttributes = truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
                     
                     attributedTruncationString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
                 }
                 CTLineRef truncationToken = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedTruncationString);
-#pragma clang diagnostic pop
 
                 // Append truncationToken to the string
                 // because if string isn't too long, CT won't add the truncationToken on its own.
@@ -1161,11 +1077,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     self.linkModels = [NSArray array];
     if (text && self.attributedText && self.enabledTextCheckingTypes) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < 50000
-        __unsafe_unretained __typeof(self)weakSelf = self;
-#else
         __weak __typeof(self)weakSelf = self;
-#endif
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             __strong __typeof(weakSelf)strongSelf = weakSelf;
 
@@ -1183,16 +1095,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         });
     }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-    if (&NSLinkAttributeName) {
-        [self.attributedText enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(id value, __unused NSRange range, __unused BOOL *stop) {
-            if (value) {
-                NSURL *URL = [value isKindOfClass:[NSString class]] ? [NSURL URLWithString:value] : value;
-                [self addLinkToURL:URL withRange:range];
-            }
-        }];
-    }
-#endif
+    [self.attributedText enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(id value, __unused NSRange range, __unused BOOL *stop) {
+        if (value) {
+            NSURL *URL = [value isKindOfClass:[NSString class]] ? [NSURL URLWithString:value] : value;
+            [self addLinkToURL:URL withRange:range];
+        }
+    }];
 }
 
 - (void)setText:(id)text
@@ -1334,11 +1242,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         [self setNeedsFramesetter];
         [self setNeedsDisplay];
         
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
         if ([self respondsToSelector:@selector(invalidateIntrinsicContentSize)]) {
             [self invalidateIntrinsicContentSize];
         }
-#endif
         
         // Use infinite width to find the max width, which will be compared to availableWidth if needed.
         CGSize maxSize = (self.numberOfLines > 1) ? CGSizeMake(TTTFLOAT_MAX, TTTFLOAT_MAX) : CGSizeZero;
@@ -1412,8 +1318,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #pragma mark - UIAccessibilityElement
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-
 - (BOOL)isAccessibilityElement {
     return NO;
 }
@@ -1477,7 +1381,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     return _accessibilityElements;
 }
-#endif
 
 #pragma mark - UIView
 
@@ -1506,7 +1409,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     return [self sizeThatFits:[super intrinsicContentSize]];
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 - (void)tintColorDidChange {
     if (!self.inactiveLinkAttributes || [self.inactiveLinkAttributes count] == 0) {
         return;
@@ -1536,7 +1438,6 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     [self setNeedsDisplay];
 }
-#endif
 
 - (UIView *)hitTest:(CGPoint)point
           withEvent:(UIEvent *)event
@@ -1766,10 +1667,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeUIEdgeInsets:self.textInsets forKey:NSStringFromSelector(@selector(textInsets))];
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [coder encodeObject:self.truncationTokenString forKey:NSStringFromSelector(@selector(truncationTokenString))];
-#pragma clang diagnostic pop
+    [coder encodeObject:self.attributedTruncationToken forKey:NSStringFromSelector(@selector(attributedTruncationToken))];
 
     [coder encodeObject:NSStringFromUIEdgeInsets(self.linkBackgroundEdgeInset) forKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))];
     [coder encodeObject:self.attributedText forKey:NSStringFromSelector(@selector(attributedText))];
@@ -1859,12 +1757,9 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         self.verticalAlignment = [coder decodeIntegerForKey:NSStringFromSelector(@selector(verticalAlignment))];
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if ([coder containsValueForKey:NSStringFromSelector(@selector(truncationTokenString))]) {
-        self.truncationTokenString = [coder decodeObjectForKey:NSStringFromSelector(@selector(truncationTokenString))];
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(attributedTruncationToken))]) {
+        self.attributedTruncationToken = [coder decodeObjectForKey:NSStringFromSelector(@selector(attributedTruncationToken))];
     }
-#pragma clang diagnostic pop
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]) {
         self.linkBackgroundEdgeInset = UIEdgeInsetsFromString([coder decodeObjectForKey:NSStringFromSelector(@selector(linkBackgroundEdgeInset))]);

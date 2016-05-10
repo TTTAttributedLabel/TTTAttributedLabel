@@ -62,7 +62,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     self.summaryLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
     self.summaryLabel.font = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     self.summaryLabel.textColor = [UIColor darkGrayColor];
-    self.summaryLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.summaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.summaryLabel.numberOfLines = 0;
     self.summaryLabel.linkAttributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:(__bridge NSString *)kCTUnderlineStyleAttributeName];
     
@@ -142,7 +142,10 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
 
     UIFont *systemFont = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     CGSize textSize = CGSizeMake(availableWidth - (2 * padding) - 26, CGFLOAT_MAX); // rough accessory size
-    CGSize sizeWithFont = [text sizeWithFont:systemFont constrainedToSize:textSize lineBreakMode:NSLineBreakByWordWrapping];
+    NSDictionary *attributes = @{
+                                 NSFontAttributeName : systemFont,
+                                 };
+    CGSize sizeWithFont = [text boundingRectWithSize:textSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
 
 #if defined(__LP64__) && __LP64__
     return ceil(sizeWithFont.height) + padding;
