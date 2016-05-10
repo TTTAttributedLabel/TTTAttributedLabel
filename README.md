@@ -1,16 +1,14 @@
 # TTTAttributedLabel
 
-[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Documentation](https://img.shields.io/cocoapods/v/TTTAttributedLabel.svg?style=flat)](http://cocoadocs.org/docsets/TTTAttributedLabel/) [![codecov.io](https://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel/coverage.svg?branch=master)](http://codecov.io/github/TTTAttributedLabel/TTTAttributedLabel?branch=master) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Circle CI](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel.svg?style=svg)](https://circleci.com/gh/TTTAttributedLabel/TTTAttributedLabel) [![Version Status](https://img.shields.io/cocoapods/v/TTTAttributedLabel.svg)](https://cocoapods.org/pods/TTTAttributedLabel) [![codecov](https://codecov.io/gh/TTTAttributedLabel/TTTAttributedLabel/branch/master/graph/badge.svg)](https://codecov.io/gh/TTTAttributedLabel/TTTAttributedLabel) [![license MIT](https://img.shields.io/cocoapods/l/TTTAttributedLabel.svg)](http://opensource.org/licenses/MIT) [![Platform](https://img.shields.io/cocoapods/p/TTTAttributedLabel.svg)](http://cocoadocs.org/docsets/TTTAttributedLabel/)  [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 
 **A drop-in replacement for `UILabel` that supports attributes, data detectors, links, and more**
 
 `TTTAttributedLabel` is a drop-in replacement for `UILabel` providing a simple way to performantly render [attributed strings](https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html). As a bonus, it also supports link embedding, both automatically with `NSTextCheckingTypes` and manually by specifying a range for a URL, address, phone number, event, or transit information.
 
-> Already using this library? Please comment on [this issue](https://github.com/TTTAttributedLabel/TTTAttributedLabel/issues/586) to let us know which versions of iOS your app supports.
-
 Even though `UILabel` received support for `NSAttributedString` in iOS 6, `TTTAttributedLabel` has several unique features:
 
-- Compatibility with iOS >= 4.3
 - Automatic data detection
 - Manual link embedding
 - Label style inheritance for attributed strings
@@ -31,6 +29,11 @@ It also includes advanced paragraph style properties:
 - `shadowRadius`
 - `textInsets`
 - `verticalAlignment`
+
+## Requirements
+
+- iOS 8+ / tvOS 9+
+- Xcode 7+
 
 ### Accessibility
 
@@ -148,11 +151,6 @@ cd Example
 pod install
 open Espressos.xcworkspace
 ```
-
-## Requirements
-
-- iOS 8+ / tvOS 9+
-- Xcode 6+
 
 ## License
 
