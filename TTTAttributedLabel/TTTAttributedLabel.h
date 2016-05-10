@@ -128,11 +128,6 @@ IB_DESIGNABLE
 ///--------------------------------------------
 
 /**
- @deprecated Use `enabledTextCheckingTypes` property instead.
- */
-@property (nonatomic, assign) NSTextCheckingTypes dataDetectorTypes DEPRECATED_ATTRIBUTE;
-
-/**
  A bitmask of `NSTextCheckingType` which are used to automatically detect links in the label text.
 
  @warning You must specify `enabledTextCheckingTypes` before setting the `text`, with either `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`.
@@ -210,11 +205,6 @@ IB_DESIGNABLE
 @property (nonatomic, assign) IBInspectable CGFloat firstLineIndent;
 
 /**
- @deprecated Use `lineSpacing` instead.
- */
-@property (nonatomic, assign) IBInspectable CGFloat leading DEPRECATED_ATTRIBUTE;
-
-/**
  The space in points added between lines within the paragraph. This value is always nonnegative and is 0.0 by default.
  */
 @property (nonatomic, assign) IBInspectable CGFloat lineSpacing;
@@ -257,16 +247,6 @@ IB_DESIGNABLE
 ///--------------------------------------------
 /// @name Accessing Truncation Token Appearance
 ///--------------------------------------------
-
-/**
- @deprecated Use `attributedTruncationToken` instead.
- */
-@property (nonatomic, strong) NSString *truncationTokenString DEPRECATED_ATTRIBUTE;
-
-/**
- @deprecated Use `attributedTruncationToken` instead.
- */
-@property (nonatomic, strong) NSDictionary *truncationTokenStringAttributes DEPRECATED_ATTRIBUTE;
 
 /**
  The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.

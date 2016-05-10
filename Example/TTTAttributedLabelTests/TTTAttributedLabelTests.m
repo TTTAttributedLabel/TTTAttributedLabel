@@ -1046,23 +1046,4 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                             timeStyle:NSDateFormatterLongStyle]);
 }
 
-#pragma mark - Deprecated Methods
-
-- (void)testLeading {
-    // Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [label setLeading:1.f];
-#pragma clang diagnostic pop
-    expect(label.lineSpacing).to.equal(1.f);
-}
-
-- (void)testDataDetectorTypes {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    label.dataDetectorTypes = NSTextCheckingTypeLink;
-    expect(label.dataDetectorTypes).will.equal(NSTextCheckingTypeLink);
-#pragma clang diagnostic pop
-}
-
 @end
