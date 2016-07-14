@@ -889,7 +889,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     CFRange leaderRange = CTRunGetStringRange(firstRun);
                     
                     NSRange tokenRange = [truncationString.string rangeOfString:attributedTruncationString.string];
-                    NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+leaderRange.position), (NSUInteger)tokenRange.length);
+                    NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+leaderRange.length), (NSUInteger)tokenRange.length);
                     
                     [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
                 }
