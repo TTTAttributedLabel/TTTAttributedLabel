@@ -288,6 +288,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 @property (readwrite, nonatomic, strong) NSArray *linkModels;
 @property (readwrite, nonatomic, strong) TTTAttributedLabelLink *activeLink;
 @property (readwrite, nonatomic, strong) NSArray *accessibilityElements;
+@property (readwrite, nonatomic) CGRect truncationRect;
+@property (readwrite, nonatomic, strong) TTTAttributedLabelLink *truncationLink;
 
 - (void) longPressGestureDidFire:(UILongPressGestureRecognizer *)sender;
 @end
@@ -642,6 +644,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         return nil;
     }
 
+    if (CGRectContainsPoint(self.truncationRect, point)) {
+      return self.truncationLink;
+    }
+
     TTTAttributedLabelLink *result = [self linkAtCharacterIndex:[self characterIndexAtPoint:point]];
 
     if (!result && self.extendsLinkTouchArea) {
@@ -680,7 +686,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if (!NSLocationInRange((NSUInteger)idx, NSMakeRange(0, self.attributedText.length))) {
         return nil;
     }
-
     NSEnumerator *enumerator = [self.linkModels reverseObjectEnumerator];
     TTTAttributedLabelLink *link = nil;
     while ((link = [enumerator nextObject])) {
@@ -788,6 +793,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                  inRect:(CGRect)rect
                 context:(CGContextRef)c
 {
+    self.truncationLink = nil;
+    self.truncationRect = CGRectZero;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, rect);
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter, textRange, path, NULL);
@@ -887,7 +894,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CGContextSetTextPosition(c, penOffset, lineOrigin.y - descent - self.font.descender);
 
                 CTLineDraw(truncatedLine, c);
-
                 NSRange linkRange;
                 if ([attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
                     NSRange tokenRange = [truncationString.string rangeOfString:attributedTruncationString.string];
@@ -895,9 +901,13 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     if (!self.truncationLineEnabled) {
                         tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+lastLineRange.length)-tokenRange.length, (NSUInteger)tokenRange.length);
                     } else {
-                        tokenLinkRange = tokenRange;
+                      CGFloat ascent, descent, leading;
+                      CGFloat width = CTLineGetTypographicBounds(truncatedLine, &ascent, &descent, &leading);
+                      CGFloat height = ascent + descent + leading;
+                      tokenLinkRange = NSMakeRange((NSUInteger)lastLineRange.location, (NSUInteger)tokenRange.length);
+                      self.truncationRect = CGRectMake(penOffset, rect.size.height - height, width, height);
                     }
-                    [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
+                    self.truncationLink = [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
                 }
 
                 CFRelease(truncatedLine);
