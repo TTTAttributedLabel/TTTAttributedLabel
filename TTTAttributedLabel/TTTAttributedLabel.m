@@ -1395,10 +1395,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
         
         NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)string);
         
-        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
+        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints(framesetter, string, size, (NSUInteger)self.numberOfLines);
         labelSize.width += self.textInsets.left + self.textInsets.right;
         labelSize.height += self.textInsets.top + self.textInsets.bottom;
+        
+        CFRelease(framesetter);
 
         return labelSize;
     }
