@@ -243,7 +243,7 @@ IB_DESIGNABLE
 ///--------------------------------------------
 
 /**
- The attributed string to apply to the truncation token at the end of a truncated line. Overrides `truncationTokenStringAttributes` and `truncationTokenString`. If unspecified, attributes will fallback to `truncationTokenStringAttributes` and `truncationTokenString`.
+ The attributed string to apply to the truncation token at the end of a truncated line.
  */
 @property (nonatomic, strong) IBInspectable NSAttributedString *attributedTruncationToken;
 
