@@ -173,7 +173,10 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
         CTParagraphStyleSetting paragraphStyles[12] = {
             {.spec = kCTParagraphStyleSpecifierAlignment, .valueSize = sizeof(CTTextAlignment), .value = (const void *)&alignment},
             {.spec = kCTParagraphStyleSpecifierLineBreakMode, .valueSize = sizeof(CTLineBreakMode), .value = (const void *)&lineBreakMode},
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             {.spec = kCTParagraphStyleSpecifierLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&lineSpacing},
+#pragma clang diagnostic pop
             {.spec = kCTParagraphStyleSpecifierMinimumLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&minimumLineHeight},
             {.spec = kCTParagraphStyleSpecifierMaximumLineSpacing, .valueSize = sizeof(CGFloat), .value = (const void *)&maximumLineHeight},
             {.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment, .valueSize = sizeof (CGFloat), .value = (const void *)&lineSpacingAdjustment},
@@ -1395,10 +1398,13 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
         
         NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)string);
         
-        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
+        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints(framesetter, string, size, (NSUInteger)self.numberOfLines);
         labelSize.width += self.textInsets.left + self.textInsets.right;
         labelSize.height += self.textInsets.top + self.textInsets.bottom;
+        
+        CFRelease(framesetter);
 
         return labelSize;
     }
