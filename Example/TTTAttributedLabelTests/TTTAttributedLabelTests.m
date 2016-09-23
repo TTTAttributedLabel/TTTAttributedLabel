@@ -26,6 +26,11 @@ static inline NSAttributedString * TTTAttributedTestString() {
                                            attributes:TTTAttributedTestAttributesDictionary()];
 }
 
+static inline NSAttributedString * TTTAttributedTruncationTokenString() {
+    return [[NSAttributedString alloc] initWithString:@"+++"
+                                           attributes:TTTAttributedTestAttributesDictionary()];
+}
+
 static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     CGSize size = [TTTAttributedLabel sizeThatFitsAttributedString:label.attributedText
                                                    withConstraints:kTestLabelSize
@@ -194,6 +199,19 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                      limitedToNumberOfLines:2];
     
     font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
+}
+
+- (void)testMultilineLabelSizeThatFitsWithTruncationToken {
+    NSAttributedString *testString = TTTAttributedTestString();
+    label.text = testString;
+    
+    NSAttributedString *tokenString = TTTAttributedTruncationTokenString();
+    label.attributedTruncationToken = tokenString;
+    
+    CGSize size = [label sizeThatFits:kTestLabelSize];
+    
+    UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
     XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
