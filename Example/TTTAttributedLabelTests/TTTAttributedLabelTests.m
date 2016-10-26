@@ -202,19 +202,6 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
-- (void)testMultilineLabelSizeThatFitsWithTruncationToken {
-    NSAttributedString *testString = TTTAttributedTestString();
-    label.text = testString;
-    
-    NSAttributedString *tokenString = TTTAttributedTruncationTokenString();
-    label.attributedTruncationToken = tokenString;
-    
-    CGSize size = [label sizeThatFits:kTestLabelSize];
-    
-    UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
-    XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
-}
-
 - (void)testContainsLinkAtPoint {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
@@ -581,6 +568,19 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     [label sizeToFit];
     FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testMultilineLabelSizeThatFitsWithTruncationToken {
+    NSAttributedString *testString = TTTAttributedTestString();
+    label.text = testString;
+    
+    NSAttributedString *tokenString = TTTAttributedTruncationTokenString();
+    label.attributedTruncationToken = tokenString;
+    
+    CGSize size = [label sizeThatFits:kTestLabelSize];
+    
+    UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
 - (void)testOversizedAttributedFontSize {
