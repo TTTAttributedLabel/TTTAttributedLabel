@@ -371,7 +371,14 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 - (NSAttributedString *)renderedAttributedText {
     if (!_renderedAttributedText) {
-        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(self.attributedText, self.textColor);
+        NSMutableAttributedString *fullString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+        
+        if (self.attributedTruncationToken) {
+            [fullString appendAttributedString:self.attributedTruncationToken];
+        }
+        
+        NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
+        self.renderedAttributedText = NSAttributedStringBySettingColorFromContext(string, self.textColor);
     }
 
     return _renderedAttributedText;
@@ -1321,20 +1328,11 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (!self.attributedText) {
         return [super sizeThatFits:size];
     } else {
-        NSMutableAttributedString *fullString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+        NSAttributedString *string = [self renderedAttributedText];
         
-        if (self.attributedTruncationToken) {
-            [fullString appendAttributedString:self.attributedTruncationToken];
-        }
-        
-        NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
-        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)string);
-        
-        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints(framesetter, string, size, (NSUInteger)self.numberOfLines);
+        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
         labelSize.width += self.textInsets.left + self.textInsets.right;
         labelSize.height += self.textInsets.top + self.textInsets.bottom;
-        
-        CFRelease(framesetter);
 
         return labelSize;
     }
