@@ -92,6 +92,35 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect([label intrinsicContentSize]).to.equal([label sizeThatFits:CGSizeZero]);
 }
 
+- (void)testSizeThatFits {
+    label.text = TTTAttributedTestString();
+    label.numberOfLines = 0;
+    
+    CGSize sizeWithoutInsets = [label sizeThatFits:CGSizeMake(1000, 1000)];
+    expect(sizeWithoutInsets.width).to.beLessThanOrEqualTo(1000);
+    expect(sizeWithoutInsets.height).to.beLessThanOrEqualTo(1000);
+    
+    // Force multiline label by asking for a width smaller than the required
+    CGSize multilineMeasurementSize = CGSizeMake(sizeWithoutInsets.width - 1, 1000);
+    CGSize sizeWithoutInsetsMultiline = [label sizeThatFits:multilineMeasurementSize];
+    expect(sizeWithoutInsetsMultiline.width).to.beLessThanOrEqualTo(multilineMeasurementSize.width);
+    expect(sizeWithoutInsetsMultiline.width).to.beGreaterThan(sizeWithoutInsets.height);
+    
+    // repeat test by setting insets
+    
+    label.textInsets = UIEdgeInsetsMake(10, 20, 30, 40);
+    CGSize sizeWithInsets = [label sizeThatFits:CGSizeMake(sizeWithoutInsets.width, 1000)];
+    expect(sizeWithInsets.width).to.beLessThan(sizeWithoutInsets.width); // has to be smaller because of the insets
+    expect(sizeWithInsets.height).to.beGreaterThan(sizeWithoutInsets.height);
+    expect(sizeWithInsets.width).to.beLessThanOrEqualTo(1000);
+    expect(sizeWithInsets.height).to.beLessThanOrEqualTo(1000);
+    
+    multilineMeasurementSize = CGSizeMake(sizeWithInsets.width - 1, 1000);
+    CGSize sizeWithInsetsMultiline = [label sizeThatFits:CGSizeMake(300, 1000)];
+    expect(sizeWithInsetsMultiline.width).to.beLessThanOrEqualTo(multilineMeasurementSize.width);
+    expect(sizeWithInsetsMultiline.width).to.beGreaterThan(sizeWithoutInsets.height);
+}
+
 - (void)testHighlighting {
     label.text = TTTAttributedTestString();
     [label setHighlighted:YES];

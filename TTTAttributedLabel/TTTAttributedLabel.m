@@ -1328,6 +1328,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         }
         
         NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
+        size.width -= self.textInsets.left + self.textInsets.right;
+        size.height -= self.textInsets.top + self.textInsets.bottom;
         
         CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
         labelSize.width += self.textInsets.left + self.textInsets.right;
