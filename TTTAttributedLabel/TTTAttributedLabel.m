@@ -1325,7 +1325,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         if (self.attributedTruncationToken) {
             NSMutableAttributedString *fullString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
             [fullString appendAttributedString:self.attributedTruncationToken];
-            string = [fullString copy];
+            string = fullString;
         } else {
             string = self.attributedText;
         }
