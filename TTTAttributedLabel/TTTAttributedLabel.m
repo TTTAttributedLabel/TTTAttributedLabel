@@ -1321,13 +1321,17 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     if (!self.attributedText) {
         return [super sizeThatFits:size];
     } else {
-        NSMutableAttributedString *fullString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
-        
+        NSAttributedString *string;
         if (self.attributedTruncationToken) {
+            NSMutableAttributedString *fullString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
             [fullString appendAttributedString:self.attributedTruncationToken];
+            string = fullString;
+        } else {
+            string = self.attributedText;
         }
         
-        NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:fullString];
+        size.width -= self.textInsets.left + self.textInsets.right;
+        size.height -= self.textInsets.top + self.textInsets.bottom;
         
         CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
         labelSize.width += self.textInsets.left + self.textInsets.right;
