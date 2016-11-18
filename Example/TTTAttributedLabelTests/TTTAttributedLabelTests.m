@@ -298,8 +298,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertTrue(CGRectEqualToRect(rect, CGRectMake(0, 0, 0, 0)));
 }
 
-- (void)testSizeToFitRequiresNumberOfLines {
-    label.numberOfLines = 0;
+- (void)testSizeToFitNumberOfLines {
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
                                                                       attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
                                                                                     NSForegroundColorAttributeName : [UIColor greenColor] }];
@@ -307,8 +306,13 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                  attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
                                                                NSForegroundColorAttributeName : [UIColor redColor] }];
     
+    label.numberOfLines = 0;
     [label sizeToFit];
-    expect(label.frame.size).to.equal(CGSizeZero);
+    expect(label.frame.size).notTo.equal(CGSizeZero);
+    
+    label.numberOfLines = 1;
+    [label sizeToFit];
+    expect(label.frame.size).notTo.equal(CGSizeZero);
     
     label.numberOfLines = 2;
     [label sizeToFit];
