@@ -3,10 +3,10 @@ machine:
     LANG: en_US.UTF-8
     LC_CTYPE: en_US.UTF-8
   xcode:
-    version: "8.0"
+    version: "7.3"
 dependencies:
   pre:
-    - xcrun instruments -w "iPhone 6 (9.3)" || exit 0
+    - xcrun instruments -w "iPhone 6 (9.3 Simulator)" || exit 0
   override:
     - sudo gem install cocoapods xcpretty obcd -N
     - pod install --project-directory=Example
