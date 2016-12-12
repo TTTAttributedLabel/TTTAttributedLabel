@@ -310,6 +310,65 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(label.frame.size).notTo.equal(CGSizeZero);
 }
 
+- (void) testLinkAttributeConversion {
+    NSDictionary *sourceDict = @{
+                                 NSUnderlineStyleAttributeName           : @NO,
+                                 kTTTBackgroundLineWidthAttributeName    : @1,
+                                 kTTTBackgroundCornerRadiusAttributeName : @4,
+                                 NSStrokeWidthAttributeName              : @1.2
+                                 };
+    
+    NSDictionary *expectedDict = @{
+                                   (NSString *)kCTUnderlineStyleAttributeName:
+                                       @NO,
+                                   kTTTBackgroundLineWidthAttributeName:
+                                       @1,
+                                   kTTTBackgroundCornerRadiusAttributeName:
+                                       @4,
+                                   (NSString *)kCTStrokeWidthAttributeName: @1.2
+                                   };
+    
+    [label setLinkAttributes:sourceDict];
+    
+    XCTAssertEqualObjects(expectedDict, label.linkAttributes);
+}
+
+- (void) testLinkAttributeConversionNilCase {
+    [label setLinkAttributes:nil];
+    XCTAssertNil(label.linkAttributes);
+}
+
+#pragma mark - Performance tests
+
+- (void) testPerformanceOfTextCheckingTypes {
+    [self measureBlock:^{
+        for (int i = 500; i--;) {
+            TTTAttributedLabel *measureLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+            measureLabel.enabledTextCheckingTypes = NSTextCheckingTypePhoneNumber | NSTextCheckingTypeTransitInformation;
+        }
+    }];
+}
+
+- (void)testSetTextAsyncWorkHang {
+    // See the fix in commit 284a1b656204652b27625cbf1402116cdb36883b.
+    // The previous dispatch_sync to main queue would seemingly deadlock an iPhone 5. (Possible exhaustion of OS handles/resources?)
+    // The fix results in a mesaurable performance impact even in simulator, so we are encoding that test here.
+    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:@"See https://www.yahoo.com/ for more information."];
+    [self measureBlock:^{
+        NSMutableArray *measureLabels = [[NSMutableArray alloc] init];
+        for (int i = 2000; i--;) {
+            TTTAttributedLabel *measureLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+            measureLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+            measureLabel.text = attributedText;
+            [measureLabels addObject:measureLabel];
+        }
+        
+        for (TTTAttributedLabel *measureLabel in measureLabels) {
+            expect(measureLabel.links.count).will.equal(1);
+        }
+    }];
+}
+
 #pragma mark - FBSnapshotTestCase tests
 
 - (void)testAdjustsFontSizeToFitWidth {
@@ -985,25 +1044,6 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(link.accessibilityValue).to.equal([NSDateFormatter localizedStringFromDate:date
                                                                             dateStyle:NSDateFormatterLongStyle
                                                                             timeStyle:NSDateFormatterLongStyle]);
-}
-
-#pragma mark - Deprecated Methods
-
-- (void)testLeading {
-    // Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [label setLeading:1.f];
-#pragma clang diagnostic pop
-    expect(label.lineSpacing).to.equal(1.f);
-}
-
-- (void)testDataDetectorTypes {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    label.dataDetectorTypes = NSTextCheckingTypeLink;
-    expect(label.dataDetectorTypes).will.equal(NSTextCheckingTypeLink);
-#pragma clang diagnostic pop
 }
 
 @end
