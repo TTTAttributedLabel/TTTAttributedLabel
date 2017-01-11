@@ -1287,6 +1287,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
                 
                 NSString *sourceText = [self.text isKindOfClass:[NSString class]] ? self.text : [(NSAttributedString *)self.text string];
 
+                if (sourceText.length <= link.result.range.location + link.result.range.length) {
+                    continue;
+                }
+
                 NSString *accessibilityLabel = [sourceText substringWithRange:link.result.range];
                 NSString *accessibilityValue = link.accessibilityValue;
 
