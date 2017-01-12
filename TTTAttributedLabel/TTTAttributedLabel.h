@@ -421,6 +421,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  @param point The point inside the label.
  */
 - (BOOL)containslinkAtPoint:(CGPoint)point;
+- (TTTAttributedLabelLink *)linkAtPoint:(CGPoint)point;
 
 /**
  Returns the @c TTTAttributedLabelLink at the give point if it exists.

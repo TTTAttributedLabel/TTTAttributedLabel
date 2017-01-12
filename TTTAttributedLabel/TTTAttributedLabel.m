@@ -509,17 +509,33 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                                   attributes:(NSDictionary *)attributes
 {
     NSMutableArray *links = [NSMutableArray array];
+    NSArray *oldLinks = self.links;
     
     for (NSTextCheckingResult *result in results) {
         NSDictionary *activeAttributes = attributes ? self.activeLinkAttributes : nil;
         NSDictionary *inactiveAttributes = attributes ? self.inactiveLinkAttributes : nil;
         
-        TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributes:attributes
-                                                                         activeAttributes:activeAttributes
-                                                                       inactiveAttributes:inactiveAttributes
-                                                                       textCheckingResult:result];
+        __block BOOL shouldAdd = YES;
         
-        [links addObject:link];
+        [oldLinks enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isKindOfClass:[NSTextCheckingResult class]]) {
+                NSTextCheckingResult *oldResult = obj;
+                
+                if (result.range.location >= oldResult.range.location && NSMaxRange(result.range) < NSMaxRange(oldResult.range)) {
+                    shouldAdd = NO;
+                    *stop = YES;
+                }
+            }
+        }];
+        
+        if (shouldAdd) {
+            TTTAttributedLabelLink *link = [[TTTAttributedLabelLink alloc] initWithAttributes:attributes
+                                                                             activeAttributes:activeAttributes
+                                                                           inactiveAttributes:inactiveAttributes
+                                                                           textCheckingResult:result];
+            
+            [links addObject:link];
+        }
     }
     
     [self addLinks:links];
@@ -979,7 +995,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 				}
 
                 // Use text color, or default to black
-                id color = [attributes objectForKey:(id)kCTForegroundColorAttributeName];
+                id color = [attributes objectForKey:(id)NSForegroundColorAttributeName];
                 if (color) {
                     CGContextSetStrokeColorWithColor(c, CGColorRefFromColor(color));
                 } else {
@@ -990,7 +1006,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
-                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.0f);
+                CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.2f);
                 CGContextMoveToPoint(c, runBounds.origin.x, y);
                 CGContextAddLineToPoint(c, runBounds.origin.x + runBounds.size.width, y);
 
