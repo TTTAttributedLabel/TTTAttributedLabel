@@ -113,6 +113,17 @@ IB_DESIGNABLE
 - (instancetype) init NS_UNAVAILABLE;
 
 ///-----------------------------
+/// @name Misc settings
+///-----------------------------
+
+/**
+ Whether it should be possible to tap throught the label if tapping outside a link.
+ 
+ @discussion If this property is set to YES, tapping outside of a link will pass the tap through to the view behind it. This for example allows selection of a UITableViewCell that has a TTTAttributedLabel with links where the label has userInteractionEnabled = YES and covers most of the view.
+ */
+@property (nonatomic) BOOL allowsTapThrough;
+
+///-----------------------------
 /// @name Accessing the Delegate
 ///-----------------------------
 

@@ -1399,6 +1399,19 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #endif
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+    if ([super pointInside:point withEvent:event]) {
+        if (self.allowsTapThrough && ![self linkAtPoint:point]) {
+            return NO;
+        } else {
+            return YES;
+        }
+    } else {
+        return NO;
+    }
+}
+
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
