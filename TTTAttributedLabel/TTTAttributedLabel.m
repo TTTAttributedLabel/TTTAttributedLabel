@@ -891,6 +891,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                         break;
                 }
 
+                CGFloat flushFactor = TTTFlushFactorForTextAlignment(self.textAlignment);
+                CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush((__bridge CTLineRef)line, flushFactor, rect.size.width);
+                xOffset += penOffset;
+                
                 runBounds.origin.x = origins[lineIndex].x + rect.origin.x + xOffset - fillPadding.left - rect.origin.x;
                 runBounds.origin.y = origins[lineIndex].y + rect.origin.y - fillPadding.bottom - rect.origin.y;
                 runBounds.origin.y -= runDescent;
