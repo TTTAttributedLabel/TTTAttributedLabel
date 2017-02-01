@@ -1428,6 +1428,8 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 - (void)touchesEnded:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
+	UITouch *touch = [touches anyObject];
+	self.activeLink = [self linkAtPoint:[touch locationInView:self]];
     if (self.activeLink) {
         if (self.activeLink.linkTapBlock) {
             self.activeLink.linkTapBlock(self, self.activeLink);
