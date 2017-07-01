@@ -845,7 +845,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         }
     }
 
-    [self drawStrike:frame inRect:rect context:c];
+    //[self drawStrike:frame inRect:rect context:c];
 
     CFRelease(frame);
     CGPathRelease(path);
