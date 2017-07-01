@@ -939,7 +939,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
             NSDictionary *attributes = (__bridge NSDictionary *)CTRunGetAttributes((__bridge CTRunRef) glyphRun);
             BOOL strikeOut = [[attributes objectForKey:kTTTStrikeOutAttributeName] boolValue];
             NSInteger superscriptStyle = [[attributes objectForKey:(id)kCTSuperscriptAttributeName] integerValue];
-
+         strikeOut = NO;
             if (strikeOut) {
                 CGRect runBounds = CGRectZero;
                 CGFloat runAscent = 0.0f;
