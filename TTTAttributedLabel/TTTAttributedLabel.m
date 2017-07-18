@@ -112,6 +112,7 @@ static inline NSDictionary * NSAttributedStringAttributesFromLabel(TTTAttributed
     paragraphStyle.maximumLineHeight = label.maximumLineHeight > 0 ? label.maximumLineHeight : label.font.lineHeight * label.lineHeightMultiple;
     paragraphStyle.lineHeightMultiple = label.lineHeightMultiple;
     paragraphStyle.firstLineHeadIndent = label.firstLineIndent;
+    paragraphStyle.paragraphSpacing = label.paragraphSpacing;
 
     if (label.numberOfLines == 1) {
         paragraphStyle.lineBreakMode = label.lineBreakMode;
