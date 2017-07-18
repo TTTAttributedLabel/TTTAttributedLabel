@@ -1600,6 +1600,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
     [coder encodeObject:@(self.lineSpacing) forKey:NSStringFromSelector(@selector(lineSpacing))];
     [coder encodeObject:@(self.lineHeightMultiple) forKey:NSStringFromSelector(@selector(lineHeightMultiple))];
     [coder encodeUIEdgeInsets:self.textInsets forKey:NSStringFromSelector(@selector(textInsets))];
+    [coder encodeObject:@(self.paragraphSpacing) forKey:NSStringFromSelector(@selector(paragraphSpacing))];
     [coder encodeInteger:self.verticalAlignment forKey:NSStringFromSelector(@selector(verticalAlignment))];
 
     [coder encodeObject:self.attributedTruncationToken forKey:NSStringFromSelector(@selector(attributedTruncationToken))];
@@ -1686,6 +1687,10 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(textInsets))]) {
         self.textInsets = [coder decodeUIEdgeInsetsForKey:NSStringFromSelector(@selector(textInsets))];
+    }
+    
+    if ([coder containsValueForKey:NSStringFromSelector(@selector(lineSpacing))]) {
+        self.textInsets = [coder decodeUIEdgeInsetsForKey:NSStringFromSelector(@selector(lineSpacing))];
     }
 
     if ([coder containsValueForKey:NSStringFromSelector(@selector(verticalAlignment))]) {
