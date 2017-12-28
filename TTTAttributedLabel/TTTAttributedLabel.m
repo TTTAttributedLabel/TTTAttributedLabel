@@ -826,8 +826,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 if ([attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange]) {
                     NSRange tokenRange = [truncationString.string rangeOfString:attributedTruncationString.string];
                     NSRange tokenLinkRange = NSMakeRange((NSUInteger)(lastLineRange.location+lastLineRange.length)-tokenRange.length, (NSUInteger)tokenRange.length);
-                    
-                    [self addLinkToURL:[attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange] withRange:tokenLinkRange];
+                    id attribute = [attributedTruncationString attribute:NSLinkAttributeName atIndex:0 effectiveRange:&linkRange];
+                    if (attribute) {
+                        // NSLinkAttributeName can be NSURL or NSString
+                        NSURL *URL = [attribute isKindOfClass:[NSString class]] ? [NSURL URLWithString:attribute] : attribute;
+                        [self addLinkToURL:URL withRange:tokenLinkRange];
+                    }
                 }
 
                 CFRelease(truncatedLine);
