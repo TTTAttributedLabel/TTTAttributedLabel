@@ -14,5 +14,5 @@ let package = Package(
             name: "TTAttributedLabel",
             path: "TTAttributedLabel"),
     ],
-    swiftLanguageVersions: [.v5, .v5_1]
+    swiftLanguageVersions: [.v5]
 )
