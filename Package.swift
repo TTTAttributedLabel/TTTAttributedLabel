@@ -7,12 +7,11 @@ let package = Package(
     products: [
         .library(
             name: "TTAttributedLabel",
-            targets: ["TTAttributedLabel"]),
+            targets: ["TTAttributedLabel"])
     ],
     targets: [
         .target(
-            name: "TTAttributedLabel",
-            path: "TTAttributedLabel"),
+            name: "TTAttributedLabel"
     ],
     swiftLanguageVersions: [.v5]
 )
