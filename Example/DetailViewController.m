@@ -105,8 +105,8 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         
         NSRegularExpression *regexp = NameRegularExpression();
         NSRange nameRange = [regexp rangeOfFirstMatchInString:[mutableAttributedString string] options:0 range:stringRange];
-        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize]; 
-        CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+        UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:kEspressoDescriptionTextFontSize];
+        CTFontRef boldFont = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)boldSystemFont.fontDescriptor, boldSystemFont.pointSize, NULL);
         if (boldFont) {
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:nameRange];
             [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)boldFont range:nameRange];
@@ -118,7 +118,7 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
         regexp = ParenthesisRegularExpression();
         [regexp enumerateMatchesInString:[mutableAttributedString string] options:0 range:stringRange usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL * stop) {
             UIFont *italicSystemFont = [UIFont italicSystemFontOfSize:kEspressoDescriptionTextFontSize];
-            CTFontRef italicFont = CTFontCreateWithName((__bridge CFStringRef)italicSystemFont.fontName, italicSystemFont.pointSize, NULL);
+            CTFontRef italicFont = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)italicSystemFont.fontDescriptor, italicSystemFont.pointSize, NULL);
             if (italicFont) {
                 [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:result.range];
                 [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)italicFont range:result.range];

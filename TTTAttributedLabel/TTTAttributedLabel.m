@@ -985,7 +985,6 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 }
                 
                 CTFontRef font = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)self.font.fontDescriptor, self.font.pointSize, NULL);
-//                CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)self.font.fontName, self.font.pointSize, NULL);
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
@@ -1793,7 +1792,6 @@ static inline CGColorRef CGColorRefFromColor(id color) {
 
 static inline CTFontRef CTFontRefFromUIFont(UIFont * font) {
     CTFontRef ctfont = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)font.fontDescriptor, font.pointSize, NULL);
-//    CTFontRef ctfont = CTFontCreateWithName((__bridge CFStringRef)font.fontName, font.pointSize, NULL);
     return CFAutorelease(ctfont);
 }
 
