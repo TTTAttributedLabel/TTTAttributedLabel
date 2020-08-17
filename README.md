@@ -97,7 +97,7 @@ NSString *text = @"Lorem ipsum dolor sit amet";
 
   // Core Text APIs use C functions without a direct bridge to UIFont. See Apple's "Core Text Programming Guide" to learn how to configure string attributes.
   UIFont *boldSystemFont = [UIFont boldSystemFontOfSize:14];
-  CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)boldSystemFont.fontName, boldSystemFont.pointSize, NULL);
+  CTFontRef font = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)boldSystemFont.fontDescriptor, boldSystemFont.pointSize, NULL);
   if (font) {
     [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)font range:boldRange];
     [mutableAttributedString addAttribute:kTTTStrikeOutAttributeName value:@YES range:strikeRange];

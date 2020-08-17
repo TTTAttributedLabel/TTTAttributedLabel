@@ -132,20 +132,18 @@ static inline NSAttributedString * NSAttributedStringByScalingFontSize(NSAttribu
     [mutableAttributedString enumerateAttribute:(NSString *)kCTFontAttributeName inRange:NSMakeRange(0, [mutableAttributedString length]) options:0 usingBlock:^(id value, NSRange range, BOOL * __unused stop) {
         UIFont *font = (UIFont *)value;
         if (font) {
-            NSString *fontName;
             CGFloat pointSize;
 
             if ([font isKindOfClass:[UIFont class]]) {
-                fontName = font.fontName;
                 pointSize = font.pointSize;
             } else {
-                fontName = (NSString *)CFBridgingRelease(CTFontCopyName((__bridge CTFontRef)font, kCTFontPostScriptNameKey));
                 pointSize = CTFontGetSize((__bridge CTFontRef)font);
             }
 
             [mutableAttributedString removeAttribute:(NSString *)kCTFontAttributeName range:range];
-            CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, CGFloat_floor(pointSize * scale), NULL);
-            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:(__bridge id)fontRef range:range];
+            
+            CTFontRef fontRef = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)font.fontDescriptor, CGFloat_floor(pointSize * scale), NULL);
+            [mutableAttributedString addAttribute:(NSString *)kCTFontAttributeName value:font range:range];
             CFRelease(fontRef);
         }
     }];
@@ -985,8 +983,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 } else {
                     CGContextSetGrayStrokeColor(c, 0.0f, 1.0);
                 }
-
-                CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)self.font.fontName, self.font.pointSize, NULL);
+                
+                CTFontRef font = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)self.font.fontDescriptor, self.font.pointSize, NULL);
                 CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
                 CFRelease(font);
 
@@ -1786,14 +1784,14 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 @end
 
-#pragma mark - 
+#pragma mark -
 
 static inline CGColorRef CGColorRefFromColor(id color) {
     return [color isKindOfClass:[UIColor class]] ? [color CGColor] : (__bridge CGColorRef)color;
 }
 
 static inline CTFontRef CTFontRefFromUIFont(UIFont * font) {
-    CTFontRef ctfont = CTFontCreateWithName((__bridge CFStringRef)font.fontName, font.pointSize, NULL);
+    CTFontRef ctfont = CTFontCreateWithFontDescriptor((__bridge CTFontDescriptorRef)font.fontDescriptor, font.pointSize, NULL);
     return CFAutorelease(ctfont);
 }
 
