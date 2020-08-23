@@ -174,6 +174,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     CFRange rangeToSize = CFRangeMake(0, (CFIndex)[attributedString length]);
     CGSize constraints = CGSizeMake(size.width, TTTFLOAT_MAX);
 
+    if (size.width < 0) {
+        return CGSizeZero;
+    }
+    
     if (numberOfLines == 1) {
         // If there is one line, the size that fits is the full width of the line
         constraints = CGSizeMake(TTTFLOAT_MAX, TTTFLOAT_MAX);
