@@ -233,6 +233,9 @@ IB_DESIGNABLE
  */
 @property (nonatomic, assign) IBInspectable UIEdgeInsets textInsets;
 
+@property (nonatomic, assign) IBInspectable CGFloat paragraphSpacing;
+
+
 /**
  The vertical text alignment for the label, for when the frame size is greater than the text rect size. The vertical alignment is `TTTAttributedLabelVerticalAlignmentCenter` by default.
  */
