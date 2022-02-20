@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "TTTAttributedLabel",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v11)],
     products: [
         .library(name: "TTTAttributedLabel", targets: ["TTTAttributedLabel"])
     ],
