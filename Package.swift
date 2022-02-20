@@ -9,6 +9,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "TTTAttributedLabel",
-                path: "TTTAttributedLabel")
+                path: "TTTAttributedLabel",
+                publicHeadersPath: ".")
     ]
 )
