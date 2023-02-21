@@ -14,6 +14,13 @@ DEPENDENCIES:
   - OCMock
   - TTTAttributedLabel (from `../`)
 
+SPEC REPOS:
+  trunk:
+    - Expecta
+    - FBSnapshotTestCase
+    - KIF
+    - OCMock
+
 EXTERNAL SOURCES:
   TTTAttributedLabel:
     :path: "../"
@@ -25,6 +32,6 @@ SPEC CHECKSUMS:
   OCMock: d68685bde31f69cb61d518dcb39269080c78b5ed
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
-PODFILE CHECKSUM: 434cefa0f9ef66f9f02f7457310d2e397c4215f7
+PODFILE CHECKSUM: 567258038596c4ec304d42f009d37832ae06d79b
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.11.2
