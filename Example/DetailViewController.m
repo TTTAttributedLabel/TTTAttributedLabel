@@ -23,9 +23,6 @@
 #import "DetailViewController.h"
 #import "TTTAttributedLabel.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 static CGFloat const kEspressoDescriptionTextFontSize = 17.0f;
 
 static inline NSRegularExpression * NameRegularExpression() {
@@ -91,8 +88,8 @@ static inline NSRegularExpression * ParenthesisRegularExpression() {
     UIFont *f = [UIFont systemFontOfSize:kEspressoDescriptionTextFontSize];
     self.attributedLabel.font = f;
     self.attributedLabel.textColor = [UIColor darkGrayColor];
-    self.attributedLabel.lineBreakMode = UILineBreakModeWordWrap;
-    self.attributedLabel.leading = -100;
+    self.attributedLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.attributedLabel.lineSpacing = -100;
     self.attributedLabel.maximumLineHeight = f.lineHeight;
     self.attributedLabel.minimumLineHeight = f.lineHeight;
     self.attributedLabel.numberOfLines = 0;
@@ -162,5 +159,3 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 @end
-
-#pragma clang diagnostic pop

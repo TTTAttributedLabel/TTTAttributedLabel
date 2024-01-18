@@ -26,6 +26,11 @@ static inline NSAttributedString * TTTAttributedTestString() {
                                            attributes:TTTAttributedTestAttributesDictionary()];
 }
 
+static inline NSAttributedString * TTTAttributedTruncationTokenString() {
+    return [[NSAttributedString alloc] initWithString:@"+++"
+                                           attributes:TTTAttributedTestAttributesDictionary()];
+}
+
 static inline void TTTSizeAttributedLabel(TTTAttributedLabel *label) {
     CGSize size = [TTTAttributedLabel sizeThatFitsAttributedString:label.attributedText
                                                    withConstraints:kTestLabelSize
@@ -293,8 +298,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     XCTAssertTrue(CGRectEqualToRect(rect, CGRectMake(0, 0, 0, 0)));
 }
 
-- (void)testSizeToFitRequiresNumberOfLines {
-    label.numberOfLines = 0;
+- (void)testSizeToFitNumberOfLines {
     label.attributedTruncationToken = [[NSAttributedString alloc] initWithString:@"[more]"
                                                                       attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:14],
                                                                                     NSForegroundColorAttributeName : [UIColor greenColor] }];
@@ -302,8 +306,13 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                  attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:15],
                                                                NSForegroundColorAttributeName : [UIColor redColor] }];
     
+    label.numberOfLines = 0;
     [label sizeToFit];
-    expect(label.frame.size).to.equal(CGSizeZero);
+    expect(label.frame.size).notTo.equal(CGSizeZero);
+    
+    label.numberOfLines = 1;
+    [label sizeToFit];
+    expect(label.frame.size).notTo.equal(CGSizeZero);
     
     label.numberOfLines = 2;
     [label sizeToFit];
@@ -563,6 +572,19 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     [label sizeToFit];
     FBSnapshotVerifyView(label, nil);
+}
+
+- (void)testMultilineLabelSizeThatFitsWithTruncationToken {
+    NSAttributedString *testString = TTTAttributedTestString();
+    label.text = testString;
+    
+    NSAttributedString *tokenString = TTTAttributedTruncationTokenString();
+    label.attributedTruncationToken = tokenString;
+    
+    CGSize size = [label sizeThatFits:kTestLabelSize];
+    
+    UIFont *font = [testString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    XCTAssertGreaterThan(size.height, font.pointSize, @"Text should size to more than one line");
 }
 
 - (void)testOversizedAttributedFontSize {
@@ -1044,25 +1066,6 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     expect(link.accessibilityValue).to.equal([NSDateFormatter localizedStringFromDate:date
                                                                             dateStyle:NSDateFormatterLongStyle
                                                                             timeStyle:NSDateFormatterLongStyle]);
-}
-
-#pragma mark - Deprecated Methods
-
-- (void)testLeading {
-    // Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [label setLeading:1.f];
-#pragma clang diagnostic pop
-    expect(label.lineSpacing).to.equal(1.f);
-}
-
-- (void)testDataDetectorTypes {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    label.dataDetectorTypes = NSTextCheckingTypeLink;
-    expect(label.dataDetectorTypes).will.equal(NSTextCheckingTypeLink);
-#pragma clang diagnostic pop
 }
 
 @end

@@ -2,22 +2,16 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.0'
 
-xcodeproj 'Espressos'
-
-deployment_target = '6.0'
-
-def install_pods
-    pod 'TTTAttributedLabel', :path => '../'
-end
+project 'Espressos'
 
 target :Espressos do
-    install_pods
-end
+  pod 'TTTAttributedLabel', :path => '../'
 
-target :TTTAttributedLabelTests, :exclusive => true do
-    install_pods
-    pod 'FBSnapshotTestCase'
-    pod 'Expecta'
-    pod 'OCMock'
-    pod 'KIF'
+  target :TTTAttributedLabelTests do
+      inherit! :search_paths
+      pod 'FBSnapshotTestCase/Core'
+      pod 'Expecta'
+      pod 'OCMock'
+      pod 'KIF'
+  end
 end
