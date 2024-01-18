@@ -14,7 +14,6 @@ let package = Package(
         .target(
             name: "TTTAttributedLabel",
             path: "TTTAttributedLabel",
-            exclude: ["Example", "Carthage"],
             publicHeadersPath: "."
         )
     ]
