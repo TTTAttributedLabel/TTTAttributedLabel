@@ -29,6 +29,8 @@ FOUNDATION_EXPORT double TTTAttributedLabelVersionNumber;
 //! Project version string for TTTAttributedLabel.
 FOUNDATION_EXPORT const unsigned char TTTAttributedLabelVersionString[];
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TTTAttributedLabelLink;
 
 /**
@@ -74,7 +76,7 @@ extern NSString * const kTTTBackgroundCornerRadiusAttributeName;
 
 // Override UILabel @property to accept both NSString and NSAttributedString
 @protocol TTTAttributedLabel <NSObject>
-@property (nonatomic, copy) IBInspectable id text;
+@property (nonatomic, copy, nullable) IBInspectable id text;
 @end
 
 IB_DESIGNABLE
@@ -88,8 +90,8 @@ IB_DESIGNABLE
  
  - `text` - This property now takes an `id` type argument, which can either be a kind of `NSString` or `NSAttributedString` (mutable or immutable in both cases)
  - `attributedText` - Do not set this property directly. Instead, pass an `NSAttributedString` to `text`.
- - `lineBreakMode` - This property displays only the first line when the value is `UILineBreakModeHeadTruncation`, `UILineBreakModeTailTruncation`, or `UILineBreakModeMiddleTruncation`
- - `adjustsFontsizeToFitWidth` - Supported in iOS 5 and greater, this property is effective for any value of `numberOfLines` greater than zero. In iOS 4, setting `numberOfLines` to a value greater than 1 with `adjustsFontSizeToFitWidth` set to `YES` may cause `sizeToFit` to execute indefinitely.
+ - `lineBreakMode` - This property displays only the first line when the value is `NSLineBreakByTruncatingHead`, `NSLineBreakByTruncatingTail`, or `NSLineBreakByTruncatingMiddle`
+ - `adjustsFontsizeToFitWidth` - This property is effective for any value of `numberOfLines` greater than zero.
  - `baselineAdjustment` - This property has no affect.
  - `textAlignment` - This property does not support justified alignment.
  - `NSTextAttachment` - This string attribute is not supported.
@@ -121,7 +123,7 @@ IB_DESIGNABLE
  
  @discussion A `TTTAttributedLabel` delegate responds to messages sent by tapping on links in the label. You can use the delegate to respond to links referencing a URL, address, phone number, date, or date with a specified time zone and duration.
  */
-@property (nonatomic, unsafe_unretained) IBOutlet id <TTTAttributedLabelDelegate> delegate;
+@property (nonatomic, weak, nullable) IBOutlet id <TTTAttributedLabelDelegate> delegate;
 
 ///--------------------------------------------
 /// @name Detecting, Accessing, & Styling Links
@@ -144,17 +146,17 @@ IB_DESIGNABLE
  
  @warning You must specify `linkAttributes` before setting autodecting or manually-adding links for these attributes to be applied.
  */
-@property (nonatomic, strong) NSDictionary *linkAttributes;
+@property (nonatomic, strong, nullable) NSDictionary *linkAttributes;
 
 /**
- A dictionary containing the default `NSAttributedString` attributes to be applied to links when they are in the active state. If `nil` or an empty `NSDictionary`, active links will not be styled. The default active link style is red and underlined.
+ A dictionary containing the default `NSAttributedString` attributes to be applied to links when they are in the active state. If `nil` or an empty `NSDictionary`, active links will not be styled. The default active link style is red and not underlined.
  */
-@property (nonatomic, strong) NSDictionary *activeLinkAttributes;
+@property (nonatomic, strong, nullable) NSDictionary *activeLinkAttributes;
 
 /**
  A dictionary containing the default `NSAttributedString` attributes to be applied to links when they are in the inactive state, which is triggered by a change in `tintColor` in iOS 7 and later. If `nil` or an empty `NSDictionary`, inactive links will not be styled. The default inactive link style is gray and unadorned.
  */
-@property (nonatomic, strong) NSDictionary *inactiveLinkAttributes;
+@property (nonatomic, strong, nullable) NSDictionary *inactiveLinkAttributes;
 
 /**
  The edge inset for the background of a link. The default value is `{0, -1, 0, -1}`.
@@ -188,7 +190,7 @@ IB_DESIGNABLE
 /** 
  The shadow color for the label when the label's `highlighted` property is `YES`. The default value is `nil` (no shadow color).
  */
-@property (nonatomic, strong) IBInspectable UIColor *highlightedShadowColor;
+@property (nonatomic, strong, nullable) IBInspectable UIColor *highlightedShadowColor;
 
 /**
  The amount to kern the next character. Default is standard kerning. If this attribute is set to 0.0, no kerning is done at all.
@@ -245,7 +247,7 @@ IB_DESIGNABLE
 /**
  The attributed string to apply to the truncation token at the end of a truncated line.
  */
-@property (nonatomic, strong) IBInspectable NSAttributedString *attributedTruncationToken;
+@property (nonatomic, strong, nullable) IBInspectable NSAttributedString *attributedTruncationToken;
 
 ///--------------------------
 /// @name Long press gestures
@@ -284,7 +286,7 @@ IB_DESIGNABLE
   
  @discussion This method overrides `UILabel -setText:` to accept both `NSString` and `NSAttributedString` objects. This string is `nil` by default.
  */
-- (void)setText:(id)text;
+- (void)setText:(nullable id)text;
 
 /**
  Sets the text displayed by the label, after configuring an attributed string containing the text attributes inherited from the label in a block.
@@ -294,8 +296,8 @@ IB_DESIGNABLE
  
  @discussion This string is `nil` by default.
  */
-- (void)setText:(id)text
-afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
+- (void)setText:(nullable id)text
+afterInheritingLabelAttributesAndConfiguringWithBlock:(nullable NSMutableAttributedString *(^)(NSMutableAttributedString *mutableAttributedString))block;
 
 ///------------------------------------
 /// @name Accessing the Text Attributes
@@ -420,7 +422,12 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param point The point inside the label.
  */
-- (BOOL)containslinkAtPoint:(CGPoint)point;
+- (BOOL)containsLinkAtPoint:(CGPoint)point;
+
+/**
+ The legacy, misspelled form of @c containsLinkAtPoint:. Use @c containsLinkAtPoint: instead.
+ */
+- (BOOL)containslinkAtPoint:(CGPoint)point NS_SWIFT_UNAVAILABLE("Use containsLink(at:) instead");
 
 /**
  Returns the @c TTTAttributedLabelLink at the give point if it exists.
@@ -429,7 +436,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
  
  @param point The point inside the label.
  */
-- (TTTAttributedLabelLink *)linkAtPoint:(CGPoint)point;
+- (nullable TTTAttributedLabelLink *)linkAtPoint:(CGPoint)point;
 
 @end
 
@@ -636,21 +643,21 @@ typedef void (^TTTAttributedLabelLinkBlock) (TTTAttributedLabel *, TTTAttributed
 /**
  Additional information about a link for VoiceOver users. Has default values if the link's @c result is @c NSTextCheckingTypeLink, @c NSTextCheckingTypePhoneNumber, or @c NSTextCheckingTypeDate.
  */
-@property (nonatomic, copy) NSString *accessibilityValue;
+@property (nonatomic, copy, nullable) NSString *accessibilityValue;
 
 /**
  A block called when this link is tapped.
  If non-nil, tapping on this link will call this block instead of the 
  @c TTTAttributedLabelDelegate tap methods, which will not be called for this link.
  */
-@property (nonatomic, copy) TTTAttributedLabelLinkBlock linkTapBlock;
+@property (nonatomic, copy, nullable) TTTAttributedLabelLinkBlock linkTapBlock;
 
 /**
  A block called when this link is long-pressed.
  If non-nil, long pressing on this link will call this block instead of the
  @c TTTAttributedLabelDelegate long press methods, which will not be called for this link.
  */
-@property (nonatomic, copy) TTTAttributedLabelLinkBlock linkLongPressBlock;
+@property (nonatomic, copy, nullable) TTTAttributedLabelLinkBlock linkLongPressBlock;
 
 /**
  Initializes a link using the attribute dictionaries specified.
@@ -679,3 +686,5 @@ typedef void (^TTTAttributedLabelLinkBlock) (TTTAttributedLabel *, TTTAttributed
                          textCheckingResult:(NSTextCheckingResult *)result;
 
 @end
+
+NS_ASSUME_NONNULL_END

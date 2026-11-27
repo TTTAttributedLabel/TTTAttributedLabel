@@ -23,8 +23,6 @@
 #import "TTTAttributedLabel.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <Availability.h>
-#import <objc/runtime.h>
 
 #define kTTTLineBreakWordWrapTextWidthScalingFactor (M_PI / M_E)
 
@@ -230,39 +228,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     BOOL _needsFramesetter;
     CTFramesetterRef _framesetter;
     CTFramesetterRef _highlightFramesetter;
+    NSTextStorage *_accessibilityTextStorage;
+    NSTextContainer *_accessibilityTextContainer;
 }
 
 @dynamic text;
 @synthesize attributedText = _attributedText;
-
-#ifndef kCFCoreFoundationVersionNumber_iOS_7_0
-#define kCFCoreFoundationVersionNumber_iOS_7_0 847.2
-#endif
-
-+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0) {
-            Class class = [self class];
-            Class superclass = class_getSuperclass(class);
-
-            NSArray *strings = @[
-                                 NSStringFromSelector(@selector(isAccessibilityElement)),
-                                 NSStringFromSelector(@selector(accessibilityElementCount)),
-                                 NSStringFromSelector(@selector(accessibilityElementAtIndex:)),
-                                 NSStringFromSelector(@selector(indexOfAccessibilityElement:)),
-                                 ];
-
-            for (NSString *string in strings) {
-                SEL selector = NSSelectorFromString(string);
-                IMP superImplementation = class_getMethodImplementation(superclass, selector);
-                Method method = class_getInstanceMethod(class, selector);
-                const char *types = method_getTypeEncoding(method);
-                class_replaceMethod(class, selector, superImplementation, types);
-            }
-        }
-    });
-}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -575,8 +546,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
 #pragma mark -
 
-- (BOOL)containslinkAtPoint:(CGPoint)point {
+- (BOOL)containsLinkAtPoint:(CGPoint)point {
     return [self linkAtPoint:point] != nil;
+}
+
+- (BOOL)containslinkAtPoint:(CGPoint)point {
+    return [self containsLinkAtPoint:point];
 }
 
 - (TTTAttributedLabelLink *)linkAtPoint:(CGPoint)point {
@@ -716,20 +691,32 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 }
 
 - (CGRect)boundingRectForCharacterRange:(NSRange)range {
-    NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+    // The layout manager and text container are cached and reused across calls:
+    // creating them per call is expensive when the label has many links, since
+    // this method is called once per link when building accessibility elements.
+    NSTextStorage *textStorage = nil;
+    if (_accessibilityTextStorage && [_accessibilityTextStorage.string isEqual:self.attributedText.string]) {
+        textStorage = _accessibilityTextStorage;
+    } else {
+        textStorage = [[NSTextStorage alloc] initWithAttributedString:self.attributedText];
 
-    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:mutableAttributedString];
+        NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+        [textStorage addLayoutManager:layoutManager];
 
-    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-    [textStorage addLayoutManager:layoutManager];
+        NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
+        [layoutManager addTextContainer:textContainer];
 
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:self.bounds.size];
-    [layoutManager addTextContainer:textContainer];
+        _accessibilityTextStorage = textStorage;
+        _accessibilityTextContainer = textContainer;
+    }
+
+    NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+    _accessibilityTextContainer.size = self.bounds.size;
 
     NSRange glyphRange;
     [layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
 
-    return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+    return [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:_accessibilityTextContainer];
 }
 
 - (void)drawFramesetter:(CTFramesetterRef)framesetter
@@ -801,7 +788,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                 if (!attributedTruncationString) {
                     NSString *truncationTokenString = @"\u2026"; // Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026)
                     
-                    NSDictionary *truncationTokenStringAttributes = truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
+                    NSDictionary *truncationTokenStringAttributes = [attributedString attributesAtIndex:(NSUInteger)truncationAttributePosition effectiveRange:NULL];
                     
                     attributedTruncationString = [[NSAttributedString alloc] initWithString:truncationTokenString attributes:truncationTokenStringAttributes];
                 }
@@ -954,6 +941,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
+    // The strike thickness is derived from the label font; creating the CTFont
+    // once here avoids doing it for every glyph run that has a strikeout.
+    CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)self.font.fontName, self.font.pointSize, NULL);
+    CGFloat strikeLineWidth = CTFontGetUnderlineThickness(font);
+    CFRelease(font);
+
     CFIndex lineIndex = 0;
     for (id line in lines) {
         CGFloat ascent = 0.0f, descent = 0.0f, leading = 0.0f;
@@ -1010,9 +1003,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     CGContextSetGrayStrokeColor(c, 0.0f, 1.0);
                 }
 
-                CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)self.font.fontName, self.font.pointSize, NULL);
-                CGContextSetLineWidth(c, CTFontGetUnderlineThickness(font));
-                CFRelease(font);
+                CGContextSetLineWidth(c, strikeLineWidth);
 
                 CGFloat y = CGFloat_round(runBounds.origin.y + runBounds.size.height / 2.0f);
                 CGContextMoveToPoint(c, runBounds.origin.x, y);
@@ -1552,7 +1543,7 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    return [self containslinkAtPoint:[touch locationInView:self]];
+    return [self containsLinkAtPoint:[touch locationInView:self]];
 }
 
 #pragma mark - UILongPressGestureRecognizer

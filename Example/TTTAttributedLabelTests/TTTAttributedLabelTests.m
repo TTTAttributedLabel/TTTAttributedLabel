@@ -215,8 +215,8 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(0, 4)];
     TTTSizeAttributedLabel(label);
-    XCTAssertTrue([label containslinkAtPoint:CGPointMake(5, 5)], @"Label should contain a link at the start of the string");
-    XCTAssertFalse([label containslinkAtPoint:CGPointMake(50, 5)], @"Label should not contain a link elsewhere in the string");
+    XCTAssertTrue([label containsLinkAtPoint:CGPointMake(5, 5)], @"Label should contain a link at the start of the string");
+    XCTAssertFalse([label containsLinkAtPoint:CGPointMake(50, 5)], @"Label should not contain a link elsewhere in the string");
 }
 
 - (void)testLinkDetection {
