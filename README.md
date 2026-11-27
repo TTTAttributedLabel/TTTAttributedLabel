@@ -32,8 +32,8 @@ It also includes advanced paragraph style properties:
 
 ## Requirements
 
-- iOS 8+ / tvOS 9+
-- Xcode 7+
+- iOS 12+ / tvOS 12+
+- Xcode 15+
 
 ### Accessibility
 
