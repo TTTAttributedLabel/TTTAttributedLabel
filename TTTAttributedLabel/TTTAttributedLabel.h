@@ -98,7 +98,7 @@ IB_DESIGNABLE
  
  ### NSCoding
  
- `TTTAttributedLabel`, like `UILabel`, conforms to `NSCoding`. However, if the build target is set to less than iOS 6.0, `linkAttributes` and `activeLinkAttributes` will not be encoded or decoded. This is due to an runtime exception thrown when attempting to copy non-object CoreText values in dictionaries.
+ `TTTAttributedLabel`, like `UILabel`, conforms to `NSCoding`. Link attribute dictionaries containing `CGColorRef` values (which do not conform to `NSCoding`) are transparently converted to `UIColor` when archived, and restored to `CGColorRef` when decoded, so archiving links is safe on all supported deployment targets.
  
  @warning Any properties changed on the label after setting the text will not be reflected until a subsequent call to `setText:` or `setText:afterInheritingLabelAttributesAndConfiguringWithBlock:`. This is to say, order of operations matters in this case. For example, if the label text color is originally black when the text is set, changing the text color to red will have no effect on the display of the label until the text is set once again.
  

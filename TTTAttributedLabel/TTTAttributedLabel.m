@@ -457,22 +457,26 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     // one detector instance per type (combination), fast reuse e.g. in cells
     static NSMutableDictionary *dataDetectorsByType = nil;
+    static dispatch_once_t onceToken;
 
-    if (!dataDetectorsByType) {
+    dispatch_once(&onceToken, ^{
         dataDetectorsByType = [NSMutableDictionary dictionary];
-    }
-    
-    if (enabledTextCheckingTypes) {
-        if (![dataDetectorsByType objectForKey:@(enabledTextCheckingTypes)]) {
-            NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:enabledTextCheckingTypes
-                                                                       error:nil];
-            if (detector) {
-                [dataDetectorsByType setObject:detector forKey:@(enabledTextCheckingTypes)];
+    });
+
+    @synchronized(dataDetectorsByType) {
+        if (enabledTextCheckingTypes) {
+            NSDataDetector *detector = [dataDetectorsByType objectForKey:@(enabledTextCheckingTypes)];
+            if (!detector) {
+                detector = [NSDataDetector dataDetectorWithTypes:enabledTextCheckingTypes
+                                                           error:nil];
+                if (detector) {
+                    [dataDetectorsByType setObject:detector forKey:@(enabledTextCheckingTypes)];
+                }
             }
+            self.dataDetector = detector;
+        } else {
+            self.dataDetector = nil;
         }
-        self.dataDetector = [dataDetectorsByType objectForKey:@(enabledTextCheckingTypes)];
-    } else {
-        self.dataDetector = nil;
     }
 }
 
@@ -665,7 +669,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     CFIndex idx = NSNotFound;
 
-    CGPoint lineOrigins[numberOfLines];
+    CGPoint *lineOrigins = calloc((size_t)numberOfLines, sizeof(CGPoint));
+    if (lineOrigins == NULL) {
+        CFRelease(frame);
+        CGPathRelease(path);
+        return NSNotFound;
+    }
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
 
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
@@ -701,6 +710,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
     CFRelease(frame);
     CGPathRelease(path);
+    free(lineOrigins);
 
     return idx;
 }
@@ -738,7 +748,12 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     NSInteger numberOfLines = self.numberOfLines > 0 ? MIN(self.numberOfLines, CFArrayGetCount(lines)) : CFArrayGetCount(lines);
     BOOL truncateLastLine = (self.lineBreakMode == TTTLineBreakByTruncatingHead || self.lineBreakMode == TTTLineBreakByTruncatingMiddle || self.lineBreakMode == TTTLineBreakByTruncatingTail);
 
-    CGPoint lineOrigins[numberOfLines];
+    CGPoint *lineOrigins = calloc((size_t)numberOfLines, sizeof(CGPoint));
+    if (lineOrigins == NULL) {
+        CFRelease(frame);
+        CGPathRelease(path);
+        return;
+    }
     CTFrameGetLineOrigins(frame, CFRangeMake(0, numberOfLines), lineOrigins);
 
     for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
@@ -846,6 +861,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     }
 
     [self drawStrike:frame inRect:rect context:c];
+    free(lineOrigins);
 
     CFRelease(frame);
     CGPathRelease(path);
@@ -856,7 +872,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                context:(CGContextRef)c
 {
     NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
-    CGPoint origins[[lines count]];
+    CGPoint *origins = calloc([lines count], sizeof(CGPoint));
+    if (origins == NULL) {
+        return;
+    }
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
     CFIndex lineIndex = 0;
@@ -920,6 +939,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
         lineIndex++;
     }
+
+    free(origins);
 }
 
 - (void)drawStrike:(CTFrameRef)frame
@@ -927,7 +948,10 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
            context:(CGContextRef)c
 {
     NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
-    CGPoint origins[[lines count]];
+    CGPoint *origins = calloc([lines count], sizeof(CGPoint));
+    if (origins == NULL) {
+        return;
+    }
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
 
     CFIndex lineIndex = 0;
@@ -1000,6 +1024,8 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
 
         lineIndex++;
     }
+
+    free(origins);
 }
 
 #pragma mark - TTTAttributedLabel
@@ -1329,8 +1355,37 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
         return [super sizeThatFits:size];
     } else {
         NSAttributedString *string = [self renderedAttributedText];
-        
-        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints([self framesetter], string, size, (NSUInteger)self.numberOfLines);
+        CTFramesetterRef framesetter = [self framesetter];
+
+        // The truncation token is part of renderedAttributedText so drawing can rely
+        // on it (see #621, #678), but when the text is not actually truncated the
+        // token would overstate the fitting size. Determine whether the text is
+        // truncated within the available width; if not, measure without the token.
+        BOOL needsToken = NO;
+        if (self.attributedTruncationToken && self.numberOfLines > 0) {
+            CGFloat layoutWidth = size.width > 0 ? size.width : TTTFLOAT_MAX;
+            CGMutablePathRef path = CGPathCreateMutable();
+            CGPathAddRect(path, NULL, CGRectMake(0.0f, 0.0f, layoutWidth, TTTFLOAT_MAX));
+            CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, (CFIndex)[self.attributedText length]), path, NULL);
+            CFArrayRef lines = CTFrameGetLines(frame);
+            needsToken = CFArrayGetCount(lines) > (CFIndex)self.numberOfLines;
+            CFRelease(frame);
+            CGPathRelease(path);
+        }
+
+        CTFramesetterRef measurementFramesetter = framesetter;
+        NSAttributedString *measurementString = string;
+        if (!needsToken) {
+            measurementString = self.attributedText;
+            measurementFramesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)measurementString);
+        }
+
+        CGSize labelSize = CTFramesetterSuggestFrameSizeForAttributedStringWithConstraints(measurementFramesetter, measurementString, size, (NSUInteger)self.numberOfLines);
+
+        if (measurementFramesetter != framesetter) {
+            CFRelease(measurementFramesetter);
+        }
+
         labelSize.width += self.textInsets.left + self.textInsets.right;
         labelSize.height += self.textInsets.top + self.textInsets.bottom;
 
@@ -1712,6 +1767,48 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 #pragma mark - TTTAttributedLabelLink
 
+#pragma mark - NSCoding helpers
+
+static inline BOOL TTTIsCGColorRef(id value) {
+    return value != nil && CFGetTypeID((__bridge CFTypeRef)value) == CGColorGetTypeID();
+}
+
+// Attribute dictionaries may contain CGColorRef values (e.g. for
+// kCTForegroundColorAttributeName), which do not conform to NSCoding and would
+// raise an exception when archived. Return a copy with CGColorRefs converted
+// to UIColor, or the original dictionary when no conversion is needed.
+static inline NSDictionary *TTTAttributesDictionaryForArchiving(NSDictionary *attributes) {
+    if (!attributes) return nil;
+
+    NSMutableDictionary *converted = nil;
+    for (id key in attributes) {
+        id value = attributes[key];
+        if (TTTIsCGColorRef(value)) {
+            if (!converted) converted = [NSMutableDictionary dictionaryWithDictionary:attributes];
+            converted[key] = [UIColor colorWithCGColor:(CGColorRef)value];
+        }
+    }
+
+    return converted ?: attributes;
+}
+
+// Restore CGColorRef values after decoding so dictionaries match their
+// pre-archival form (Core Text attributes require CGColorRef).
+static inline NSDictionary *TTTAttributesDictionaryFromArchiving(NSDictionary *attributes) {
+    if (!attributes) return nil;
+
+    NSMutableDictionary *converted = nil;
+    for (id key in attributes) {
+        id value = attributes[key];
+        if ([value isKindOfClass:[UIColor class]]) {
+            if (!converted) converted = [NSMutableDictionary dictionaryWithDictionary:attributes];
+            converted[key] = (__bridge_transfer id)CGColorCreateCopy([value CGColor]);
+        }
+    }
+
+    return converted ?: attributes;
+}
+
 @implementation TTTAttributedLabelLink
 
 - (instancetype)initWithAttributes:(NSDictionary *)attributes
@@ -1766,18 +1863,18 @@ afterInheritingLabelAttributesAndConfiguringWithBlock:(NSMutableAttributedString
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:self.result forKey:NSStringFromSelector(@selector(result))];
-    [aCoder encodeObject:self.attributes forKey:NSStringFromSelector(@selector(attributes))];
-    [aCoder encodeObject:self.activeAttributes forKey:NSStringFromSelector(@selector(activeAttributes))];
-    [aCoder encodeObject:self.inactiveAttributes forKey:NSStringFromSelector(@selector(inactiveAttributes))];
+    [aCoder encodeObject:TTTAttributesDictionaryForArchiving(self.attributes) forKey:NSStringFromSelector(@selector(attributes))];
+    [aCoder encodeObject:TTTAttributesDictionaryForArchiving(self.activeAttributes) forKey:NSStringFromSelector(@selector(activeAttributes))];
+    [aCoder encodeObject:TTTAttributesDictionaryForArchiving(self.inactiveAttributes) forKey:NSStringFromSelector(@selector(inactiveAttributes))];
     [aCoder encodeObject:self.accessibilityValue forKey:NSStringFromSelector(@selector(accessibilityValue))];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super init])) {
         _result = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(result))];
-        _attributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(attributes))];
-        _activeAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(activeAttributes))];
-        _inactiveAttributes = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(inactiveAttributes))];
+        _attributes = TTTAttributesDictionaryFromArchiving([aDecoder decodeObjectForKey:NSStringFromSelector(@selector(attributes))]);
+        _activeAttributes = TTTAttributesDictionaryFromArchiving([aDecoder decodeObjectForKey:NSStringFromSelector(@selector(activeAttributes))]);
+        _inactiveAttributes = TTTAttributesDictionaryFromArchiving([aDecoder decodeObjectForKey:NSStringFromSelector(@selector(inactiveAttributes))]);
         self.accessibilityValue = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(accessibilityValue))];
     }
     
