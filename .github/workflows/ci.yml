@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & Test (iOS)
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    env:
+      COCOAPODS_DISABLE_STATS: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods dependencies
+        working-directory: Example
+        run: pod install
+
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document
+
+      - name: Create snapshot simulator
+        id: simulator
+        run: |
+          set -euo pipefail
+
+          # Reference images were recorded on iPhone SE (3rd generation) with
+          # iOS 18. Prefer that runtime and fall back to the newest iOS one.
+          RUNTIME_ID=$(xcrun simctl list runtimes --json | /usr/bin/python3 -c '
+          import json, sys
+
+          runtimes = json.load(sys.stdin)["runtimes"]
+          ios = [r for r in runtimes if r.get("platform") == "iOS" and r.get("isAvailable")]
+
+          if not ios:
+              sys.exit("No available iOS simulator runtimes found")
+
+          def version(runtime):
+              return tuple(int(part) for part in runtime["version"].split("."))
+
+          ios.sort(key=version)
+          preferred = [r for r in ios if r["version"] == "18.6"]
+          if not preferred:
+              preferred = [r for r in ios if r["version"].startswith("18.")]
+
+          print((preferred or ios)[-1]["identifier"])
+          ')
+
+          UDID=$(xcrun simctl create "TTT-Snapshot-SE" \
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation" \
+            "$RUNTIME_ID")
+
+          echo "Using simulator $UDID ($RUNTIME_ID)"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Run tests
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace Example/Espressos.xcworkspace \
+            -scheme Espressos \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            -derivedDataPath build \
+            test | xcpretty --report junit --output build/junit.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            build/junit.xml
+            build/Logs/Test
+          if-no-files-found: ignore
+
+  lint:
+    name: Podspec Lint
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    env:
+      COCOAPODS_DISABLE_STATS: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint podspec
+        run: |
+          pod lib lint TTTAttributedLabel.podspec \
+            --platforms=ios \
+            --allow-warnings \
+            --skip-import-validation

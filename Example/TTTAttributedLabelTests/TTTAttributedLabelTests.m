@@ -13,6 +13,11 @@
 #import <OCMock.h>
 #import <KIF.h>
 
+// Allow a small pixel tolerance so snapshots stay stable across iOS point
+// releases while still catching real rendering regressions.
+static CGFloat const kTTTSnapshotTolerance = 0.02f;
+#define TTTVerifySnapshot(view) FBSnapshotVerifyViewWithOptions(view, nil, FBSnapshotTestCaseDefaultSuffixes(), kTTTSnapshotTolerance)
+
 static NSString * const kTestLabelText = @"Pallando, Merlyn, and Melisandre were walking one day...";
 static CGSize const kTestLabelSize = (CGSize) { 90, CGFLOAT_MAX };
 
@@ -64,6 +69,10 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
 
 - (void)setUp {
     [super setUp];
+
+    // Set FB_RECORD_MODE=1 in the scheme's Test action environment to
+    // regenerate the reference images, then run the tests again without it.
+    self.recordMode = [[[NSProcessInfo processInfo] environment][@"FB_RECORD_MODE"] boolValue];
     
     label = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(0, 0, 300, 100)];
     label.numberOfLines = 0;
@@ -386,13 +395,13 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.numberOfLines = 1;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 150, 50)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testNumberOfLines {
     label.numberOfLines = 1;
     label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testAttributedTruncationToken {
@@ -401,7 +410,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                                     NSForegroundColorAttributeName : [UIColor blueColor] }];
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 120, 60)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testAttributedTruncationTokenLinks {
@@ -411,7 +420,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                                     NSLinkAttributeName : [NSURL URLWithString:@"http://ytmnd.com"] }];
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 120, 60)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testAttributedTruncationTokenLinksUnderline {
@@ -422,7 +431,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                                     NSUnderlineStyleAttributeName : @YES }];
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 120, 60)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testAttributedTruncationTokenLinksUnderlineColor {
@@ -434,7 +443,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                                     NSUnderlineColorAttributeName : [UIColor redColor] }];
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 120, 60)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testHighlightedLabel {
@@ -443,39 +452,39 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.highlightedShadowColor = [UIColor redColor];
     label.highlightedShadowOffset = CGSizeMake(1, 1);
     label.text = @"Test text";
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testRightAlignedSimpleText {
     label.textAlignment = NSTextAlignmentRight;
     label.text = @"Test text";
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testCenterAlignedSimpleText {
     label.textAlignment = NSTextAlignmentCenter;
     label.text = @"Test text";
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testVerticalAlignment {
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 90, 300)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testMultilineLabelView {
     label.text = TTTAttributedTestString();
     TTTSizeAttributedLabel(label);
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLinkifiedLabelView {
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(1, 3)];
     TTTSizeAttributedLabel(label);
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLinkAttributeLabelView {
@@ -483,27 +492,27 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(10, 6)];
     TTTSizeAttributedLabel(label);
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLinkBackgroundLabelView {
     label.linkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor };
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(40, 5)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testMultipleLineLinkBackgroundLabelView {
     label.linkAttributes = @{ kTTTBackgroundFillColorAttributeName : (id)[UIColor greenColor].CGColor };
     label.text = TTTAttributedTestString();
     [label addLinkToURL:testURL withRange:NSMakeRange(20, 25)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLabelTextInsets {
     label.textInsets = UIEdgeInsetsMake(10, 40, 10, 40);
     label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLabelShadowRadius {
@@ -511,7 +520,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.shadowColor = [UIColor greenColor];
     label.shadowOffset = CGSizeMake(1, 3);
     label.text = TTTAttributedTestString();
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testCenteredMultilineAttributedString {
@@ -519,7 +528,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentBottom;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 200, 400)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testRightAlignedMultilineAttributedString {
@@ -527,7 +536,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.verticalAlignment = TTTAttributedLabelVerticalAlignmentTop;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 200, 400)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testComplexAttributedString {
@@ -544,21 +553,21 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     
     label.text = string;
     TTTSizeAttributedLabel(label);
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testCenteredTextSizeSmallerThanLabel {
     label.textAlignment = NSTextAlignmentCenter;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 600, 200)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testRightAlignedTextSizeSmallerThanLabel {
     label.textAlignment = NSTextAlignmentRight;
     label.text = TTTAttributedTestString();
     [label setFrame:CGRectMake(0, 0, 600, 200)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testSizeToFitWithTruncationToken {
@@ -571,7 +580,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
                                                                NSForegroundColorAttributeName : [UIColor redColor] }];
     
     [label sizeToFit];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testMultilineLabelSizeThatFitsWithTruncationToken {
@@ -594,7 +603,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
     label.text = [[NSAttributedString alloc] initWithString:kTestLabelText
                                                  attributes:@{ NSFontAttributeName : [UIFont boldSystemFontOfSize:fontSize + 10] }];
     [label setFrame:CGRectMake(0, 0, 150, 60)];
-    FBSnapshotVerifyView(label, nil);
+    TTTVerifySnapshot(label);
 }
 
 - (void)testLabelTruncationVaryingWidthSizing {
@@ -614,7 +623,7 @@ static inline void TTTSimulateLongPressOnLabelAtPointWithDuration(TTTAttributedL
         l.layer.borderWidth = 2;
     }
     
-    FBSnapshotVerifyView(containerView, nil);
+    TTTVerifySnapshot(containerView);
 }
 
 #pragma mark - UIAccessibility
